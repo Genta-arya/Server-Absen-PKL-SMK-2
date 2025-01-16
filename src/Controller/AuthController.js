@@ -1,12 +1,16 @@
+import multer from "multer";
+import { image_url } from "../Config/Constans.js";
+import { uploadImage } from "../Config/Multer.js";
 import { prisma } from "../Config/Prisma.js";
 import { createToken, JWT_SECRET } from "../Library/CreateToken.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { isValidRole } from "../Utils/Role.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import path from "path";
+import fs from "fs";
 export const handleRegister = async (req, res) => {
-  const { nim, password, role , name } = req.body;
+  const { nim, password, role, name } = req.body;
   if (!nim) {
     return sendResponse(res, 400, "Mohon lengkapi nim");
   }
@@ -243,19 +247,150 @@ export const getUserByRole = async (req, res) => {
     const exitsUser = await prisma.user.findMany({
       where: { role },
       select: {
-        id : true,
+        id: true,
         name: true,
         email: true,
         role: true,
         nim: true,
-        avatar: true
-        
-      }
+        avatar: true,
+      },
     });
     if (!exitsUser) {
       return sendResponse(res, 404, "User tidak ditemukan");
     }
     return sendResponse(res, 200, "User ditemukan", exitsUser);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updatePasswordUser = async (req, res) => {
+  const { id } = req.params;
+  const { password, new_password } = req.body;
+
+  if (!id || !password || !new_password) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  try {
+    const exitsUser = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan");
+    }
+
+    const isMatch = await bcrypt.compare(password, exitsUser.password);
+    if (!isMatch) {
+      return sendResponse(res, 400, "Password lama salah , mohon cek kembali");
+    }
+
+    if (password === new_password) {
+      return sendResponse(
+        res,
+        400,
+        "Password baru tidak boleh sama dengan password lama"
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    await prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+    return sendResponse(res, 200, "Password berhasil diubah");
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updateFotoProfile = async (req, res) => {
+  const { id } = req.params;
+  const file = req.file;
+
+  if (!file) {
+    return sendResponse(res, 400, "File tidak ditemukan dalam permintaan.");
+  }
+
+  if (!id) {
+    return sendResponse(res, 400, "ID pengguna tidak valid.");
+  }
+
+  try {
+    const exitsUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan.");
+    }
+
+    const oldImagePath = exitsUser.avatar
+      ? path.join(
+          path.resolve(),
+          "Public/Images/Profile",
+          exitsUser.avatar.split("/").pop()
+        )
+      : null;
+
+    if (oldImagePath && fs.existsSync(oldImagePath)) {
+      fs.unlinkSync(oldImagePath);
+    }
+
+    const url_image = `${image_url}/${file.filename}`;
+    const response = await prisma.user.update({
+      where: { id },
+      data: { avatar: url_image },
+    });
+
+    return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar);
+  } catch (error) {
+    if (
+      file &&
+      fs.existsSync(
+        path.join(path.resolve(), "Public/Images/Profile", file.filename)
+      )
+    ) {
+      fs.unlinkSync(
+        path.join(path.resolve(), "Public/Images/Profile", file.filename)
+      );
+    }
+
+    sendError(res, error);
+  }
+};
+
+export const getSingleUser = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+
+  // Validasi ID
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  try {
+
+    const exitsUser = await prisma.user.findFirst({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        nim: true,
+        avatar: true,
+      }
+    });
+
+  
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan");
+    }
+
+ 
+
+    return sendResponse(res, 200, "User ditemukansss", exitsUser);
   } catch (error) {
     sendError(res, error);
   }

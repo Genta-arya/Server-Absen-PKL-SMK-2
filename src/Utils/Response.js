@@ -3,6 +3,7 @@ export const sendResponse = async (res, statusCode, message, data = null) => {
     message,
   };
   console.log("LOG: " + message +"," + statusCode);
+  console.log("LOG: " + data);
 
   if (data) {
     responsePayload.data = data;

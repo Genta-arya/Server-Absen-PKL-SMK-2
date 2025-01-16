@@ -18,7 +18,7 @@ app.use(
 
 // Endpoints
 app.use("/api/auth",AuthRoutes)
-
+app.use("/image", express.static("Public/Images/Profile"));
 
 
 httpServer.listen(PORT, () => {

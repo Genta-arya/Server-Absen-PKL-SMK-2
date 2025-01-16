@@ -6,12 +6,16 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const handleRegister = async (req, res) => {
-  const { nim, password, role } = req.body;
+  const { nim, password, role , name } = req.body;
   if (!nim) {
     return sendResponse(res, 400, "Mohon lengkapi nim");
   }
 
-  if (nim.length > 20) {
+  if (!name) {
+    return sendResponse(res, 400, "Mohon lengkapi nama");
+  }
+
+  if (nim.length >= 20) {
     return sendResponse(res, 400, "NIM tidak boleh lebih dari 20 karakter");
   }
 
@@ -26,9 +30,10 @@ export const handleRegister = async (req, res) => {
       "Role tidak valid. Pilih antara pembimbing , user dan admin."
     );
   }
+  const parseNim = parseInt(nim);
 
   const user = await prisma.user.findUnique({
-    where: { nim },
+    where: { nim: parseNim },
   });
 
   if (user) {
@@ -48,8 +53,9 @@ export const handleRegister = async (req, res) => {
 
     await prisma.user.create({
       data: {
-        nim,
+        nim: parseNim,
         password: hashedPassword,
+        name,
         role,
         avatar: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
       },
@@ -243,6 +249,7 @@ export const getUserByRole = async (req, res) => {
         role: true,
         nim: true,
         avatar: true
+        
       }
     });
     if (!exitsUser) {

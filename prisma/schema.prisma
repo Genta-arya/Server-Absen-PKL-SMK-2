@@ -26,11 +26,12 @@ model Pkl {
   id              String    @id @default(uuid())
   name            String
   alamat          String
-  user_id         String?
+  creatorId       String
   users           User[]    @relation("UserPkl")
   absensi         Absensi[] @relation("PklAbsensi")
   tanggal_mulai   DateTime?
   tanggal_selesai DateTime
+  status Boolean @default(true)
   createdAt       DateTime  @default(now())
 }
 

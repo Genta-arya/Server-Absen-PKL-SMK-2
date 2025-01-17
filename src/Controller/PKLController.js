@@ -1,19 +1,17 @@
 import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
+import { sendError, sendResponse } from "../Utils/Response.js";
 
-const BATCH_SIZE = 200; 
+const BATCH_SIZE = 50;
 
 export const createPKLWithAbsensi = async (req, res) => {
-  const { name, address, user_id, start_date, end_date } = req.body;
+  const { name, address, user_id, start_date, end_date, creatorId } = req.body;
 
-  console.log(req.body);
-
-  if (!name || !address || !user_id || !start_date || !end_date) {
-    return res.status(400).json({ message: "Invalid request" });
+  if (!name || !address || !user_id || !start_date || !end_date || !creatorId) {
+    return sendResponse(res, 400, "Invalid request");
   }
 
   try {
-  
     const users = await prisma.user.findMany({
       where: {
         id: {
@@ -23,40 +21,61 @@ export const createPKLWithAbsensi = async (req, res) => {
     });
 
     if (users.length !== user_id.length) {
-      return res.status(404).json({ message: "One or more users not found" });
+      return sendResponse(res, 404, "User not found");
     }
 
-   
+    // siswa yang sudah ada di pkl tidak boleh ditambahkan lagi
+
+    const existingPkl = await prisma.pkl.findMany({
+      where: {
+        users: {
+          some: {
+            id: {
+              in: user_id,
+            },
+          },
+        },
+      },
+    });
+
+    if (existingPkl.length > 0) {
+      return sendResponse(
+        res,
+        400,
+        " Siswa yang sudah ada di pkl tidak boleh ditambahkan lagi"
+      );
+    }
+
     const newPkl = await prisma.pkl.create({
       data: {
         name,
         alamat: address,
         tanggal_mulai: new Date(start_date),
         tanggal_selesai: new Date(end_date),
+        creatorId: creatorId,
         users: {
-          connect: user_id.map((id) => ({ id })), 
+          connect: user_id.map((id) => ({ id })),
         },
       },
     });
 
-  
     const start = dayjs(start_date);
     const end = dayjs(end_date);
 
     if (start.isAfter(end)) {
-      return res
-        .status(400)
-        .json({ message: "Start date cannot be after end date" });
+      return sendResponse(res, 400, "Start date must be before end date");
     }
 
-    const dates = []; 
+    const dates = [];
 
-
-    for (let date = start; date.isBefore(end) || date.isSame(end); date = date.add(1, "day")) {
-      dates.push(date.format("YYYY-MM-DD")); 
+    for (
+      let date = start;
+      date.isBefore(end) || date.isSame(end);
+      date = date.add(1, "day")
+    ) {
+      dates.push(date.format("YYYY-MM-DD"));
     }
 
-   
     let absensiData = [];
     dates.forEach((date) => {
       user_id.forEach((user) => {
@@ -68,23 +87,67 @@ export const createPKLWithAbsensi = async (req, res) => {
       });
     });
 
-
     const batchPromises = [];
     for (let i = 0; i < absensiData.length; i += BATCH_SIZE) {
       const batch = absensiData.slice(i, i + BATCH_SIZE);
       batchPromises.push(prisma.absensi.createMany({ data: batch }));
     }
 
- 
     await Promise.all(batchPromises);
 
-    res.json({
-      message: "PKL created and absensi generated successfully",
-      data: newPkl,
-    });
+    return sendResponse(res, 201, "PKL created successfully", newPkl);
   } catch (error) {
-    console.error("Error creating PKL or absensi:", error);
-    res.status(500).json({ message: "Error creating PKL or absensi", error });
+    sendError(res, error);
   }
 };
 
+export const getDataPklCreator = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  const findUser = await prisma.user.findFirst();
+  if (!findUser) {
+    return sendResponse(res, 404, "User not found");
+  }
+  try {
+    const data = await prisma.pkl.findMany({
+      where: {
+        creatorId: id,
+      },
+    });
+
+    return sendResponse(res, 200, "Data ditemukan", data);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const getSinglePkl = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  try {
+    const data = await prisma.pkl.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            nim: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+    return sendResponse(res, 200, "Data ditemukan", data);
+  } catch (error) {
+    sendError(res, error);
+  }
+};

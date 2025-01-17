@@ -253,6 +253,8 @@ export const getUserByRole = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
+        Pkl: true,
+        
       },
     });
     if (!exitsUser) {
@@ -380,11 +382,13 @@ export const getSingleUser = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
+        Pkl: true,
         Absensi: {
          orderBy: {
             tanggal: "asc",
           },
         },
+      
       }
     });
 

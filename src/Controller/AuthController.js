@@ -380,6 +380,11 @@ export const getSingleUser = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
+        Absensi: {
+         orderBy: {
+            tanggal: "asc",
+          },
+        },
       }
     });
 

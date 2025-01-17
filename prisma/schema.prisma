@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,14 +8,38 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(uuid())
-  nim          Int  @unique
+  id           String    @id @default(uuid())
+  nim          Int       @unique
   name         String?
-  email        String? @unique
+  email        String?   @unique
   password     String
-  status_login Boolean @default(false)
+  status_login Boolean   @default(false)
   avatar       String?
-  role         String  @default("user")
-  token        String? 
-  createdAt    DateTime @default(now())
+  role         String    @default("user")
+  token        String?
+  createdAt    DateTime  @default(now())
+  Pkl          Pkl[]     @relation("UserPkl")
+  Absensi      Absensi[]
+}
+
+model Pkl {
+  id              String    @id @default(uuid())
+  name            String
+  alamat          String
+  user_id         String?
+  users           User[]    @relation("UserPkl")
+  absensi         Absensi[] @relation("PklAbsensi")
+  tanggal_mulai   DateTime?
+  tanggal_selesai DateTime
+  createdAt       DateTime  @default(now())
+}
+
+model Absensi {
+  id      String   @id @default(uuid())
+  pkl_id  String
+  pkl     Pkl?     @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+  user_id String
+  user    User?    @relation(fields: [user_id], references: [id])
+  tanggal DateTime
+  hadir   Boolean  @default(false)
 }

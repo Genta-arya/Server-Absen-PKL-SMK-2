@@ -253,8 +253,11 @@ export const getUserByRole = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
-        Pkl: true,
-        
+        Pkl: {
+          where: {
+            isDelete: false,
+          }
+        },
       },
     });
     if (!exitsUser) {
@@ -364,7 +367,6 @@ export const updateFotoProfile = async (req, res) => {
 
 export const getSingleUser = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   // Validasi ID
   if (!id) {
@@ -372,7 +374,6 @@ export const getSingleUser = async (req, res) => {
   }
 
   try {
-
     const exitsUser = await prisma.user.findFirst({
       where: { id },
       select: {
@@ -382,24 +383,83 @@ export const getSingleUser = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
-        Pkl: true,
-        Absensi: {
-         orderBy: {
-            tanggal: "asc",
+        Pkl: {
+          where: {
+            status: true,
+            isDelete: false,
+          },
+          select: {
+            id: true,
+            name: true,
+            alamat: true,
+            creatorId: true,
+            tanggal_mulai: true,
+            tanggal_selesai: true,
+            isDelete: true,
+            status: true,
+            createdAt: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatar: true,
+                role: true,
+              },
+            },
+            absensi: {
+              where: {
+                user_id: id,
+              },
+              orderBy: {
+                tanggal: "asc",
+              },
+            },
           },
         },
-      
-      }
+      },
     });
 
-  
     if (!exitsUser) {
       return sendResponse(res, 404, "User tidak ditemukan");
     }
 
- 
-
     return sendResponse(res, 200, "User ditemukansss", exitsUser);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updateDataUser = async (req, res) => {
+  const { id } = req.params;
+  const { nim, name, email } = req.body;
+
+  if (!nim || !name || !email) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+
+  const parseNim = parseInt(nim);
+
+  try {
+    const exitsUser = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan");
+    }
+    // uniq nim
+    const checkNim = await prisma.user.findUnique({
+      where: { nim: parseNim },
+    });
+    if (checkNim && checkNim.id !== id) {
+      return sendResponse(res, 400, "NIM sudah terdaftar");
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { nim: parseNim, name , email },
+    });
+    return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
   } catch (error) {
     sendError(res, error);
   }

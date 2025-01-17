@@ -19,6 +19,7 @@ model User {
   token        String?
   createdAt    DateTime  @default(now())
   Pkl          Pkl[]     @relation("UserPkl")
+  CreatedPkl   Pkl[]     @relation("PklCreator")
   Absensi      Absensi[]
 }
 
@@ -27,11 +28,13 @@ model Pkl {
   name            String
   alamat          String
   creatorId       String
+  creator         User      @relation("PklCreator", fields: [creatorId], references: [id])
   users           User[]    @relation("UserPkl")
   absensi         Absensi[] @relation("PklAbsensi")
+  isDelete        Boolean? @default(false)
   tanggal_mulai   DateTime?
   tanggal_selesai DateTime
-  status Boolean @default(true)
+  status          Boolean   @default(true)
   createdAt       DateTime  @default(now())
 }
 
@@ -39,8 +42,9 @@ model Absensi {
   id      String   @id @default(uuid())
   pkl_id  String
   pkl     Pkl?     @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+  isDelete Boolean? 
   user_id String
   user    User?    @relation(fields: [user_id], references: [id])
   tanggal DateTime
-  hadir   Boolean  @default(false)
+  hadir   String?
 }

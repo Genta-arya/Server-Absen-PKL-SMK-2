@@ -1,6 +1,7 @@
 import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
+import { io } from "../../index.js";
 
 const BATCH_SIZE = 50;
 
@@ -35,6 +36,7 @@ export const createPKLWithAbsensi = async (req, res) => {
             },
           },
         },
+        isDelete: false,
       },
     });
 
@@ -94,6 +96,11 @@ export const createPKLWithAbsensi = async (req, res) => {
     }
 
     await Promise.all(batchPromises);
+    user_id.forEach((userId) => {
+      io.to(userId).emit("new-pkl-notification", {
+        message: `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${newPkl.name}`,
+      });
+    });
 
     return sendResponse(res, 201, "PKL created successfully", newPkl);
   } catch (error) {
@@ -114,6 +121,7 @@ export const getDataPklCreator = async (req, res) => {
     const data = await prisma.pkl.findMany({
       where: {
         creatorId: id,
+        OR: [{ isDelete: false }, { isDelete: null }],
       },
     });
 
@@ -132,6 +140,7 @@ export const getSinglePkl = async (req, res) => {
     const data = await prisma.pkl.findUnique({
       where: {
         id,
+        OR: [{ isDelete: false }, { isDelete: null }],
       },
       include: {
         users: {
@@ -146,8 +155,85 @@ export const getSinglePkl = async (req, res) => {
         },
       },
     });
+
+    if (!data) {
+      return sendResponse(res, 404, "Data tidak ditemukan", data);
+    }
     return sendResponse(res, 200, "Data ditemukan", data);
   } catch (error) {
     sendError(res, error);
+  }
+};
+
+export const EditPkl = async (req, res) => {
+  const { id } = req.params;
+  const { name, alamat } = req.body;
+
+  if (!id || !name || !alamat) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  const checkPkl = await prisma.pkl.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!checkPkl) {
+    return sendResponse(res, 404, "Data PKL tidak ditemukan");
+  }
+  try {
+    const update = await prisma.pkl.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        alamat,
+      },
+    });
+    return sendResponse(res, 200, "Data berhasil diupdate", update);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const deletePkl = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  try {
+    const checkPkl = await prisma.pkl.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!checkPkl) {
+      return sendResponse(res, 404, "Data PKL tidak ditemukan");
+    }
+    const deletePkl = await prisma.pkl.update({
+      where: {
+        id,
+      },
+      data: {
+        isDelete: true,
+      },
+    });
+    return sendResponse(res, 200, "Data berhasil dihapus", deletePkl);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const deleteAllPkl = async (req, res) => {
+  try {
+    const deletePkl = await prisma.pkl.deleteMany({
+      where: {
+        isDelete: true,
+      },
+    });
+    console.log(" Data PKL berhasil dihapus", deletePkl);
+  } catch (error) {
+    console.log(error);
   }
 };

@@ -7,11 +7,46 @@ import cron from "node-cron";
 import { deleteAllPkl } from "./src/Controller/PKLController.js";
 import { Server as SocketIOServer } from "socket.io";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 const httpServer = createServer(app);
+
+const transporter = nodemailer.createTransport({
+  service: 'SMTP', 
+  host: 'mail.mgentaarya.my.id',
+  port: 465,
+  secure: true, // menggunakan SSL
+  auth: {
+    user: 'admin@mgentaarya.my.id',
+    pass: 'Genta@456',  // Gantilah dengan password email Anda
+  },
+});
+
+export const sendEmail = (to, subject, text) => {
+  const mailOptions = {
+    from: 'admin@mgentaarya.my.id',
+    to: to.join(','), // Menggabungkan array alamat email menjadi string, dipisahkan oleh koma
+    subject: subject,
+    text: text,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error sending email:', error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+};
+
+// Menjalankan cronjob setiap jam
+// cron.schedule('*/10 * * * * *', () => {
+//   console.log('Sending email every 10 seconds...');
+//   sendEmail();
+// });
 
 export const io = new SocketIOServer(httpServer, {
   cors: {

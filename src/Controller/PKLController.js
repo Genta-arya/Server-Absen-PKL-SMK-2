@@ -1,7 +1,7 @@
 import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
-import { io } from "../../index.js";
+import { io, sendEmail } from "../../index.js";
 
 const BATCH_SIZE = 50;
 
@@ -113,6 +113,16 @@ export const createPKLWithAbsensi = async (req, res) => {
       });
     });
 
+    // kirim notifikasi email
+
+    const emailList = users.map((user) => user.email);
+
+    sendEmail(
+      emailList, // Kirim ke beberapa email sekaligus
+      "Notifikasi",
+      `Anda telah ditambahkan ke Praktik Kerja Lapangan : ${newPkl.name},  \n \n Silahkan klik link berikut untuk melihat detail PKL: http://localhost:5173/app/absensi`
+    );
+
     return sendResponse(res, 201, "PKL created successfully", newPkl);
   } catch (error) {
     sendError(res, error);
@@ -133,6 +143,12 @@ export const addSiswaToExistingPKL = async (req, res) => {
       include: {
         users: true, // Include users to check existing ones
         absensi: true, // Include absensi for generating data
+        creator: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -203,6 +219,23 @@ export const addSiswaToExistingPKL = async (req, res) => {
         message: `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${existingPkl.name}`,
       });
     });
+
+    // kirim notifikasi email
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          in: user_id,
+        },
+      },
+    });
+    const emailList = users.map((user) => user.email);
+
+    sendEmail(
+      emailList, // Kirim ke beberapa email sekaligus
+      "Notifikasi",
+      `Anda telah ditambahkan ke Praktik Kerja Lapangan : ${existingPkl.name}, \n  Pembimbing : ${existingPkl.creator.name}  , \n Silahkan klik link berikut untuk melihat detail PKL: http://localhost:5173/app/absensi`
+    );
 
     return sendResponse(res, 200, "Siswa berhasil ditambahkan ke PKL");
   } catch (error) {

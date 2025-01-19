@@ -5,11 +5,12 @@ import { AuthRoutes } from "./src/Routes/AuthRoutes.js";
 import { PKLRoutes } from "./src/Routes/PKLRoutes.js";
 import cron from "node-cron";
 import { deleteAllPkl } from "./src/Controller/PKLController.js";
-
 import { Server as SocketIOServer } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT;
 const httpServer = createServer(app);
 
 export const io = new SocketIOServer(httpServer, {

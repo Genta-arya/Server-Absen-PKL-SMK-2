@@ -24,7 +24,8 @@ AuthRoutes.post("/logout/:id", handleLogout);
 // update profil
 AuthRoutes.post("/update/password/:id", updatePassword);
 AuthRoutes.post("/update/user/password/:id", updatePasswordUser);
-AuthRoutes.post("/update/profile/:id", uploadImage, updateFotoProfile);
+// AuthRoutes.post("/update/profile/:id", uploadImage, updateFotoProfile);
+AuthRoutes.post("/update/profile/:id",  updateFotoProfile);
 AuthRoutes.post("/update/user/:id", updateDataUser);
 
 // data user

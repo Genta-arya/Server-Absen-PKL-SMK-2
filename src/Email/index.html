@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      /* Tailwind CSS CDN */
+      @import url("https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css");
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-2xl font-bold text-gray-800">Notifikasi</h1>
+
+      <div class="mt-2">
+        <h1 class="text-xl font-bold text-gray-800">
+          Anda telah ditambahkan dalam Pratek Kerja Lapangan
+        </h1>
+        <p class="mt-2 text-gray-600">Di {{pklname}}</p>
+        <p class="mt-2 text-gray-600">Oleh {{creatorName}}</p>
+      </div>
+      <div class="mt-6">
+        <p class="text-gray-600 text-sm">
+          untuk informasi lebih lanjut terkait absensi, silahkan klik link di
+          bawah ini
+        </p>
+        <a
+          href="https://genta.publicvm.com"
+          class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          Lihat Absensi
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

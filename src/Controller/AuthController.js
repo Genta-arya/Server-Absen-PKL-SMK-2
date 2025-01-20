@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import path from "path";
 import fs from "fs";
+import dayjs from "dayjs";
 export const handleRegister = async (req, res) => {
   const { nim, password, role, name } = req.body;
   if (!nim) {
@@ -155,13 +156,22 @@ export const checkLogin = async (req, res) => {
         role: true,
         Pkl: {
           include: {
-            absensi: true,
+            absensi: {
+              orderBy: {
+                tanggal: "asc",
+              },
+            },
             creator: true,
-
-          }
-        }
+          },
+        },
       },
     });
+    const newDateIndonesia = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Jakarta",
+      hour12: false,
+    });
+
+    findUser.DateIndonesia = newDateIndonesia;
 
     if (!findUser) {
       return sendResponse(res, 409, "User tidak ditemukan");
@@ -375,14 +385,16 @@ export const updatePasswordUser = async (req, res) => {
 //   }
 // };
 
-
 export const updateFotoProfile = async (req, res) => {
   const { id } = req.params;
   const { image_url } = req.body;
 
-
   if (!image_url) {
-    return sendResponse(res, 400, "URL gambar tidak ditemukan dalam permintaan.");
+    return sendResponse(
+      res,
+      400,
+      "URL gambar tidak ditemukan dalam permintaan."
+    );
   }
   if (!id) {
     return sendResponse(res, 400, "ID pengguna tidak valid.");
@@ -404,30 +416,9 @@ export const updateFotoProfile = async (req, res) => {
 
     return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar);
   } catch (error) {
-   
-
     sendError(res, error);
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const getSingleUser = async (req, res) => {
   const { id } = req.params;
@@ -449,7 +440,6 @@ export const getSingleUser = async (req, res) => {
         avatar: true,
         Pkl: {
           where: {
-            
             isDelete: false,
           },
           select: {

@@ -391,26 +391,34 @@ export const updateStatusPkl = async (req, res) => {
     if (!checkPkl) {
       return sendResponse(res, 404, "Data PKL tidak ditemukan");
     }
-    // new Date pake waktu indonesia
-    const newDateIndonesia = new Date().toLocaleString("id-ID", {
+
+    const newDateIndonesia = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Jakarta",
     });
-    console.log(
-      checkPkl.tanggal_selesai.toLocaleString("id-ID", {
+    const currentDate = new Date(newDateIndonesia);
+
+    const currentDateOnly = new Date(
+      currentDate.toLocaleDateString("en-US", { timeZone: "Asia/Jakarta" })
+    );
+
+    const checkPklTanggalSelesai = new Date(
+      checkPkl.tanggal_selesai.toLocaleString("en-US", {
         timeZone: "Asia/Jakarta",
       })
     );
-    console.log(newDateIndonesia);
 
-    if (
-      !checkPkl.status &&
-      checkPkl.tanggal_selesai.toLocaleString("id-ID", {
+    const checkPklTanggalSelesaiOnly = new Date(
+      checkPklTanggalSelesai.toLocaleDateString("en-US", {
         timeZone: "Asia/Jakarta",
-      }) < newDateIndonesia
-    ) {
-      // true atau false
-      console.log("sudah lewat");
-      return sendResponse(res, 400, "Tanggal selesai sudah lewat");
+      })
+    );
+
+    console.log("currentDateOnly", currentDateOnly);
+    console.log("checkPklTanggalSelesaiOnly", checkPklTanggalSelesaiOnly);
+
+    if (!checkPkl.status && currentDateOnly > checkPklTanggalSelesaiOnly) {
+      console.log("PKL sudah selesai");
+      return sendResponse(res, 400, "PKL sudah selesai");
     }
 
     const update = await prisma.pkl.update({

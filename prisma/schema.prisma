@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -32,7 +32,7 @@ model Pkl {
   creator         User      @relation("PklCreator", fields: [creatorId], references: [id])
   users           User[]    @relation("UserPkl")
   absensi         Absensi[] @relation("PklAbsensi")
-  isDelete        Boolean? @default(false)
+  isDelete        Boolean?  @default(false)
   tanggal_mulai   DateTime?
   tanggal_selesai DateTime
   status          Boolean   @default(true)
@@ -40,12 +40,15 @@ model Pkl {
 }
 
 model Absensi {
-  id      String   @id @default(uuid())
-  pkl_id  String
-  pkl     Pkl?     @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
-  isDelete Boolean? 
-  user_id String
-  user    User?    @relation(fields: [user_id], references: [id])
-  tanggal DateTime
-  hadir   String?
+  id       String    @id @default(uuid())
+  pkl_id   String
+  pkl      Pkl?      @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+  isDelete Boolean?
+  user_id  String
+  user     User?     @relation(fields: [user_id], references: [id])
+  tanggal  DateTime
+  hadir    String?
+  pulang   DateTime?
+  datang   DateTime?
+  status   Boolean?
 }

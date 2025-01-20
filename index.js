@@ -16,19 +16,30 @@ const app = express();
 const PORT = process.env.PORT;
 const httpServer = createServer(app);
 
+// const transporter = nodemailer.createTransport({
+//   service: "SMTP",
+//   host: "mail.mgentaarya.my.id",
+//   port: 465,
+//   secure: true, // menggunakan SSL
+//   auth: {
+//     user: "admin@mgentaarya.my.id",
+//     pass: "Genta@456", // Gantilah dengan password email Anda
+//   },
+// });
+
 const transporter = nodemailer.createTransport({
   service: "SMTP",
-  host: "mail.mgentaarya.my.id",
+  host: "mail.smkn2ketapang.sch.id",
   port: 465,
   secure: true, // menggunakan SSL
+
   auth: {
-    user: "admin@mgentaarya.my.id",
+    user: "system-pkl@smkn2ketapang.sch.id",
     pass: "Genta@456", // Gantilah dengan password email Anda
   },
 });
 
 export const sendEmail = (to, subject, body) => {
-
   console.log(to);
   const htmlContent = fs.readFileSync(
     path.join(path.resolve(), "src", "Email", "index.html"),
@@ -40,10 +51,9 @@ export const sendEmail = (to, subject, body) => {
     .replace("{{pklname}}", body.pklname)
     .replace("{{creatorName}}", body.creatorName);
 
-
   const mailOptions = {
-    from: "admin@mgentaarya.my.id",
-    to: to.join(","), 
+    from: '"No-Reply " <system-pkl@smkn2ketapang.sch.id>',
+    to: to.join(","),
     subject: subject,
     html: customizedContent,
   };
@@ -66,7 +76,7 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
   const body = {
     pklname,
     creatorName,
-  }
+  };
 
   sendEmail(emailList, subject, body);
 };

@@ -1,6 +1,4 @@
-import multer from "multer";
 import { image_url } from "../Config/Constans.js";
-import { uploadImage } from "../Config/Multer.js";
 import { prisma } from "../Config/Prisma.js";
 import { createToken, JWT_SECRET } from "../Library/CreateToken.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
@@ -155,6 +153,13 @@ export const checkLogin = async (req, res) => {
         token: true,
         avatar: true,
         role: true,
+        Pkl: {
+          include: {
+            absensi: true,
+            creator: true,
+
+          }
+        }
       },
     });
 
@@ -253,8 +258,11 @@ export const getUserByRole = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
-        Pkl: true,
-        
+        Pkl: {
+          where: {
+            isDelete: false,
+          },
+        },
       },
     });
     if (!exitsUser) {
@@ -306,14 +314,76 @@ export const updatePasswordUser = async (req, res) => {
   }
 };
 
+// export const updateFotoProfile = async (req, res) => {
+//   const { id } = req.params;
+//   const file = req.file;
+
+//   if (!file) {
+//     return sendResponse(res, 400, "File tidak ditemukan dalam permintaan.");
+//   }
+
+//   if (!id) {
+//     return sendResponse(res, 400, "ID pengguna tidak valid.");
+//   }
+
+//   try {
+//     const exitsUser = await prisma.user.findUnique({
+//       where: { id },
+//     });
+
+//     if (!exitsUser) {
+//       return sendResponse(res, 404, "User tidak ditemukan.");
+//     }
+
+//     const oldImagePath = exitsUser.avatar
+//       ? path.join(
+//           path.resolve(),
+//           "Public/Images/Profile",
+//           exitsUser.avatar.split("/").pop()
+//         )
+//       : null;
+
+//     if (oldImagePath && fs.existsSync(oldImagePath)) {
+//       fs.unlinkSync(oldImagePath);
+//     }
+//     let url_image = "";
+//     if (process.env.NODE_ENV === "DEV") {
+//       url_image = `${image_url}/${file.filename}`;
+//     } else {
+//       url_image = `${process.env.IMAGE_URL}/${file.filename}`;
+//     }
+
+//     const response = await prisma.user.update({
+//       where: { id },
+//       data: { avatar: url_image },
+//     });
+
+//     return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar);
+//   } catch (error) {
+//     if (
+//       file &&
+//       fs.existsSync(
+//         path.join(path.resolve(), "Public/Images/Profile", file.filename)
+//       )
+//     ) {
+//       fs.unlinkSync(
+//         path.join(path.resolve(), "Public/Images/Profile", file.filename)
+//       );
+//     }
+
+//     sendError(res, error);
+//   }
+// };
+
+
 export const updateFotoProfile = async (req, res) => {
   const { id } = req.params;
-  const file = req.file;
+  const { image_url } = req.body;
 
-  if (!file) {
-    return sendResponse(res, 400, "File tidak ditemukan dalam permintaan.");
+
+  if (!image_url) {
+    return sendResponse(res, 400, "URL gambar tidak ditemukan dalam permintaan.");
   }
-
   if (!id) {
     return sendResponse(res, 400, "ID pengguna tidak valid.");
   }
@@ -327,44 +397,40 @@ export const updateFotoProfile = async (req, res) => {
       return sendResponse(res, 404, "User tidak ditemukan.");
     }
 
-    const oldImagePath = exitsUser.avatar
-      ? path.join(
-          path.resolve(),
-          "Public/Images/Profile",
-          exitsUser.avatar.split("/").pop()
-        )
-      : null;
-
-    if (oldImagePath && fs.existsSync(oldImagePath)) {
-      fs.unlinkSync(oldImagePath);
-    }
-
-    const url_image = `${image_url}/${file.filename}`;
     const response = await prisma.user.update({
       where: { id },
-      data: { avatar: url_image },
+      data: { avatar: image_url },
     });
 
     return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar);
   } catch (error) {
-    if (
-      file &&
-      fs.existsSync(
-        path.join(path.resolve(), "Public/Images/Profile", file.filename)
-      )
-    ) {
-      fs.unlinkSync(
-        path.join(path.resolve(), "Public/Images/Profile", file.filename)
-      );
-    }
+   
 
     sendError(res, error);
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const getSingleUser = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   // Validasi ID
   if (!id) {
@@ -372,7 +438,6 @@ export const getSingleUser = async (req, res) => {
   }
 
   try {
-
     const exitsUser = await prisma.user.findFirst({
       where: { id },
       select: {
@@ -382,24 +447,90 @@ export const getSingleUser = async (req, res) => {
         role: true,
         nim: true,
         avatar: true,
-        Pkl: true,
-        Absensi: {
-         orderBy: {
-            tanggal: "asc",
+        Pkl: {
+          where: {
+            
+            isDelete: false,
+          },
+          select: {
+            id: true,
+            name: true,
+            alamat: true,
+            creatorId: true,
+            tanggal_mulai: true,
+            tanggal_selesai: true,
+            isDelete: true,
+            status: true,
+            createdAt: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatar: true,
+                role: true,
+              },
+            },
+            absensi: {
+              where: {
+                user_id: id,
+              },
+              orderBy: {
+                tanggal: "asc",
+              },
+            },
           },
         },
-      
-      }
+      },
     });
 
-  
     if (!exitsUser) {
       return sendResponse(res, 404, "User tidak ditemukan");
     }
 
- 
-
     return sendResponse(res, 200, "User ditemukansss", exitsUser);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updateDataUser = async (req, res) => {
+  const { id } = req.params;
+  const { nim, name, email } = req.body;
+
+  if (!nim || !name || !email) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+
+  const parseNim = parseInt(nim);
+
+  try {
+    const exitsUser = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan");
+    }
+    // uniq nim
+    const checkNim = await prisma.user.findUnique({
+      where: { nim: parseNim },
+    });
+    if (checkNim && checkNim.id !== id) {
+      return sendResponse(res, 400, "NIM sudah terdaftar");
+    }
+    // uniq email
+    const checkEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (checkEmail && checkEmail.id !== id) {
+      return sendResponse(res, 400, "Email sudah terdaftar");
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { nim: parseNim, name, email },
+    });
+    return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
   } catch (error) {
     sendError(res, error);
   }

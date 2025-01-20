@@ -25,3 +25,5 @@ export const sendError = async (
   
     return res.status(500).json({ message: customMessage, Detail: error });
   };
+
+  

@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -31,7 +32,7 @@ model Pkl {
   absensi         Absensi[] @relation("PklAbsensi")
   tanggal_mulai   DateTime?
   tanggal_selesai DateTime
-  status Boolean @default(true)
+  status          Boolean   @default(true)
   createdAt       DateTime  @default(now())
 }
 

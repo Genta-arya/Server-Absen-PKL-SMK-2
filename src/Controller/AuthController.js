@@ -166,6 +166,12 @@ export const checkLogin = async (req, res) => {
         token: true,
         avatar: true,
         role: true,
+        Kelas: {
+          select: {
+            id: true,
+            nama: true,
+          },
+        },
         Pkl: {
           where: {
             isDelete: false,
@@ -513,10 +519,16 @@ export const getSingleUser = async (req, res) => {
 
 export const updateDataUser = async (req, res) => {
   const { id } = req.params;
-  const { nim, name, email } = req.body;
+  const { nim, name, email, kelas } = req.body;
 
-  if (!nim || !name || !email) {
+  if ((!nim || !name || !email, !kelas)) {
     return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+  const checkKelas = await prisma.kelas.findUnique({
+    where: { id: kelas },
+  });
+  if (!checkKelas) {
+    return sendResponse(res, 404, "Kelas tidak ditemukan");
   }
 
   const parseNim = parseInt(nim);
@@ -545,9 +557,106 @@ export const updateDataUser = async (req, res) => {
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { nim: parseNim, name, email },
+      data: { nim: parseNim, name, email, Kelas: { connect: { id: kelas } } },
     });
     return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const createKelas = async (req, res) => {
+  const { nama } = req.body;
+
+  if (!nama) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+
+  const checkKelas = await prisma.kelas.findFirst({
+    where: { nama },
+  });
+  if (checkKelas) {
+    return sendResponse(res, 400, "Kelas sudah terdaftar");
+  }
+
+  try {
+    const createdKelas = await prisma.kelas.create({
+      data: { nama },
+    });
+    return sendResponse(res, 201, "Kelas berhasil dibuat", createdKelas);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const getKelas = async (req, res) => {
+  try {
+    const exitsKelas = await prisma.kelas.findMany();
+    if (!exitsKelas) {
+      return sendResponse(res, 404, "Kelas tidak ditemukan");
+    }
+    return sendResponse(res, 200, "Kelas ditemukan", exitsKelas);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updateKelas = async (req, res) => {
+  const { id } = req.params;
+  const { nama } = req.body;
+
+  if (!id || !nama) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+
+  const checkKelas = await prisma.kelas.findUnique({
+    where: { id },
+  });
+
+  if (!checkKelas) {
+    return sendResponse(res, 404, "Kelas tidak ditemukan");
+  }
+
+  // nama tidka boleh sama keculai id nya
+  const checkKelasSame = await prisma.kelas.findFirst({
+    where: { id: { not: id }, nama },
+  });
+
+  if (checkKelasSame) {
+    return sendResponse(res, 400, "Kelas sudah terdaftar");
+  }
+  try {
+    const updatedKelas = await prisma.kelas.update({
+      where: { id },
+      data: { nama },
+    });
+
+    return sendResponse(res, 200, "Kelas berhasil diupdate", updatedKelas);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const deleteKelas = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+
+  const checkKelas = await prisma.kelas.findUnique({
+    where: { id },
+  });
+
+  if (!checkKelas) {
+    return sendResponse(res, 404, "Kelas tidak ditemukan");
+  }
+  try {
+    const deletedKelas = await prisma.kelas.delete({
+      where: { id },
+    });
+
+    return sendResponse(res, 200, "Kelas berhasil dihapus", deletedKelas);
   } catch (error) {
     sendError(res, error);
   }

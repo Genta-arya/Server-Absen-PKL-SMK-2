@@ -1,6 +1,9 @@
 import express from "express";
 import {
   checkLogin,
+  createKelas,
+  deleteKelas,
+  getKelas,
   getSingleUser,
   getUserByRole,
   handleLogin,
@@ -8,6 +11,7 @@ import {
   handleRegister,
   updateDataUser,
   updateFotoProfile,
+  updateKelas,
   updatePassword,
   updatePasswordUser,
 } from "../Controller/AuthController.js";
@@ -25,9 +29,15 @@ AuthRoutes.post("/logout/:id", handleLogout);
 AuthRoutes.post("/update/password/:id", updatePassword);
 AuthRoutes.post("/update/user/password/:id", updatePasswordUser);
 // AuthRoutes.post("/update/profile/:id", uploadImage, updateFotoProfile);
-AuthRoutes.post("/update/profile/:id",  updateFotoProfile);
+AuthRoutes.post("/update/profile/:id", updateFotoProfile);
 AuthRoutes.post("/update/user/:id", updateDataUser);
 
 // data user
 AuthRoutes.get("/user/:role", getUserByRole);
 AuthRoutes.get("/detail/user/:id", getSingleUser);
+
+// data Kelas
+AuthRoutes.get("/kelas", getKelas);
+AuthRoutes.post("/create/kelas", createKelas);
+AuthRoutes.put("/kelas/:id", updateKelas);
+AuthRoutes.delete("/kelas/:id", deleteKelas);

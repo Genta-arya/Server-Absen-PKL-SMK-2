@@ -21,7 +21,14 @@ model User {
   createdAt    DateTime  @default(now())
   Pkl          Pkl[]     @relation("UserPkl")
   CreatedPkl   Pkl[]     @relation("PklCreator")
+  Kelas        Kelas[]   @relation("UserKelas")
   Absensi      Absensi[]
+}
+
+model Kelas {
+  id String @id @default(uuid())
+  nama  String
+  users User[] @relation("UserKelas")
 }
 
 model Pkl {

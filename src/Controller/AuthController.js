@@ -202,7 +202,17 @@ export const checkLogin = async (req, res) => {
       timeZone: "Asia/Jakarta",
       hour12: false,
     });
-    const isoDateIndonesia = new Date(newDateIndonesia).toISOString().split("T")[0];
+    
+    // Mengonversi string tanggal dan waktu menjadi objek Date
+    const dateIndonesia = new Date(newDateIndonesia);
+    
+    // Menambahkan offset zona waktu Jakarta (UTC+7), jika diperlukan
+    const jakartaOffset = 7 * 60 * 60 * 1000; // UTC+7 dalam milidetik
+    const adjustedDate = new Date(dateIndonesia.getTime() + jakartaOffset);
+    
+    // Mengonversi menjadi ISO dan mengambil tanggal saja (YYYY-MM-DD)
+    const isoDateIndonesia = adjustedDate.toISOString().split("T")[0];
+    
 
     // findUser.Absensi = absensi;
     findUser.DateIndonesia = newDateIndonesia;

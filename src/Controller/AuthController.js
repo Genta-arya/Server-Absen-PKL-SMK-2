@@ -142,7 +142,20 @@ export const checkLogin = async (req, res) => {
   }
 
   try {
-    jwt.verify(token, JWT_SECRET);
+
+    const getID_PKL = await prisma.user.findFirst({
+      where: { token },
+      select: {
+        Pkl:{
+          select:{
+            id: true
+          }
+        },
+        id  : true
+      },
+    })
+
+    console.log(getID_PKL.id);
     const findUser = await prisma.user.findFirst({
       where: { token },
       select: {
@@ -155,22 +168,40 @@ export const checkLogin = async (req, res) => {
         avatar: true,
         role: true,
         Pkl: {
-          include: {
-            absensi: {
+          where: {
+            isDelete: false,
+          },
+
+          include:{
+            absensi: { 
+              where: {
+               user_id: getID_PKL.id
+              },
               orderBy: {
                 tanggal: "asc",
               },
             },
-            creator: true,
-          },
+            creator: {
+              select: {
+                name: true,
+                avatar: true,
+              },
+            },
+            
+          }
         },
+
       },
     });
+    jwt.verify(token, JWT_SECRET);
+
+
     const newDateIndonesia = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Jakarta",
       hour12: false,
     });
 
+    // findUser.Absensi = absensi;
     findUser.DateIndonesia = newDateIndonesia;
 
     if (!findUser) {
@@ -179,25 +210,25 @@ export const checkLogin = async (req, res) => {
 
     return sendResponse(res, 200, "User ditemukan", findUser);
   } catch (error) {
-    const findUser = await prisma.user.findFirst({
+    const findUsers = await prisma.user.findFirst({
       where: { token },
       select: {
         id: true,
       },
     });
-    if (!findUser) {
+    if (!findUsers) {
       return sendResponse(res, 409, "User tidak ditemukan");
     }
     if (error instanceof jwt.TokenExpiredError) {
       await prisma.user.update({
-        where: { id: findUser.id },
+        where: { id: findUsers.id },
         data: { status_login: false, token: null },
       });
       return sendResponse(res, 409, "Token telah kedaluwarsa");
     }
     if (error instanceof jwt.JsonWebTokenError) {
       await prisma.user.update({
-        where: { id: findUser.id },
+        where: { id: findUsers.id },
         data: { status_login: false, token: null },
       });
       return sendResponse(res, 409, "Token tidak valid atau format salah");

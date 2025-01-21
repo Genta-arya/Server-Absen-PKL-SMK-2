@@ -3,6 +3,8 @@ import { addSiswaToExistingPKL, createPKLWithAbsensi, deletePkl, EditPkl, getDat
 
 export const PKLRoutes = express.Router();
 
+
+// pkl
 PKLRoutes.post("/create", createPKLWithAbsensi);
 PKLRoutes.get("/creator/:id", getDataPklCreator);
 PKLRoutes.put("/add/siswa", addSiswaToExistingPKL);

@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import { AbsensRoutes } from "./src/Routes/AbsenRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -112,6 +113,7 @@ cron.schedule("0 0 1 * *", () => {
 // Endpoints
 app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);
+app.use("/api/absensi", AbsensRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 
 // Realtime notification

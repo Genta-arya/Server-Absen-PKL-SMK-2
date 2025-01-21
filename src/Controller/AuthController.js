@@ -202,9 +202,11 @@ export const checkLogin = async (req, res) => {
       timeZone: "Asia/Jakarta",
       hour12: false,
     });
+    const isoDateIndonesia = new Date(newDateIndonesia).toISOString().split("T")[0];
 
     // findUser.Absensi = absensi;
     findUser.DateIndonesia = newDateIndonesia;
+    findUser.tanggal = isoDateIndonesia;
 
     if (!findUser) {
       return sendResponse(res, 409, "User tidak ditemukan");

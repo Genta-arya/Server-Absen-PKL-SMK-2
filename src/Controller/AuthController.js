@@ -142,18 +142,17 @@ export const checkLogin = async (req, res) => {
   }
 
   try {
-
     const getID_PKL = await prisma.user.findFirst({
       where: { token },
       select: {
-        Pkl:{
-          select:{
-            id: true
-          }
+        Pkl: {
+          select: {
+            id: true,
+          },
         },
-        id  : true
+        id: true,
       },
-    })
+    });
 
     console.log(getID_PKL.id);
     const findUser = await prisma.user.findFirst({
@@ -172,10 +171,10 @@ export const checkLogin = async (req, res) => {
             isDelete: false,
           },
 
-          include:{
-            absensi: { 
+          include: {
+            absensi: {
               where: {
-               user_id: getID_PKL.id
+                user_id: getID_PKL.id,
               },
               orderBy: {
                 tanggal: "asc",
@@ -187,14 +186,11 @@ export const checkLogin = async (req, res) => {
                 avatar: true,
               },
             },
-            
-          }
+          },
         },
-
       },
     });
     jwt.verify(token, JWT_SECRET);
-
 
     const newDateIndonesia = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Jakarta",

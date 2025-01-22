@@ -21,6 +21,11 @@ export const updateAbsensi = async (req, res) => {
   if (!exits) {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
+
+  if (exits.hadir === "hadir") {
+    return sendResponse(res, 400, "Anda sudah absen");
+  }
+
   try {
     await prisma.absensi.update({
       where: {
@@ -35,6 +40,45 @@ export const updateAbsensi = async (req, res) => {
       },
     });
     return sendResponse(res, 200, "Berhasil absen", jam_masuk);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const absenPulang = async (req, res) => {
+  const { id } = req.params;
+  const { jam_pulang } = req.body;
+
+  if (!id || !jam_pulang) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  // jam masuk harus format isoString
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(jam_pulang)) {
+    return sendResponse(res, 400, "Invalid Jam masuk");
+  }
+
+  const exits = await prisma.absensi.findUnique({
+    where: { id },
+  });
+
+  if (!exits) {
+    return sendResponse(res, 404, "Data absen tidak ditemukan");
+  }
+
+  if (exits.pulang !== null) {
+    return sendResponse(res, 400, "Anda sudah absen");
+  }
+  try {
+    await prisma.absensi.update({
+      where: {
+        id,
+      },
+      data: {
+        pulang: jam_pulang,
+      },
+    });
+    return sendResponse(res, 200, "Berhasil absen", jam_pulang);
   } catch (error) {
     sendError(res, error);
   }

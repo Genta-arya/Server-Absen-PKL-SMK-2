@@ -30,6 +30,7 @@ export const updateAbsensi = async (req, res) => {
         datang: jam_masuk,
         gps,
         posisi,
+        foto,
 
         hadir: "hadir",
       },

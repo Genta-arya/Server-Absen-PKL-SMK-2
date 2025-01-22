@@ -26,7 +26,7 @@ model User {
 }
 
 model Kelas {
-  id String @id @default(uuid())
+  id    String @id @default(uuid())
   nama  String
   users User[] @relation("UserKelas")
 }
@@ -55,6 +55,9 @@ model Absensi {
   user     User?     @relation(fields: [user_id], references: [id])
   tanggal  DateTime
   hadir    String?
+  foto     String?
+  gps      String?
+  posisi   String?
   pulang   DateTime?
   datang   DateTime?
   status   Boolean?

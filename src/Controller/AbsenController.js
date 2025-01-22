@@ -3,9 +3,9 @@ import { sendError, sendResponse } from "../Utils/Response.js";
 
 export const updateAbsensi = async (req, res) => {
   const { id } = req.params;
-  const { jam_masuk } = req.body;
+  const { jam_masuk, gps, posisi, foto } = req.body;
 
-  if (!id || !jam_masuk) {
+  if (!id || !jam_masuk || !gps || !posisi || !foto) {
     return sendResponse(res, 400, "Invalid request");
   }
 
@@ -28,10 +28,13 @@ export const updateAbsensi = async (req, res) => {
       },
       data: {
         datang: jam_masuk,
-        hadir: "hadir"
+        gps,
+        posisi,
+
+        hadir: "hadir",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen" , jam_masuk);
+    return sendResponse(res, 200, "Berhasil absen", jam_masuk);
   } catch (error) {
     sendError(res, error);
   }

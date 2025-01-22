@@ -31,7 +31,6 @@ export const updateAbsensi = async (req, res) => {
         gps,
         posisi,
         foto,
-
         hadir: "hadir",
       },
     });

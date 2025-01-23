@@ -123,6 +123,11 @@ io.on("connection", (socket) => {
     console.log(`User dengan ID ${userId} bergabung ke room`);
   });
 
+  socket.on("ping", (timestamp) => {
+    // Mengirimkan kembali waktu respons
+    socket.emit("pong", timestamp);
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

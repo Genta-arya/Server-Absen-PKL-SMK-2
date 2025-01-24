@@ -96,10 +96,29 @@ export const io = new SocketIOServer(httpServer, {
 });
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "150mb" }));
+app.use(express.urlencoded({ limit: "150mb", extended: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://siabsen.apiservices.my.id",
+];
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    next(); 
+  } else {
+    res.status(403).json({
+      message: "Tidak diizinkan untuk mengakses API ini",
+      status: 403,
+    });
+  }
+});
+
 app.use(
   cors({
-    origin: "*",
+    origin: allowedOrigins,
+    optionsSuccessStatus: 200,
     credentials: true,
   })
 );

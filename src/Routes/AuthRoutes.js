@@ -17,28 +17,29 @@ import {
   updateSingleProfile,
 } from "../Controller/AuthController.js";
 import { uploadImage } from "../Config/Multer.js";
+import { middleware } from "../midleware/midleware.js";
 
 export const AuthRoutes = express.Router();
 
 // authentikasi
 AuthRoutes.post("/register", handleRegister);
 AuthRoutes.post("/login", handleLogin);
-AuthRoutes.post("/session", checkLogin);
-AuthRoutes.post("/logout/:id", handleLogout);
+AuthRoutes.post("/session",middleware,checkLogin);
+AuthRoutes.post("/logout/:id",middleware, handleLogout);
 
 // update profil
-AuthRoutes.post("/update/password/:id", updatePassword);
-AuthRoutes.post("/update/user/password/:id", updatePasswordUser);
+AuthRoutes.post("/update/password/:id",middleware, updatePassword);
+AuthRoutes.post("/update/user/password/:id",middleware, updatePasswordUser);
 // AuthRoutes.post("/update/profile/:id", uploadImage, updateFotoProfile);
-AuthRoutes.post("/update/profile/:id", updateFotoProfile);
-AuthRoutes.post("/update/user/:id", updateDataUser);
+AuthRoutes.post("/update/profile/:id",middleware, updateFotoProfile);
+AuthRoutes.post("/update/user/:id",middleware, updateDataUser);
 
 // data user
-AuthRoutes.get("/user/:role", getUserByRole);
-AuthRoutes.get("/detail/user/:id", getSingleUser);
-AuthRoutes.put("/update/single/user/:id", updateSingleProfile);
+AuthRoutes.get("/user/:role",middleware, getUserByRole);
+AuthRoutes.get("/detail/user/:id",middleware, getSingleUser);
+AuthRoutes.put("/update/single/user/:id",middleware, updateSingleProfile);
 // data Kelas
-AuthRoutes.get("/kelas", getKelas);
-AuthRoutes.post("/create/kelas", createKelas);
-AuthRoutes.put("/kelas/:id", updateKelas);
-AuthRoutes.delete("/kelas/:id", deleteKelas);
+AuthRoutes.get("/kelas",middleware, getKelas);
+AuthRoutes.post("/create/kelas",middleware, createKelas);
+AuthRoutes.put("/kelas/:id",middleware, updateKelas);
+AuthRoutes.delete("/kelas/:id",middleware, deleteKelas);

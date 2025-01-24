@@ -18,6 +18,7 @@ model User {
   avatar       String?
   role         String    @default("user")
   token        String?
+  noHp         String?
   createdAt    DateTime  @default(now())
   Pkl          Pkl[]     @relation("UserPkl")
   CreatedPkl   Pkl[]     @relation("PklCreator")
@@ -40,6 +41,7 @@ model Pkl {
   users           User[]    @relation("UserPkl")
   absensi         Absensi[] @relation("PklAbsensi")
   isDelete        Boolean?  @default(false)
+  link_grup       String?
   tanggal_mulai   DateTime?
   tanggal_selesai DateTime
   status          Boolean   @default(true)

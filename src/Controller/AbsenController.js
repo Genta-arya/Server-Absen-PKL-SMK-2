@@ -66,6 +66,19 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
+  const newDateIndonesia = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Jakarta",
+    hour12: false,
+  });
+  const currentDate = new Date(newDateIndonesia);
+
+  const tenAM = new Date(currentDate);
+  tenAM.setHours(10, 0, 0, 0);
+
+  if (currentDate > tenAM) {
+    return sendResponse(res, 400, "Jam absen telah lewat");
+  }
+
   if (exits.pulang !== null) {
     return sendResponse(res, 400, "Anda sudah absen");
   }

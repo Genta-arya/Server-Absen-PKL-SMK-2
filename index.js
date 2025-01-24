@@ -89,7 +89,7 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 
 export const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:5173", "http://siabsen.apiservices.my.id"],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -99,7 +99,7 @@ export const io = new SocketIOServer(httpServer, {
 app.use(express.json());
 app.use(
   cors({
-    origin: true,
+    origin: "*",
     credentials: true,
   })
 );

@@ -162,6 +162,7 @@ export const checkLogin = async (req, res) => {
         nim: true,
         name: true,
         email: true,
+        noHp: true,
         status_login: true,
         token: true,
         avatar: true,
@@ -202,17 +203,16 @@ export const checkLogin = async (req, res) => {
       timeZone: "Asia/Jakarta",
       hour12: false,
     });
-    
+
     // Mengonversi string tanggal dan waktu menjadi objek Date
     const dateIndonesia = new Date(newDateIndonesia);
-    
+
     // Menambahkan offset zona waktu Jakarta (UTC+7), jika diperlukan
     const jakartaOffset = 7 * 60 * 60 * 1000; // UTC+7 dalam milidetik
     const adjustedDate = new Date(dateIndonesia.getTime() + jakartaOffset);
-    
+
     // Mengonversi menjadi ISO dan mengambil tanggal saja (YYYY-MM-DD)
     const isoDateIndonesia = adjustedDate.toISOString().split("T")[0];
-    
 
     // findUser.Absensi = absensi;
     findUser.DateIndonesia = newDateIndonesia;
@@ -669,6 +669,31 @@ export const deleteKelas = async (req, res) => {
     });
 
     return sendResponse(res, 200, "Kelas berhasil dihapus", deletedKelas);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const updateSingleProfile = async (req, res) => {
+  const { id } = req.params;
+
+  const { email, noHp } = req.body;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  if (!email || !noHp) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+  try {
+    const updateProfile = await prisma.user.update({
+      where: { id },
+      data: {
+        email,
+        noHp,
+      },
+    });
+    return sendResponse(res, 200, "Profile berhasil diupdate", updateProfile);
   } catch (error) {
     sendError(res, error);
   }

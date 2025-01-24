@@ -14,6 +14,7 @@ import {
   updateKelas,
   updatePassword,
   updatePasswordUser,
+  updateSingleProfile,
 } from "../Controller/AuthController.js";
 import { uploadImage } from "../Config/Multer.js";
 
@@ -35,7 +36,7 @@ AuthRoutes.post("/update/user/:id", updateDataUser);
 // data user
 AuthRoutes.get("/user/:role", getUserByRole);
 AuthRoutes.get("/detail/user/:id", getSingleUser);
-
+AuthRoutes.put("/update/single/user/:id", updateSingleProfile);
 // data Kelas
 AuthRoutes.get("/kelas", getKelas);
 AuthRoutes.post("/create/kelas", createKelas);

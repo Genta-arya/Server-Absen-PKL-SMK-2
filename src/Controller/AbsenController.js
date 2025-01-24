@@ -22,6 +22,19 @@ export const updateAbsensi = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
+  const newDateIndonesia = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Jakarta",
+    hour12: false,
+  });
+  const currentDate = new Date(newDateIndonesia);
+
+  const tenAM = new Date(currentDate);
+  tenAM.setHours(10, 0, 0, 0);
+
+  if (currentDate > tenAM) {
+    return sendResponse(res, 400, "Jam absen Masuk telah lewat");
+  }
+
   if (exits.hadir === "hadir") {
     return sendResponse(res, 400, "Anda sudah absen");
   }
@@ -73,10 +86,10 @@ export const absenPulang = async (req, res) => {
   const currentDate = new Date(newDateIndonesia);
 
   const tenAM = new Date(currentDate);
-  tenAM.setHours(10, 0, 0, 0);
+  tenAM.setHours(17, 0, 0, 0);
 
   if (currentDate > tenAM) {
-    return sendResponse(res, 400, "Jam absen telah lewat");
+    return sendResponse(res, 400, "Jam absen Pulang telah lewat");
   }
 
   if (exits.pulang !== null) {
@@ -92,6 +105,39 @@ export const absenPulang = async (req, res) => {
       },
     });
     return sendResponse(res, 200, "Berhasil absen", jam_pulang);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+export const getDataAbsen = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  try {
+    const data = await prisma.absensi.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        pkl: {
+          where: {
+            isDelete: false,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+            nim: true,
+          },
+        },
+      },
+    });
+
+    return sendResponse(res, 200, "Data ditemukan", data);
   } catch (error) {
     sendError(res, error);
   }

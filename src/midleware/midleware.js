@@ -8,7 +8,7 @@ export const middleware = (req, res, next) => {
   console.log(process.env.JWT_SECRET);
   // Periksa apakah header Authorization ada dan formatnya benar
   if (!authHeader || !authHeader.startsWith("Bearer")) {
-    return sendResponse(res, 401, "Authorization header missing or invalid");
+    return sendResponse(res, 403, "Authorization header missing or invalid");
   }
 
   // Ambil token dari header

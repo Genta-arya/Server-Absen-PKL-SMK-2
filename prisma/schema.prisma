@@ -8,6 +8,13 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+
+model Kelas {
+  id    String @id @default(uuid())
+  nama  String
+  users User[] @relation("UserKelas")
+}
+
 model User {
   id           String    @id @default(uuid())
   nim          Int       @unique
@@ -26,11 +33,7 @@ model User {
   Absensi      Absensi[]
 }
 
-model Kelas {
-  id    String @id @default(uuid())
-  nama  String
-  users User[] @relation("UserKelas")
-}
+
 
 model Pkl {
   id              String    @id @default(uuid())

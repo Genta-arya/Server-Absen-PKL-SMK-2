@@ -89,7 +89,11 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 
 export const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: ["http://localhost:5173", "https://siabsen.apiservices.my.id"],
+    origin: [
+      "http://localhost:5173",
+      "https://siabsen.apiservices.my.id",
+      "https://sipkl.smkn2ketapang.sch.id",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -106,7 +110,7 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
-    next(); 
+    next();
   } else {
     res.status(403).json({
       message: "Tidak diizinkan untuk mengakses API ini",

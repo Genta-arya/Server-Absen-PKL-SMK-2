@@ -115,10 +115,6 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 //   return hashedBatch;
 // };
 
-
-
-
-
 // Fungsi untuk memeriksa dan membuat kelas jika belum ada
 // const findOrCreateKelas = async (kelasNama) => {
 //   // Cari kelas berdasarkan nama
@@ -143,7 +139,6 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 //   return kelas;
 // };
 
-
 // // Fungsi untuk mengimpor CSV dan menambahkan kelas
 // const importCsvToDatabase = async (filePath) => {
 //   const users = [];
@@ -161,7 +156,7 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 //     const kelasData = await findOrCreateKelas(kelas);
 
 //     // Hash password jika perlu
-//     const hashedPassword = await bcrypt.hash(nim, 10); 
+//     const hashedPassword = await bcrypt.hash(nim, 10);
 
 //     // Buat user
 //     const userData = {
@@ -200,11 +195,6 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 //   console.log("CSV berhasil diimpor. Data telah ditambahkan.");
 // };
 
-
-
-
-
-
 // Import CSV
 
 // const filePath = path.join(path.resolve(), "Public", "CSV", "Data.csv");
@@ -220,17 +210,14 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
 //   sendEmail(["mgentaarya@gmail.com"], "Test Email");
 // });
 
-
 // Middleware
 app.use(express.json({ limit: "150mb" }));
 app.use(express.urlencoded({ limit: "150mb", extended: true }));
 const allowedOrigins = [
-  "http://localhost",
   "http://localhost:5173",
   "https://siabsen.apiservices.my.id",
   "https://sipkl.smkn2ketapang.sch.id",
 ];
-
 
 export const io = new SocketIOServer(httpServer, {
   cors: {
@@ -239,7 +226,6 @@ export const io = new SocketIOServer(httpServer, {
     credentials: true,
   },
 });
-
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

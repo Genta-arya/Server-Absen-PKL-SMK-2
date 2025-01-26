@@ -33,6 +33,9 @@ export const middleware = async (req, res, next) => {
           token: token,
         },
       });
+       if (!find) {
+        return sendResponse(res, 403, "Sesi login telah habis");
+      }
       await prisma.user.update({
         where: {
           id: find.id,

@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../Library/CreateToken.js";
 import { sendResponse } from "../Utils/Response.js";
+import { prisma } from "../Config/Prisma.js";
 
-export const middleware = (req, res, next) => {
+export const middleware = async (req, res, next) => {
   // Ambil Authorization header
   const authHeader = req.headers["authorization"];
   console.log(process.env.JWT_SECRET);
@@ -22,7 +23,17 @@ export const middleware = (req, res, next) => {
 
     next();
   } catch (err) {
-    console.log(err);
-    return res.status(403).json({ message: "Sesi login telah habis" });
+    if (err instanceof jwt.JsonWebTokenError && err.message === "invalid signature") {
+      // Token invalid, atur token menjadi null di database
+      await prisma.user.update({
+        where: {
+          token: token,
+        },
+        data: {
+          token: null,  // Atur token menjadi null
+        },
+      });
+    }
+    return sendResponse(res, 403, "Sesi login telah habis");
   }
 };

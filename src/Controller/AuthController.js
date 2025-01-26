@@ -34,7 +34,6 @@ export const handleRegister = async (req, res) => {
     );
   }
 
-
   const user = await prisma.user.findUnique({
     where: { nim: nim },
   });
@@ -529,22 +528,13 @@ export const getSingleUser = async (req, res) => {
   }
 };
 
-
 export const updateDataUserAdmin = async (req, res) => {
   const { id } = req.params;
-  const { nim, name} = req.body;
+  const { nim, name } = req.body;
 
-  if ((!nim || !name )) {
+  if (!nim || !name) {
     return sendResponse(res, 400, "Field tidak boleh kosong");
   }
-  const checkKelas = await prisma.kelas.findUnique({
-    where: { id: kelas },
-  });
-  if (!checkKelas) {
-    return sendResponse(res, 404, "Kelas tidak ditemukan");
-  }
-
- 
 
   try {
     const exitsUser = await prisma.user.findUnique({
@@ -584,8 +574,6 @@ export const updateDataUser = async (req, res) => {
   if (!checkKelas) {
     return sendResponse(res, 404, "Kelas tidak ditemukan");
   }
-
-
 
   try {
     const exitsUser = await prisma.user.findUnique({

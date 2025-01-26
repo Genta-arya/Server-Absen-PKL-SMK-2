@@ -33,10 +33,10 @@ export const handleRegister = async (req, res) => {
       "Role tidak valid. Pilih antara pembimbing , user dan admin."
     );
   }
-  const parseNim = parseInt(nim);
+
 
   const user = await prisma.user.findUnique({
-    where: { nim: parseNim },
+    where: { nim: nim },
   });
 
   if (user) {
@@ -56,7 +56,7 @@ export const handleRegister = async (req, res) => {
 
     await prisma.user.create({
       data: {
-        nim: parseNim,
+        nim: nim,
         password: hashedPassword,
         name,
         role,
@@ -529,6 +529,48 @@ export const getSingleUser = async (req, res) => {
   }
 };
 
+
+export const updateDataUserAdmin = async (req, res) => {
+  const { id } = req.params;
+  const { nim, name} = req.body;
+
+  if ((!nim || !name )) {
+    return sendResponse(res, 400, "Field tidak boleh kosong");
+  }
+  const checkKelas = await prisma.kelas.findUnique({
+    where: { id: kelas },
+  });
+  if (!checkKelas) {
+    return sendResponse(res, 404, "Kelas tidak ditemukan");
+  }
+
+ 
+
+  try {
+    const exitsUser = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!exitsUser) {
+      return sendResponse(res, 404, "User tidak ditemukan");
+    }
+    // uniq nim
+    const checkNim = await prisma.user.findUnique({
+      where: { nim: nim },
+    });
+    if (checkNim && checkNim.id !== id) {
+      return sendResponse(res, 400, "NIM sudah terdaftar");
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { nim, name },
+    });
+    return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
 export const updateDataUser = async (req, res) => {
   const { id } = req.params;
   const { nim, name, email, kelas } = req.body;
@@ -543,7 +585,7 @@ export const updateDataUser = async (req, res) => {
     return sendResponse(res, 404, "Kelas tidak ditemukan");
   }
 
-  const parseNim = parseInt(nim);
+
 
   try {
     const exitsUser = await prisma.user.findUnique({
@@ -554,7 +596,7 @@ export const updateDataUser = async (req, res) => {
     }
     // uniq nim
     const checkNim = await prisma.user.findUnique({
-      where: { nim: parseNim },
+      where: { nim: nim },
     });
     if (checkNim && checkNim.id !== id) {
       return sendResponse(res, 400, "NIM sudah terdaftar");
@@ -569,7 +611,7 @@ export const updateDataUser = async (req, res) => {
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { nim: parseNim, name, email, Kelas: { connect: { id: kelas } } },
+      data: { nim: nim, name, email, Kelas: { connect: { id: kelas } } },
     });
     return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
   } catch (error) {

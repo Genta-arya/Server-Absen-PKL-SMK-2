@@ -10,7 +10,13 @@ import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import { createReadStream } from "fs";
 import { AbsensRoutes } from "./src/Routes/AbsenRoutes.js";
+import csv from "csv-parser";
+import mysql from "mysql2";
+import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
+import { prisma } from "./src/Config/Prisma.js";
 dotenv.config();
 
 const app = express();
@@ -82,31 +88,159 @@ export const sendNotificationEmail = (emailList, existingPkl) => {
   sendEmail(emailList, subject, body);
 };
 
+// const db = mysql.createConnection({
+//   host: "amplangema.my.id",
+//   port: 3306,
+//   user: "afyungs2_siakel", // Ganti dengan username MySQL Anda
+//   password: "Genta456", // Ganti dengan password MySQL Anda
+//   database: "afyungs2_siakel", // Ganti dengan nama database Anda
+// });
+
+// db.connect((err) => {
+//   if (err) {
+//     console.error("Koneksi database gagal:", err);
+//   } else {
+//     console.log("Terhubung ke database.");
+//   }
+// });
+// const BATCH_SIZE = 100;
+
+// const processBatch = async (batch) => {
+//   const hashedBatch = await Promise.all(
+//     batch.map(async (row) => {
+//       const hashedPassword = await bcrypt.hash(row.nim, 10);
+//       return [uuidv4(), row.nim, row.name, hashedPassword, "user"];
+//     })
+//   );
+//   return hashedBatch;
+// };
+
+
+
+
+
+// Fungsi untuk memeriksa dan membuat kelas jika belum ada
+// const findOrCreateKelas = async (kelasNama) => {
+//   // Cari kelas berdasarkan nama
+//   let kelas = await prisma.kelas.findFirst({
+//     where: {
+//       nama: kelasNama,
+//     },
+//   });
+
+//   // Jika kelas tidak ada, buat kelas baru
+//   if (!kelas) {
+//     kelas = await prisma.kelas.create({
+//       data: {
+//         nama: kelasNama,
+//       },
+//     });
+//     console.log(`Kelas ${kelasNama} berhasil dibuat.`);
+//   } else {
+//     console.log(`Kelas ${kelasNama} sudah ada.`);
+//   }
+
+//   return kelas;
+// };
+
+
+// // Fungsi untuk mengimpor CSV dan menambahkan kelas
+// const importCsvToDatabase = async (filePath) => {
+//   const users = [];
+//   const promises = [];
+
+//   const stream = createReadStream(filePath).pipe(csv({ separator: ";" }));
+
+//   for await (const row of stream) {
+//     const userId = uuidv4();
+//     const nim = row.nim;
+//     const name = row.name;
+//     const kelas = row.kelas;
+
+//     // Cek apakah kelas sudah ada
+//     const kelasData = await findOrCreateKelas(kelas);
+
+//     // Hash password jika perlu
+//     const hashedPassword = await bcrypt.hash(nim, 10); 
+
+//     // Buat user
+//     const userData = {
+//       id: userId,
+//       nim: nim,
+//       name: name,
+//       password: hashedPassword,
+//       role: "user",
+//     };
+
+//     // Tambahkan user ke array
+//     users.push(userData);
+
+//     // Simpan relasi antara user dan kelas
+//     promises.push(
+//       prisma.user.upsert({
+//         where: { nim: nim }, // Upsert berdasarkan nim agar tidak duplikat
+//         update: {},
+//         create: userData,
+//       }).then((user) => {
+//         return prisma.kelas.update({
+//           where: { id: kelasData.id },
+//           data: {
+//             users: {
+//               connect: { id: user.id },
+//             },
+//           },
+//         });
+//       })
+//     );
+//   }
+
+//   // Tunggu semua promise selesai
+//   await Promise.all(promises);
+
+//   console.log("CSV berhasil diimpor. Data telah ditambahkan.");
+// };
+
+
+
+
+
+
+// Import CSV
+
+// const filePath = path.join(path.resolve(), "Public", "CSV", "Data.csv");
+// if (fs.existsSync(filePath)) {
+//   console.log("File CSV ditemukan. Memulai impor data...");
+//   importCsvToDatabase(filePath);
+// } else {
+//   console.error("File CSV tidak ditemukan. Proses impor dibatalkan.");
+// }
+
 // cron.schedule("*/10 * * * * *", () => {
 //   console.log("Sending email every 10 seconds...");
 //   sendEmail(["mgentaarya@gmail.com"], "Test Email");
 // });
 
-export const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://siabsen.apiservices.my.id",
-      "https://sipkl.smkn2ketapang.sch.id",
-    ],
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
 
 // Middleware
 app.use(express.json({ limit: "150mb" }));
 app.use(express.urlencoded({ limit: "150mb", extended: true }));
 const allowedOrigins = [
+  "http://localhost",
   "http://localhost:5173",
   "https://siabsen.apiservices.my.id",
   "https://sipkl.smkn2ketapang.sch.id",
 ];
+
+
+export const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 

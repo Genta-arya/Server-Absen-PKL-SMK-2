@@ -17,7 +17,7 @@ model Kelas {
 
 model User {
   id           String    @id @default(uuid())
-  nim          Int       @unique
+  nim          String     @unique
   name         String?
   email        String?   @unique
   password     String

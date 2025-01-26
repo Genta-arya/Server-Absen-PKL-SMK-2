@@ -246,7 +246,7 @@ export const checkLogin = async (req, res) => {
       });
       return sendResponse(res, 409, "Token tidak valid atau format salah");
     }
-    sendError(res, error);
+     return sendError(res, error);
   }
 };
 

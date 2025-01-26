@@ -10,6 +10,7 @@ import {
   handleLogout,
   handleRegister,
   updateDataUser,
+  updateDataUserAdmin,
   updateFotoProfile,
   updateKelas,
   updatePassword,
@@ -30,9 +31,11 @@ AuthRoutes.post("/logout/:id",middleware, handleLogout);
 // update profil
 AuthRoutes.post("/update/password/:id",middleware, updatePassword);
 AuthRoutes.post("/update/user/password/:id",middleware, updatePasswordUser);
+
 // AuthRoutes.post("/update/profile/:id", uploadImage, updateFotoProfile);
 AuthRoutes.post("/update/profile/:id",middleware, updateFotoProfile);
 AuthRoutes.post("/update/user/:id",middleware, updateDataUser);
+AuthRoutes.post("/update/users/:id",middleware, updateDataUserAdmin);
 
 // data user
 AuthRoutes.get("/user/:role",middleware, getUserByRole);

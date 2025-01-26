@@ -23,14 +23,22 @@ export const middleware = async (req, res, next) => {
 
     next();
   } catch (err) {
-    if (err instanceof jwt.JsonWebTokenError && err.message === "invalid signature") {
+    if (
+      err instanceof jwt.JsonWebTokenError &&
+      err.message === "invalid signature"
+    ) {
       // Token invalid, atur token menjadi null di database
-      await prisma.user.update({
+      const find = await prisma.user.findFirst({
         where: {
           token: token,
         },
+      });
+      await prisma.user.update({
+        where: {
+          id: find.id,
+        },
         data: {
-          token: null,  // Atur token menjadi null
+          token: null, // Atur token menjadi null
         },
       });
     }

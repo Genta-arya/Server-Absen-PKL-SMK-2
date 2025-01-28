@@ -49,7 +49,7 @@ export const updateAbsensi = async (req, res) => {
   }
 
   if (exits.hadir === "hadir") {
-    return sendResponse(res, 400, "Anda sudah absen");
+    return sendResponse(res, 400, "Anda sudah absen masuk");
   }
 
   try {
@@ -93,6 +93,7 @@ export const absenPulang = async (req, res) => {
           jamMasuk: true,
         },
       },
+      pulang: true,
     },
   });
 
@@ -126,7 +127,7 @@ export const absenPulang = async (req, res) => {
   }
 
   if (exits.pulang !== null) {
-    return sendResponse(res, 400, "Anda sudah absen");
+    return sendResponse(res, 400, "Anda sudah absen pulang");
   }
   try {
     await prisma.absensi.update({

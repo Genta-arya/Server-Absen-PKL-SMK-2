@@ -175,20 +175,55 @@ export const getDataAbsen = async (req, res) => {
     sendError(res, error);
   }
 };
-
 export const updateStatusCron = async (req, res) => {
   try {
-    // Menggabungkan kondisi update untuk mengurangi jumlah query
-    await prisma.absensi.updateMany({
+    // Mendapatkan waktu Indonesia
+    const newDateIndonesia = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Jakarta",
+      hour12: false,
+    });
+
+    const currentDate = new Date(newDateIndonesia);
+    currentDate.setHours(0, 0, 0, 0);
+    console.log("Current Date (Indonesia Time):", currentDate);
+
+    // Mengambil data absensi yang tanggalnya sudah lewat
+    const data = await prisma.absensi.findMany({
       where: {
-        isDelete: false,
+        OR: [{ isDelete: false }, { isDelete: null }],
+        tanggal: {
+          lt: currentDate, // hanya ambil data dengan tanggal sebelum hari ini
+        },
+        hadir: null,
         OR: [{ pulang: null }, { datang: null }],
       },
-      data: {
-        hadir: "tidak_hadir",
-      },
     });
+
+    console.log("Data absensi yang ditemukan:", data);
+
+    // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+    if (data.length > 0) {
+      console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+
+      await prisma.absensi.updateMany({
+        where: {
+          id: {
+            in: data.map((item) => item.id), // Menggunakan ID data yang sudah diambil
+          },
+        },
+        data: {
+          hadir: "tidak_hadir",
+        },
+      });
+
+      console.log(
+        "Status hadir berhasil diupdate menjadi 'tidak_hadir' untuk absensi dengan ID:",
+        data.map((item) => item.id)
+      );
+    } else {
+      console.log("Tidak ada absensi yang perlu diperbarui.");
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
   }
 };

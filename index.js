@@ -265,8 +265,21 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
+// cron.schedule('* * * * *', async () => {
+//   try {
+//     console.log("Menjalankan cron job updateStatusCron...");
+//     // Panggil fungsi pada 0 detik
+//     await updateStatusCron();
 
+//     // Panggil fungsi pada 20 detik
+//     setTimeout(async () => await updateStatusCron(), 10000); // 20 detik
 
+//     // Panggil fungsi pada 40 detik
+//     setTimeout(async () => await updateStatusCron(), 20000); // 40 detik
+//   } catch (error) {
+//     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+//   }
+// });
 // Endpoints
 app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);

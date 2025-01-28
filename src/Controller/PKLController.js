@@ -6,33 +6,68 @@ import { io, sendEmail, sendNotificationEmail } from "../../index.js";
 const BATCH_SIZE = 50;
 
 export const createPKLWithAbsensi = async (req, res) => {
-  const { name, address, user_id, start_date, end_date, creatorId } = req.body;
+  const { name, address, start_date, end_date, creatorId, shifts } = req.body;
 
-  if (!name || !address || !user_id || !start_date || !end_date || !creatorId) {
+  if (
+    !name ||
+    !address ||
+    !start_date ||
+    !end_date ||
+    !creatorId ||
+    !Array.isArray(shifts)
+  ) {
     return sendResponse(res, 400, "Invalid request");
   }
 
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        id: {
-          in: user_id,
-        },
-      },
-    });
-
-    if (users.length !== user_id.length) {
-      return sendResponse(res, 404, "User not found");
+    // Validasi tanggal mulai dan selesai
+    const start = dayjs(start_date);
+    const end = dayjs(end_date);
+    if (start.isAfter(end)) {
+      return sendResponse(
+        res,
+        400,
+        "Tanggal mulai harus sebelum tanggal selesai."
+      );
     }
 
-    // siswa yang sudah ada di pkl tidak boleh ditambahkan lagi
+    // Validasi shift
+    const allUsers = new Set(); // Untuk mencegah siswa muncul di shift lain
+    for (const shift of shifts) {
+      const { jamMasuk, jamPulang, users } = shift;
+
+      if (!jamMasuk || !jamPulang || !Array.isArray(users)) {
+        return sendResponse(res, 400, "Data shift tidak valid.");
+      }
+
+      // Validasi jam masuk dan jam pulang
+      if (dayjs(jamMasuk).isAfter(dayjs(jamPulang))) {
+        return sendResponse(
+          res,
+          400,
+          `Jam masuk (${jamMasuk}) tidak boleh lebih besar dari jam pulang (${jamPulang}).`
+        );
+      }
+
+      // Validasi pengguna yang sudah ada di shift lain
+      for (const user of users) {
+        if (allUsers.has(user)) {
+          return sendResponse(
+            res,
+            400,
+            `Pengguna dengan ID ${user} sudah ditambahkan di shift lain.`
+          );
+        }
+        allUsers.add(user);
+      }
+    }
 
     const existingPkl = await prisma.pkl.findMany({
       where: {
         users: {
           some: {
             id: {
-              in: user_id,
+              in: [...allUsers], // Mengecek jika ada pengguna yang sudah ada di PKL lain
             },
           },
         },
@@ -48,40 +83,51 @@ export const createPKLWithAbsensi = async (req, res) => {
       );
     }
 
+    // Buat PKL baru
     const newPkl = await prisma.pkl.create({
       data: {
         name,
         alamat: address,
         tanggal_mulai: new Date(start_date),
         tanggal_selesai: new Date(end_date),
-        creatorId: creatorId,
-
+        creatorId,
         users: {
-          connect: user_id.map((id) => ({ id })),
+          connect:
+            allUsers.size > 0
+              ? [...allUsers].map((userId) => ({ id: userId }))
+              : [],
         },
       },
     });
 
-    const start = dayjs(start_date);
-    const end = dayjs(end_date);
+    let createdShifts = [];
 
-    if (start.isAfter(end)) {
-      // hapus lagi pkl
-      await prisma.pkl.delete({
-        where: { id: newPkl.id },
+    // Proses pembuatan shift dan mengaitkan pengguna
+    const shiftPromises = shifts.map(async (shift) => {
+      const { name, jamMasuk, jamPulang, users } = shift;
+
+      // Membuat shift untuk PKL
+      const createdShift = await prisma.shift.create({
+        data: {
+          name,
+          jamMasuk: new Date(jamMasuk),
+          jamPulang: new Date(jamPulang),
+          pklId: newPkl.id,
+          // Pastikan untuk menghubungkan pengguna yang sesuai
+        },
       });
-      console.log(
-        "Tanggal mulai harus sebelum tanggal selesai , data pkl di hapus"
-      );
-      return sendResponse(
-        res,
-        400,
-        "Tanggal mulai harus sebelum tanggal selesai , periksa kembali"
-      );
-    }
 
+      createdShifts.push(createdShift);
+    });
+
+    // Tunggu hingga semua shift selesai dibuat
+    await Promise.all(shiftPromises);
+
+    // Tunggu hingga semua shift selesai
+    await Promise.all(shiftPromises);
+
+    // Pembuatan absensi untuk setiap shift dan tanggal
     const dates = [];
-
     for (
       let date = start;
       date.isBefore(end) || date.isSame(end);
@@ -91,16 +137,29 @@ export const createPKLWithAbsensi = async (req, res) => {
     }
 
     let absensiData = [];
-    dates.forEach((date) => {
-      user_id.forEach((user) => {
-        absensiData.push({
-          pkl_id: newPkl.id,
-          user_id: user,
-          tanggal: new Date(date),
+    shifts.forEach((shift, shiftIndex) => {
+      shift.users.forEach((userId) => {
+        dates.forEach((date) => {
+          // Cek apakah absensi sudah ada untuk tanggal dan user yang sama
+          const existingAbsensi = absensiData.find(
+            (absensi) => absensi.user_id === userId && absensi.tanggal === date
+          );
+
+          // Jika belum ada absensi untuk user pada tanggal tersebut
+          if (!existingAbsensi) {
+            absensiData.push({
+              pkl_id: newPkl.id,
+              shift_id: createdShifts[shiftIndex].id, // Pastikan shift_id disertakan untuk absensi pada shift pertama
+              user_id: userId,
+              tanggal: new Date(date),
+            });
+          }
         });
       });
     });
 
+    // Masukkan absensi ke dalam database
+    const BATCH_SIZE = 1000; // Atur ukuran batch untuk efisiensi
     const batchPromises = [];
     for (let i = 0; i < absensiData.length; i += BATCH_SIZE) {
       const batch = absensiData.slice(i, i + BATCH_SIZE);
@@ -108,187 +167,68 @@ export const createPKLWithAbsensi = async (req, res) => {
     }
 
     await Promise.all(batchPromises);
-    user_id.forEach((userId) => {
-      io.to(userId).emit("new-pkl-notification", {
-        message: `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${newPkl.name}`,
-      });
-    });
 
-    const findPkl = await prisma.pkl.findUnique({
-      where: { id: newPkl.id },
-      include: {
-        creator: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-
-    // kirim notifikasi email
-
-    const emailList = users.map((user) => user.email);
-    const body = {
-      name: newPkl.name,
-      creator: {
-        name: findPkl.creator.name,
-      },
-    };
-
-    sendNotificationEmail(emailList, body);
-
-    return sendResponse(res, 201, "PKL created successfully", newPkl);
+    return sendResponse(
+      res,
+      201,
+      "PKL and absensi created successfully",
+      newPkl
+    );
   } catch (error) {
-    sendError(res, error);
+    console.error(error);
+    return sendError(res, error);
   }
 };
 
-// export const addSiswaToExistingPKL = async (req, res) => {
-//   const { pkl_id, user_id } = req.body;
-
-//   if (!pkl_id || !user_id || !Array.isArray(user_id) || user_id.length === 0) {
-//     return sendResponse(res, 400, "Invalid request");
-//   }
-
-//   try {
-//     // Validasi apakah PKL ada
-//     const existingPkl = await prisma.pkl.findUnique({
-//       where: { id: pkl_id },
-//       include: {
-//         users: true, // Include users to check existing ones
-//         absensi: true, // Include absensi for generating data
-//         creator: {
-//           select: {
-//             id: true,
-//             name: true,
-//           },
-//         },
-//       },
-//     });
-
-//     if (!existingPkl) {
-//       return sendResponse(res, 404, "PKL not found");
-//     }
-
-//     const { tanggal_mulai, tanggal_selesai } = existingPkl;
-//     if (!tanggal_mulai || !tanggal_selesai) {
-//       return sendResponse(
-//         res,
-//         400,
-//         "PKL tidak memiliki tanggal mulai atau selesai"
-//       );
-//     }
-
-//     // Cek apakah siswa sudah ada dalam PKL
-//     const existingUserIds = existingPkl.users.map((user) => user.id);
-//     const newUsers = user_id.filter((id) => !existingUserIds.includes(id));
-//     const duplicateUsers = user_id.filter((id) => existingUserIds.includes(id));
-
-//     if (duplicateUsers.length > 0) {
-//       return sendResponse(
-//         res,
-//         400,
-//         `Siswa dengan ID ${duplicateUsers.join(", ")} sudah ada di PKL ini`
-//       );
-//     }
-
-//     // // Tambahkan siswa baru ke PKL
-//     await prisma.pkl.update({
-//       where: { id: pkl_id },
-//       data: {
-//         users: {
-//           connect: user_id.map((id) => ({ id })),
-//         },
-//       },
-//     });
-
-//     // Ambil tanggal absensi dari PKL yang sudah ada data pertama saja
-//     const uniqueDates = [
-//       ...new Set(
-//         existingPkl.absensi.map((absen) => absen.tanggal.toISOString())
-//       ),
-//     ];
-
-//     if (uniqueDates.length === 0) {
-//       return sendResponse(res, 400, "Tidak ada data absensi dalam PKL ini");
-//     } else {
-//       // Buat data absensi untuk siswa baru
-//     }
-
-//     // Buat data absensi untuk siswa baru
-//     const newAbsensiData = [];
-//     uniqueDates.forEach((tanggal) => {
-//       newUsers.forEach((id) => {
-//         newAbsensiData.push({
-//           pkl_id,
-//           user_id: id,
-//           tanggal: new Date(tanggal), // Konversi tanggal menjadi objek Date
-//         });
-//       });
-//     });
-
-//     console.log("data absensi", newAbsensiData);
-
-//     const BATCH_SIZE = 100;
-//     const batchPromises = [];
-//     for (let i = 0; i < newAbsensiData.length; i += BATCH_SIZE) {
-//       const batch = newAbsensiData.slice(i, i + BATCH_SIZE);
-//       batchPromises.push(prisma.absensi.createMany({ data: batch }));
-//     }
-
-//     await Promise.all(batchPromises);
-
-//     // Kirim notifikasi ke siswa baru
-//     user_id.forEach((userId) => {
-//       io.to(userId).emit("new-pkl-notification", {
-//         message: `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${existingPkl.name}`,
-//       });
-//     });
-
-//     // kirim notifikasi email
-
-//     const users = await prisma.user.findMany({
-//       where: {
-//         id: {
-//           in: user_id,
-//         },
-//       },
-//     });
-//     // const emailList = users.map((user) => user.email);
-
-//     // sendNotificationEmail(
-//     //   emailList, // Kirim ke beberapa email sekaligus
-//     //   `Anda telah ditambahkan ke Praktik Kerja Lapangan : ${existingPkl.name}, \n  Pembimbing : ${existingPkl.creator.name}  , \n Silahkan klik link berikut untuk melihat detail PKL: http://localhost:5173/app/absensi`
-//     // );
-
-//     return sendResponse(res, 200, "Siswa berhasil ditambahkan ke PKL");
-//   } catch (error) {
-//     sendError(res, error);
-//   }
-// };
-
-
 export const addSiswaToExistingPKL = async (req, res) => {
-  const { pkl_id, user_id } = req.body;
+  const { pkl_id, shift_data } = req.body;
 
-  if (!pkl_id || !user_id || !Array.isArray(user_id) || user_id.length === 0) {
+  if (
+    !pkl_id ||
+    !shift_data ||
+    !Array.isArray(shift_data) ||
+    shift_data.length === 0
+  ) {
     return sendResponse(res, 400, "Invalid request");
   }
 
   try {
-    // Validasi apakah PKL ada
+    for (const shift of shift_data) {
+      const { shift_name, jam_masuk, jam_keluar, user_id } = shift;
+
+      // Pastikan nama shift ada
+      if (!shift_name) {
+        return sendResponse(res, 400, "Nama shift harus diisi");
+      }
+
+      // Validasi jam masuk dan jam keluar
+      if (!jam_masuk || !jam_keluar) {
+        return sendResponse(res, 400, "Jam masuk dan jam keluar harus diisi");
+      }
+
+      // Cek apakah jam masuk lebih besar dari jam keluar
+      if (jam_masuk >= jam_keluar) {
+        return sendResponse(
+          res,
+          400,
+          `Jam masuk shift ${shift_name} tidak boleh lebih besar dari jam keluar.`
+        );
+      }
+
+      // Validasi user_id
+      if (!Array.isArray(user_id) || user_id.length === 0) {
+        return sendResponse(
+          res,
+          400,
+          `User ID untuk shift ${shift_name} harus diisi`
+        );
+      }
+    }
+
+    // Mendapatkan tanggal mulai dan selesai PKL
     const existingPkl = await prisma.pkl.findUnique({
       where: { id: pkl_id },
-      include: {
-        users: true, // Include users untuk cek keberadaan siswa
-        absensi: true, // Include absensi untuk referensi
-        creator: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: { tanggal_mulai: true, tanggal_selesai: true },
     });
 
     if (!existingPkl) {
@@ -296,51 +236,64 @@ export const addSiswaToExistingPKL = async (req, res) => {
     }
 
     const { tanggal_mulai, tanggal_selesai } = existingPkl;
-    if (!tanggal_mulai || !tanggal_selesai) {
-      return sendResponse(res, 400, "PKL tidak memiliki tanggal mulai atau selesai");
-    }
 
-    // Cek apakah siswa sudah ada dalam PKL
-    const existingUserIds = existingPkl.users.map((user) => user.id);
-    const newUsers = user_id.filter((id) => !existingUserIds.includes(id));
-    const duplicateUsers = user_id.filter((id) => existingUserIds.includes(id));
-
-    if (duplicateUsers.length > 0) {
-      return sendResponse(
-        res,
-        400,
-        `Siswa dengan ID ${duplicateUsers.join(", ")} sudah ada di PKL ini`
-      );
-    }
-
-    // Tambahkan siswa baru ke PKL
-    await prisma.pkl.update({
-      where: { id: pkl_id },
-      data: {
-        users: {
-          connect: newUsers.map((id) => ({ id })),
-        },
-      },
-    });
-
-    // Jika data absensi belum ada, buat data baru berdasarkan tanggal PKL
     const absensiData = [];
     const currentDate = new Date(tanggal_mulai);
     const endDate = new Date(tanggal_selesai);
+    const getCurrentDate = () => new Date().toISOString().split("T")[0];
 
     while (currentDate <= endDate) {
-      newUsers.forEach((id) => {
-        absensiData.push({
-          pkl_id,
-          user_id: id,
-          tanggal: new Date(currentDate), // Tanggal untuk absensi
+      // Iterasi melalui setiap shift
+      for (const shift of shift_data) {
+        const { user_id } = shift;
+
+        // Buat shift baru dan ambil shift_id setelah shift dibuat
+        let id_shift = null;
+
+        // Cek apakah shift dengan jam yang sama sudah ada
+        const existingShifts = await prisma.shift.findMany({
+          where: {
+            jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
+            jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
+          },
         });
-      });
-      currentDate.setDate(currentDate.getDate() + 1); // Tambah satu hari
+
+        // Jika shift belum ada, buat shift baru
+        if (existingShifts.length === 0) {
+          console.log("Shift belum ada, membuat shift baru");
+          const newShift = await prisma.shift.create({
+            data: {
+              name: shift.shift_name,
+              jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
+              jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
+              pkl: { connect: { id: pkl_id } },
+              users: {
+                connect: shift.user_id.map((id) => ({ id })),
+              },
+            },
+          });
+          id_shift = newShift.id;
+        } else {
+          console.log("Shift sudah ada, menggunakan shift yang sudah ada");
+          id_shift = existingShifts[0].id;
+        }
+
+        // Iterasi setiap user_id untuk shift tersebut dan tambahkan ke absensi
+        user_id.forEach((userId) => {
+          absensiData.push({
+            pkl_id,
+            user_id: userId,
+            tanggal: new Date(currentDate),
+            shift_id: id_shift,
+          });
+        });
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
     }
 
     if (absensiData.length > 0) {
-      const BATCH_SIZE = 100; // Atur ukuran batch
+      const BATCH_SIZE = 100;
       const batchPromises = [];
       for (let i = 0; i < absensiData.length; i += BATCH_SIZE) {
         const batch = absensiData.slice(i, i + BATCH_SIZE);
@@ -349,47 +302,28 @@ export const addSiswaToExistingPKL = async (req, res) => {
       await Promise.all(batchPromises);
     }
 
-    // Kirim notifikasi ke siswa baru
-    newUsers.forEach((userId) => {
-      io.to(userId).emit("new-pkl-notification", {
-        message: `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${existingPkl.name}`,
-      });
-    });
-
-    // Kirim notifikasi email
-    const users = await prisma.user.findMany({
-      where: {
-        id: {
-          in: newUsers,
+    // Hubungkan semua user ke PKL
+    await prisma.pkl.update({
+      where: { id: pkl_id },
+      data: {
+        users: {
+          connect: shift_data.flatMap((shift) =>
+            shift.user_id.map((id) => ({ id }))
+          ),
         },
       },
     });
 
-    const emailList = users.map((user) => user.email);
-    // if (emailList.length > 0) {
-    //   sendNotificationEmail(
-    //     emailList,
-    //     `Anda telah ditambahkan ke Praktik Kerja Lapangan: ${existingPkl.name}\nPembimbing: ${existingPkl.creator.name}\nSilakan klik tautan berikut untuk melihat detail PKL: http://localhost:5173/app/absensi`
-    //   );
-    // }
-
-    return sendResponse(res, 200, "Siswa berhasil ditambahkan ke PKL dan data absensi dibuat");
+    return sendResponse(
+      res,
+      200,
+      "Siswa berhasil ditambahkan ke PKL, data shift diperbarui, dan absensi telah dibuat"
+    );
   } catch (error) {
     console.error(error);
-    sendError(res, error);
+    return sendError(res, error);
   }
 };
-
-
-
-
-
-
-
-
-
-
-
 
 export const getDataPklCreator = async (req, res) => {
   const { id } = req.params;
@@ -434,6 +368,14 @@ export const getSinglePkl = async (req, res) => {
             role: true,
             nim: true,
             avatar: true,
+          },
+        },
+        shifts: {
+          select: {
+            id: true,
+            name: true,
+            jamMasuk: true,
+            jamPulang: true,
           },
         },
       },
@@ -495,6 +437,15 @@ export const deletePkl = async (req, res) => {
     if (!checkPkl) {
       return sendResponse(res, 404, "Data PKL tidak ditemukan");
     }
+
+    await prisma.absensi.updateMany({
+      where: {
+        pkl_id: id,
+      },
+      data: {
+        isDelete: true,
+      },
+    });
     const deletePkl = await prisma.pkl.update({
       where: {
         id,
@@ -587,7 +538,7 @@ export const updateStatusPkl = async (req, res) => {
 
 export const removeSiswaFromPkl = async (req, res) => {
   const { id } = req.params; // ID PKL
-  const { siswaId } = req.body; // ID Siswa
+  const { siswaId, isDelete } = req.body; // ID Siswa
 
   console.log("id", id);
   console.log("siswaId", siswaId);
@@ -616,6 +567,11 @@ export const removeSiswaFromPkl = async (req, res) => {
         },
       },
     });
+    if (isDelete) {
+      await prisma.shift.deleteMany({
+        where: { pklId: id },
+      });
+    }
 
     // Hapus data absensi siswa terkait PKL ini
     await prisma.absensi.deleteMany({
@@ -624,6 +580,14 @@ export const removeSiswaFromPkl = async (req, res) => {
         user_id: siswaId,
       },
     });
+
+    // hapus relasi siswa dari shift
+    await prisma.$executeRaw`
+    DELETE FROM \`_UserShift\`
+    WHERE B = ${siswaId} AND A IN (
+      SELECT id FROM \`Shift\` WHERE pklId = ${id}
+    )
+  `;
 
     return sendResponse(
       res,

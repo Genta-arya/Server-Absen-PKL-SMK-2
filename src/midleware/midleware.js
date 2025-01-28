@@ -6,7 +6,7 @@ import { prisma } from "../Config/Prisma.js";
 export const middleware = async (req, res, next) => {
   // Ambil Authorization header
   const authHeader = req.headers["authorization"];
-  console.log(process.env.JWT_SECRET);
+
   // Periksa apakah header Authorization ada dan formatnya benar
   if (!authHeader || !authHeader.startsWith("Bearer")) {
     return sendResponse(res, 403, "Authorization header missing or invalid");
@@ -14,7 +14,7 @@ export const middleware = async (req, res, next) => {
 
   // Ambil token dari header
   const token = authHeader.split(" ")[1];
-  console.log(token);
+  
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);

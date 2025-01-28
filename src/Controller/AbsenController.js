@@ -16,6 +16,14 @@ export const updateAbsensi = async (req, res) => {
 
   const exits = await prisma.absensi.findUnique({
     where: { id },
+    select: {
+      shift: {
+        select: {
+          jamPulang: true,
+          jamMasuk: true,
+        },
+      },
+    },
   });
 
   if (!exits) {
@@ -27,11 +35,16 @@ export const updateAbsensi = async (req, res) => {
     hour12: false,
   });
   const currentDate = new Date(newDateIndonesia);
+  const jamMasuk = new Date(exits.shift.jamMasuk);
 
-  const tenAM = new Date(currentDate);
-  tenAM.setHours(10, 0, 0, 0);
+  const tenAM = jamMasuk.getHours(); // Mendapatkan jam dari jamPulang (format 24 jam)
 
-  if (currentDate > tenAM) {
+  // Ambil jam dari currentDate untuk perbandingan
+  const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  console.log("Jam Masuk Shift:", tenAM);
+  console.log("Jam Sekarang:", currentHour);
+
+  if (currentHour > tenAM) {
     return sendResponse(res, 400, "Jam absen Masuk telah lewat");
   }
 
@@ -73,7 +86,17 @@ export const absenPulang = async (req, res) => {
 
   const exits = await prisma.absensi.findUnique({
     where: { id },
+    select: {
+      shift: {
+        select: {
+          jamPulang: true,
+          jamMasuk: true,
+        },
+      },
+    },
   });
+
+  // select
 
   if (!exits) {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
@@ -83,12 +106,22 @@ export const absenPulang = async (req, res) => {
     timeZone: "Asia/Jakarta",
     hour12: false,
   });
-  const currentDate = new Date(newDateIndonesia);
+  const currentDate = new Date(newDateIndonesia); // Waktu saat ini di Jakarta (UTC+7)
 
-  const tenAM = new Date(currentDate);
-  tenAM.setHours(17, 0, 0, 0);
+  // Ambil jamPulalng dan konversi ke Date object
+  const jamPulang = new Date(exits.shift.jamPulang); // Pastikan jamPulang dalam format yang benar
 
-  if (currentDate > tenAM) {
+  // Ambil jam dari jamPulang untuk dibandingkan
+  const tenAM = jamPulang.getHours(); // Mendapatkan jam dari jamPulang (format 24 jam)
+
+  // Ambil jam dari currentDate untuk perbandingan
+  const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  console.log("Jam Pulang Shift:", tenAM);
+  console.log("Jam Sekarang:", currentHour);
+  // Cek apakah jam absen pulang telah lewat
+  if (currentHour > tenAM) {
+    console.log("Jam Pulang Shift:", tenAM);
+    console.log("Jam Sekarang:", currentHour);
     return sendResponse(res, 400, "Jam absen Pulang telah lewat");
   }
 

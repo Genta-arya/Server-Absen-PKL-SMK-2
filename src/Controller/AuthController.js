@@ -182,6 +182,16 @@ export const checkLogin = async (req, res) => {
               where: {
                 user_id: getID_PKL.id,
               },
+              include: {
+                shift: {
+                  select: {
+                    id: true,
+                    name: true,
+                    jamMasuk: true,
+                    jamPulang: true,
+                  },
+                },
+              },
               orderBy: {
                 tanggal: "asc",
               },
@@ -246,7 +256,7 @@ export const checkLogin = async (req, res) => {
       });
       return sendResponse(res, 409, "Token tidak valid atau format salah");
     }
-     return sendError(res, error);
+    return sendError(res, error);
   }
 };
 
@@ -508,6 +518,17 @@ export const getSingleUser = async (req, res) => {
             absensi: {
               where: {
                 user_id: id,
+                isDelete: null,
+              },
+              include: {
+                shift: {
+                  select: {
+                    id: true,
+                    name: true,
+                    jamMasuk: true,
+                    jamPulang: true,
+                  },
+                },
               },
               orderBy: {
                 tanggal: "asc",

@@ -8,16 +8,66 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-
 model Kelas {
   id    String @id @default(uuid())
   nama  String
   users User[] @relation("UserKelas")
 }
 
+// model User {
+//   id           String    @id @default(uuid())
+//   nim          String    @unique
+//   name         String?
+//   email        String?   @unique
+//   password     String
+//   status_login Boolean   @default(false)
+//   avatar       String?
+//   role         String    @default("user")
+//   token        String?
+//   noHp         String?
+//   createdAt    DateTime  @default(now())
+//   Pkl          Pkl[]     @relation("UserPkl")
+//   CreatedPkl   Pkl[]     @relation("PklCreator")
+//   Kelas        Kelas[]   @relation("UserKelas")
+//   Absensi      Absensi[]
+// }
+
+// model Pkl {
+//   id              String    @id @default(uuid())
+//   name            String
+//   alamat          String
+//   creatorId       String
+//   creator         User      @relation("PklCreator", fields: [creatorId], references: [id])
+//   users           User[]    @relation("UserPkl")
+//   absensi         Absensi[] @relation("PklAbsensi")
+//   isDelete        Boolean?  @default(false)
+//   link_grup       String?
+//   tanggal_mulai   DateTime?
+//   tanggal_selesai DateTime
+//   status          Boolean   @default(true)
+//   createdAt       DateTime  @default(now())
+// }
+
+// model Absensi {
+//   id       String    @id @default(uuid())
+//   pkl_id   String
+//   pkl      Pkl?      @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+//   isDelete Boolean?
+//   user_id  String
+//   user     User?     @relation(fields: [user_id], references: [id])
+//   tanggal  DateTime
+//   hadir    String?
+//   foto     String?
+//   gps      String?
+//   posisi   String?
+//   pulang   DateTime?
+//   datang   DateTime?
+//   status   Boolean?
+// }
+
 model User {
   id           String    @id @default(uuid())
-  nim          String     @unique
+  nim          String    @unique
   name         String?
   email        String?   @unique
   password     String
@@ -31,9 +81,20 @@ model User {
   CreatedPkl   Pkl[]     @relation("PklCreator")
   Kelas        Kelas[]   @relation("UserKelas")
   Absensi      Absensi[]
+  shifts       Shift[]   @relation("UserShift")
 }
 
-
+model Shift {
+  id        String    @id @default(uuid())
+  pklId     String
+  pkl       Pkl       @relation("PklShift", fields: [pklId], references: [id], onDelete: Cascade)
+  name      String
+  jamMasuk  DateTime
+  jamPulang DateTime
+  absensi   Absensi[]
+  users     User[]    @relation("UserShift")
+  createdAt DateTime  @default(now())
+}
 
 model Pkl {
   id              String    @id @default(uuid())
@@ -43,6 +104,7 @@ model Pkl {
   creator         User      @relation("PklCreator", fields: [creatorId], references: [id])
   users           User[]    @relation("UserPkl")
   absensi         Absensi[] @relation("PklAbsensi")
+  shifts          Shift[]   @relation("PklShift")
   isDelete        Boolean?  @default(false)
   link_grup       String?
   tanggal_mulai   DateTime?
@@ -51,10 +113,14 @@ model Pkl {
   createdAt       DateTime  @default(now())
 }
 
+
+
 model Absensi {
   id       String    @id @default(uuid())
   pkl_id   String
   pkl      Pkl?      @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+  shift_id String?
+  shift    Shift?    @relation(fields: [shift_id], references: [id])
   isDelete Boolean?
   user_id  String
   user     User?     @relation(fields: [user_id], references: [id])

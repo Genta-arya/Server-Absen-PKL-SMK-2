@@ -175,3 +175,20 @@ export const getDataAbsen = async (req, res) => {
     sendError(res, error);
   }
 };
+
+export const updateStatusCron = async (req, res) => {
+  try {
+    // Menggabungkan kondisi update untuk mengurangi jumlah query
+    await prisma.absensi.updateMany({
+      where: {
+        isDelete: false,
+        OR: [{ pulang: null }, { datang: null }],
+      },
+      data: {
+        hadir: "tidak_hadir",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

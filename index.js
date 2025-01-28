@@ -17,6 +17,7 @@ import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
+import { updateStatusCron } from "./src/Controller/AbsenController.js";
 dotenv.config();
 
 const app = express();
@@ -248,11 +249,23 @@ app.use(
   })
 );
 
-// Cron Job
+// Cron Job 1 bulan sekali
 cron.schedule("0 0 1 * *", () => {
   deleteAllPkl();
   console.log("Cron job dijalankan");
 });
+
+// Cron Job Update Status absen
+cron.schedule("0 0 * * *", async () => {
+  try {
+    console.log("Menjalankan cron job updateStatusCron...");
+    await updateStatusCron(); // Memanggil fungsi update status
+  } catch (error) {
+    console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+  }
+});
+
+
 
 // Endpoints
 app.use("/api/auth", AuthRoutes);

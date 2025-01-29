@@ -40,7 +40,7 @@ export const updateAbsensi = async (req, res) => {
   const tenAM = jamMasuk.getHours(); // Mendapatkan jam dari jamPulang (format 24 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  const currentHour = currentDate.getHours() + 2; // Jam sekarang (format 24 jam)
   console.log("Jam Masuk Shift:", tenAM);
   console.log("Jam Sekarang:", currentHour);
 
@@ -113,7 +113,7 @@ export const absenPulang = async (req, res) => {
   const jamPulang = new Date(exits.shift.jamPulang); // Pastikan jamPulang dalam format yang benar
 
   // Ambil jam dari jamPulang untuk dibandingkan
-  const tenAM = jamPulang.getHours(); // Mendapatkan jam dari jamPulang (format 24 jam)
+  const tenAM = jamPulang.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
   const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)

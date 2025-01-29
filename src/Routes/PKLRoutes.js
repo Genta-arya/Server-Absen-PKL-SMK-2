@@ -1,5 +1,5 @@
 import express from "express";
-import { addSiswaToExistingPKL, createPKLWithAbsensi, deletePkl, EditPkl, getDataPklCreator, getSinglePkl, removeSiswaFromPkl, updateStatusPkl, } from "../Controller/PKLController.js";
+import { addSiswaToExistingPKL, createPKLWithAbsensi, deletePkl, EditPkl, getAnggotaPkl, getDataPklCreator, getSinglePkl, removeSiswaFromPkl, updateStatusPkl, } from "../Controller/PKLController.js";
 import { middleware } from "../midleware/midleware.js";
 
 export const PKLRoutes = express.Router();
@@ -14,3 +14,4 @@ PKLRoutes.put("/edit/:id",middleware, EditPkl);
 PKLRoutes.put("/delete/:id",middleware, deletePkl);
 PKLRoutes.put("/status/:id",middleware, updateStatusPkl);
 PKLRoutes.put("/remove/siswa/:id",middleware, removeSiswaFromPkl);
+PKLRoutes.get("/anggota/:id",middleware, getAnggotaPkl);

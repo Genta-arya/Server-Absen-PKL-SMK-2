@@ -196,6 +196,7 @@ export const checkLogin = async (req, res) => {
                 tanggal: "asc",
               },
             },
+
             creator: {
               select: {
                 name: true,
@@ -327,6 +328,13 @@ export const getUserByRole = async (req, res) => {
             isDelete: false,
           },
         },
+        Kelas: {
+          select: {
+            id: true,
+            nama: true,
+            
+          }
+        }
       },
     });
     if (!exitsUser) {

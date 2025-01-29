@@ -601,4 +601,50 @@ export const removeSiswaFromPkl = async (req, res) => {
   }
 };
 
-
+export const getAnggotaPkl = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  try {
+    const checkPkl = await prisma.pkl.findUnique({
+      where: {
+        id,
+      },
+      select:{
+        users:{
+          select:{
+            id:true,
+            name:true,
+            email:true,
+            noHp:true,
+            role:true,
+            nim:true,
+            avatar:true,
+            Kelas: {
+              select: {
+                id: true,
+                nama: true,
+               
+              }
+            },
+            shifts: {
+              select:{
+                id:true,
+                name:true,
+                jamMasuk:true,
+                jamPulang:true,
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!checkPkl) {
+      return sendResponse(res, 404, "Data PKL tidak ditemukan");
+    }
+    return sendResponse(res, 200, "Data anggota PKL", checkPkl);
+  } catch (error) {
+    sendError(res, error);
+  }
+};

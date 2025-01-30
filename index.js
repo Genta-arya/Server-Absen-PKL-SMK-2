@@ -18,6 +18,7 @@ import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
 import { updateStatusCron } from "./src/Controller/AbsenController.js";
+import { LaporanRoutes } from "./src/Routes/LaporanRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -284,6 +285,7 @@ cron.schedule("0 0 * * *", async () => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);
 app.use("/api/absensi", AbsensRoutes);
+app.use("/api/report", LaporanRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 
 // Realtime notification

@@ -142,7 +142,7 @@ export const createPKLWithAbsensi = async (req, res) => {
         dates.forEach((date) => {
           // Cek apakah absensi sudah ada untuk tanggal dan user yang sama
           const existingAbsensi = absensiData.find(
-            (absensi) => absensi.user_id === userId && absensi.tanggal === date
+            (absensi) => absensi.user_id === userId && absensi.tanggal.getTime() === new Date(date).getTime()
           );
 
           // Jika belum ada absensi untuk user pada tanggal tersebut
@@ -167,6 +167,40 @@ export const createPKLWithAbsensi = async (req, res) => {
     }
 
     await Promise.all(batchPromises);
+
+    const absensiBaru = await prisma.absensi.findMany({
+      where: {
+        user_id: { in: absensiData.map((a) => a.user_id) },
+        tanggal: { in: absensiData.map((a) => a.tanggal) },
+      },
+    });
+
+    if (absensiBaru.length === 0) {
+      throw new Error(
+        "Tidak ada data absensi yang ditemukan! Periksa proses penyimpanan absensi."
+      );
+    }
+
+    console.log(
+      `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
+    );
+
+    const laporanData = absensiBaru.map((absensi) => ({
+      tanggal: absensi.tanggal ?? new Date(), 
+      absensi_id: absensi.id, 
+      pembimbingId: creatorId ?? "default_pembimbing", 
+      pkl_id: absensi.pkl_id ?? "unknown_pkl",
+      user_id: absensi.user_id ?? "unknown_user",
+    }));
+
+    const laporanPromises = [];
+    for (let i = 0; i < laporanData.length; i += BATCH_SIZE) {
+      const batch = laporanData.slice(i, i + BATCH_SIZE);
+      laporanPromises.push(prisma.laporan.createMany({ data: batch }));
+    }
+    await Promise.all(laporanPromises); 
+
+    console.log("Absensi dan laporan berhasil dibuat!");
 
     return sendResponse(
       res,
@@ -301,6 +335,59 @@ export const addSiswaToExistingPKL = async (req, res) => {
       }
       await Promise.all(batchPromises);
     }
+
+    const absensiBaru = await prisma.absensi.findMany({
+      where: {
+        user_id: { in: absensiData.map((a) => a.user_id) },
+        tanggal: { in: absensiData.map((a) => a.tanggal) },
+      },
+    });
+
+    const findCreator = await prisma.pkl.findFirst({
+      where: {
+        id: pkl_id
+      },
+    })
+
+    if (absensiBaru.length === 0) {
+      throw new Error(
+        "Tidak ada data absensi yang ditemukan! Periksa proses penyimpanan absensi."
+      );
+    }
+
+    console.log(
+      `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
+    );
+
+    const laporanData = absensiBaru.map((absensi) => ({
+      tanggal: absensi.tanggal ?? new Date(), 
+      absensi_id: absensi.id, 
+      pembimbingId:  findCreator.creatorId ?? "default_pembimbing", 
+      pkl_id: pkl_id ?? "unknown_pkl",
+      user_id: absensi.user_id ?? "unknown_user",
+    }));
+
+    const laporanPromises = [];
+    for (let i = 0; i < laporanData.length; i += BATCH_SIZE) {
+      const batch = laporanData.slice(i, i + BATCH_SIZE);
+      laporanPromises.push(prisma.laporan.createMany({ data: batch }));
+    }
+    await Promise.all(laporanPromises); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Hubungkan semua user ke PKL
     await prisma.pkl.update({
@@ -611,34 +698,33 @@ export const getAnggotaPkl = async (req, res) => {
       where: {
         id,
       },
-      select:{
-        users:{
-          select:{
-            id:true,
-            name:true,
-            email:true,
-            noHp:true,
-            role:true,
-            nim:true,
-            avatar:true,
+      select: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            noHp: true,
+            role: true,
+            nim: true,
+            avatar: true,
             Kelas: {
               select: {
                 id: true,
                 nama: true,
-               
-              }
+              },
             },
             shifts: {
-              select:{
-                id:true,
-                name:true,
-                jamMasuk:true,
-                jamPulang:true,
-              }
-            }
-          }
-        }
-      }
+              select: {
+                id: true,
+                name: true,
+                jamMasuk: true,
+                jamPulang: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!checkPkl) {
       return sendResponse(res, 404, "Data PKL tidak ditemukan");

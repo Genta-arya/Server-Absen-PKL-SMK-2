@@ -37,7 +37,7 @@ export const updateAbsensi = async (req, res) => {
   const currentDate = new Date(newDateIndonesia);
   const jamMasuk = new Date(exits.shift.jamMasuk);
 
-  const tenAM = jamMasuk.getHours()  + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
+  const tenAM = jamMasuk.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
   const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
@@ -103,22 +103,78 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  const newDateIndonesia = new Date().toLocaleString("en-US", {
+  // const newDateIndonesia = new Date().toLocaleString("en-US", {
+  //   timeZone: "Asia/Jakarta",
+  //   hour12: false,
+  // });
+  // const currentDate = new Date(newDateIndonesia); // Waktu saat ini di Jakarta (UTC+7)
+
+  // // Ambil jamPulalng dan konversi ke Date object
+  // const jamPulang = new Date(exits.shift.jamPulang); // Pastikan jamPulang dalam format yang benar
+
+  // // Ambil jam dari jamPulang untuk dibandingkan
+  // const tenAM = jamPulang.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
+
+  // // Ambil jam dari currentDate untuk perbandingan
+  // const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  // console.log("Jam Pulang Shift:", tenAM);
+  // console.log("Jam Sekarang:", currentHour);
+  // // Cek apakah jam absen pulang telah lewat
+  // if (currentHour > tenAM) {
+  //   console.log("Jam Pulang Shift:", tenAM);
+  //   console.log("Jam Sekarang:", currentHour);
+  //   return sendResponse(res, 400, "Jam absen Pulang telah lewat");
+  // }
+
+  // Dapatkan waktu saat ini dalam zona waktu Indonesia (WIB, UTC+7)
+  const currentDate = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: false,
   });
-  const currentDate = new Date(newDateIndonesia); // Waktu saat ini di Jakarta (UTC+7)
 
-  // Ambil jamPulalng dan konversi ke Date object
-  const jamPulang = new Date(exits.shift.jamPulang); // Pastikan jamPulang dalam format yang benar
+  // Ambil bagian tanggal & waktu dari formatter
+  const parts = formatter.formatToParts(currentDate);
+  const year = parts.find((p) => p.type === "year").value;
+  const month = parts.find((p) => p.type === "month").value;
+  const day = parts.find((p) => p.type === "day").value;
+  const hour = parts.find((p) => p.type === "hour").value;
+  const minute = parts.find((p) => p.type === "minute").value;
+  const second = parts.find((p) => p.type === "second").value;
+
+  // Buat objek Date yang benar-benar di zona WIB
+  const newDateIndonesia = new Date(
+    `${year}-${month}-${day}T${hour}:${minute}:${second}+07:00`
+  );
+
+  console.log("Waktu Indonesia saat ini:", newDateIndonesia);
+
+  // Ambil jamPulang dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
+  const jamPulang = new Date(newDateIndonesia);
+  const jamPulangShift = new Date(exits.shift.jamPulang);
+  jamPulang.setHours(
+    jamPulangShift.getHours(),
+    jamPulangShift.getMinutes(),
+    0,
+    0
+  );
+
+  console.log("Jam Pulang Shift:", jamPulang);
 
   // Ambil jam dari jamPulang untuk dibandingkan
-  const tenAM = jamPulang.getHours() + 1; // Mendapatkan jam dari jamPulang (format 24 jam)
+  const tenAM = jamPulang.getHours() + 2; // Waktu batas pulang (jamPulang + 1 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  const currentHour = newDateIndonesia.getHours(); // Jam sekarang (format 24 jam)
   console.log("Jam Pulang Shift:", tenAM);
   console.log("Jam Sekarang:", currentHour);
+
   // Cek apakah jam absen pulang telah lewat
   if (currentHour > tenAM) {
     console.log("Jam Pulang Shift:", tenAM);

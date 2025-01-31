@@ -1,3 +1,4 @@
+import { newDateIndonesia } from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 
@@ -30,19 +31,39 @@ export const updateAbsensi = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  const newDateIndonesia = new Date().toLocaleString("en-US", {
-    timeZone: "Asia/Jakarta",
-    hour12: false,
-  });
-  const currentDate = new Date(newDateIndonesia);
-  const jamMasuk = new Date(exits.shift.jamMasuk);
+  // const newDateIndonesia = new Date().toLocaleString("en-US", {
+  //   timeZone: "Asia/Jakarta",
+  //   hour12: false,
+  // });
+  // const currentDate = new Date(newDateIndonesia);
+  // const jamMasuk = new Date(exits.shift.jamMasuk);
 
-  const tenAM = jamMasuk.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
+  // const tenAM = jamMasuk.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
+
+  // // Ambil jam dari currentDate untuk perbandingan
+  // const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
+  // console.log("Jam Masuk Shift:", tenAM);
+  // console.log("Jam Sekarang:", currentHour);
+
+  // Ambil jamMasuk dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
+  const jamMasuk = new Date(newDateIndonesia);
+  const jamMasukShift = new Date(exits.shift.jamMasuk);
+  jamMasuk.setHours(jamMasukShift.getHours(), jamMasukShift.getMinutes(), 0, 0);
+
+  console.log("Jam Masuk Shift:", jamMasuk);
+
+  // Ambil jam dari jamMasuk untuk dibandingkan
+  const batasMasuk = jamMasuk.getHours() + 2; // Waktu batas masuk (jamMasuk + 2 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
-  console.log("Jam Masuk Shift:", tenAM);
+  const currentHour = newDateIndonesia.getHours(); // Jam sekarang (format 24 jam)
+  console.log("Jam Masuk Shift (Batas Akhir):", batasMasuk);
   console.log("Jam Sekarang:", currentHour);
+
+  // Cek apakah jam absen masuk telah lewat
+  if (currentHour > batasMasuk) {
+    return sendResponse(res, 400, "Jam absen Masuk telah lewat");
+  }
 
   if (currentHour > tenAM) {
     return sendResponse(res, 400, "Jam absen Masuk telah lewat");
@@ -126,32 +147,7 @@ export const absenPulang = async (req, res) => {
   //   return sendResponse(res, 400, "Jam absen Pulang telah lewat");
   // }
 
-  // Dapatkan waktu saat ini dalam zona waktu Indonesia (WIB, UTC+7)
-  const currentDate = new Date();
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Jakarta",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
 
-  // Ambil bagian tanggal & waktu dari formatter
-  const parts = formatter.formatToParts(currentDate);
-  const year = parts.find((p) => p.type === "year").value;
-  const month = parts.find((p) => p.type === "month").value;
-  const day = parts.find((p) => p.type === "day").value;
-  const hour = parts.find((p) => p.type === "hour").value;
-  const minute = parts.find((p) => p.type === "minute").value;
-  const second = parts.find((p) => p.type === "second").value;
-
-  // Buat objek Date yang benar-benar di zona WIB
-  const newDateIndonesia = new Date(
-    `${year}-${month}-${day}T${hour}:${minute}:${second}+07:00`
-  );
 
   console.log("Waktu Indonesia saat ini:", newDateIndonesia);
 

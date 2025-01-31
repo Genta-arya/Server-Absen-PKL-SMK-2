@@ -142,7 +142,9 @@ export const createPKLWithAbsensi = async (req, res) => {
         dates.forEach((date) => {
           // Cek apakah absensi sudah ada untuk tanggal dan user yang sama
           const existingAbsensi = absensiData.find(
-            (absensi) => absensi.user_id === userId && absensi.tanggal.getTime() === new Date(date).getTime()
+            (absensi) =>
+              absensi.user_id === userId &&
+              absensi.tanggal.getTime() === new Date(date).getTime()
           );
 
           // Jika belum ada absensi untuk user pada tanggal tersebut
@@ -186,9 +188,9 @@ export const createPKLWithAbsensi = async (req, res) => {
     );
 
     const laporanData = absensiBaru.map((absensi) => ({
-      tanggal: absensi.tanggal ?? new Date(), 
-      absensi_id: absensi.id, 
-      pembimbingId: creatorId ?? "default_pembimbing", 
+      tanggal: absensi.tanggal ?? new Date(),
+      absensi_id: absensi.id,
+      pembimbingId: creatorId ?? "default_pembimbing",
       pkl_id: absensi.pkl_id ?? "unknown_pkl",
       user_id: absensi.user_id ?? "unknown_user",
     }));
@@ -198,7 +200,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       const batch = laporanData.slice(i, i + BATCH_SIZE);
       laporanPromises.push(prisma.laporan.createMany({ data: batch }));
     }
-    await Promise.all(laporanPromises); 
+    await Promise.all(laporanPromises);
 
     console.log("Absensi dan laporan berhasil dibuat!");
 
@@ -345,9 +347,9 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     const findCreator = await prisma.pkl.findFirst({
       where: {
-        id: pkl_id
+        id: pkl_id,
       },
-    })
+    });
 
     if (absensiBaru.length === 0) {
       throw new Error(
@@ -360,9 +362,9 @@ export const addSiswaToExistingPKL = async (req, res) => {
     );
 
     const laporanData = absensiBaru.map((absensi) => ({
-      tanggal: absensi.tanggal ?? new Date(), 
-      absensi_id: absensi.id, 
-      pembimbingId:  findCreator.creatorId ?? "default_pembimbing", 
+      tanggal: absensi.tanggal ?? new Date(),
+      absensi_id: absensi.id,
+      pembimbingId: findCreator.creatorId ?? "default_pembimbing",
       pkl_id: pkl_id ?? "unknown_pkl",
       user_id: absensi.user_id ?? "unknown_user",
     }));
@@ -372,22 +374,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
       const batch = laporanData.slice(i, i + BATCH_SIZE);
       laporanPromises.push(prisma.laporan.createMany({ data: batch }));
     }
-    await Promise.all(laporanPromises); 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    await Promise.all(laporanPromises);
 
     // Hubungkan semua user ke PKL
     await prisma.pkl.update({
@@ -604,8 +591,8 @@ export const updateStatusPkl = async (req, res) => {
     console.log("checkPklTanggalSelesaiOnly", checkPklTanggalSelesaiOnly);
 
     if (!checkPkl.status && currentDateOnly > checkPklTanggalSelesaiOnly) {
-      console.log("PKL sudah selesai");
-      return sendResponse(res, 400, "PKL sudah selesai");
+      console.log("Periode PKL sudah selesai");
+      return sendResponse(res, 400, "Periode PKL sudah selesai , Tidak bisa diaktifkan kembali");
     }
 
     const update = await prisma.pkl.update({
@@ -732,5 +719,62 @@ export const getAnggotaPkl = async (req, res) => {
     return sendResponse(res, 200, "Data anggota PKL", checkPkl);
   } catch (error) {
     sendError(res, error);
+  }
+};
+
+export const updateStatusPKLCron = async (req, res) => {
+  try {
+    // Mendapatkan waktu Indonesia
+    const newDateIndonesia = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Jakarta",
+      hour12: false,
+    });
+
+    const currentDate = new Date(newDateIndonesia);
+    currentDate.setHours(0, 0, 0, 0);
+    console.log("Current Date (Indonesia Time):", currentDate);
+
+    // Mengambil data absensi yang tanggalnya sudah lewat
+    const data = await prisma.pkl.findMany({
+      where: {
+        AND: [
+          {
+            OR: [{ isDelete: false }, { isDelete: null }],
+          },
+          {
+            tanggal_selesai: {
+              lt: currentDate, // Ambil data dengan tanggal_selesai sebelum hari ini
+            },
+          },
+        ],
+      },
+    });
+
+    console.log("Data pkl yang ditemukan:", data);
+
+    // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+    if (data.length > 0) {
+      console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+
+      await prisma.pkl.updateMany({
+        where: {
+          id: {
+            in: data.map((item) => item.id), // Menggunakan ID data yang sudah diambil
+          },
+        },
+        data: {
+          status: false,
+        },
+      });
+
+      console.log(
+        "Mengupdate status PKL dengan ID:",
+        data.map((item) => item.id)
+      );
+    } else {
+      console.log("Tidak ada pkl yang perlu diperbarui.");
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan saat memperbarui status pkl:", error);
   }
 };

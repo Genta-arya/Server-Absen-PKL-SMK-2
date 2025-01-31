@@ -4,7 +4,7 @@ import cors from "cors";
 import { AuthRoutes } from "./src/Routes/AuthRoutes.js";
 import { PKLRoutes } from "./src/Routes/PKLRoutes.js";
 import cron from "node-cron";
-import { deleteAllPkl } from "./src/Controller/PKLController.js";
+import { deleteAllPkl, updateStatusPKLCron } from "./src/Controller/PKLController.js";
 import { Server as SocketIOServer } from "socket.io";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
@@ -250,17 +250,19 @@ app.use(
   })
 );
 
-// Cron Job 1 bulan sekali
-cron.schedule("0 0 1 * *", () => {
+// Cron Job 8 bulan sekali
+cron.schedule("0 0 1 1,9 *", () => {
   deleteAllPkl();
-  console.log("Cron job dijalankan");
+  console.log("Cron job dijalankan setiap 8 bulan sekali");
 });
 
 // Cron Job Update Status absen
-cron.schedule("0 0 * * *", async () => {
+
+cron.schedule("0 * * * *", async () => {
   try {
     console.log("Menjalankan cron job updateStatusCron...");
     await updateStatusCron(); // Memanggil fungsi update status
+    await updateStatusPKLCron();
   } catch (error) {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }
@@ -290,6 +292,7 @@ app.use("/image", express.static("Public/Images/Profile"));
 
 // Realtime notification
 io.on("connection", (socket) => {
+  // console.log("A user connected");
   socket.on("joinRoom", (userId) => {
     socket.join(userId);
     console.log(`User dengan ID ${userId} bergabung ke room`);
@@ -297,6 +300,7 @@ io.on("connection", (socket) => {
 
   socket.on("ping", (timestamp) => {
     // Mengirimkan kembali waktu respons
+    console.log("Pong received:", timestamp);
     socket.emit("pong", timestamp);
   });
 

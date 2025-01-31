@@ -3,9 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // provider          = "mysql"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Kelas {
@@ -86,7 +88,7 @@ model Laporan {
   perencanaan_kegiatan String?
   pelaksanaan_kegiatan String?        @db.Text
   catatan_instruktur   String?        @db.Text
-  status_selesai       String? @default("Belum")
+  status_selesai       String?        @default("Belum")
   fotos                Foto_laporan[] @relation("LaporanFoto")
 
   status Boolean?

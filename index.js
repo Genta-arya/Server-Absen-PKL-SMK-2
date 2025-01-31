@@ -48,47 +48,47 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = (to, subject, body) => {
-  console.log(to);
-  const htmlContent = fs.readFileSync(
-    path.join(path.resolve(), "src", "Email", "index.html"),
-    "utf-8"
-  );
+// export const sendEmail = (to, subject, body) => {
+//   console.log(to);
+//   const htmlContent = fs.readFileSync(
+//     path.join(path.resolve(), "src", "Email", "index.html"),
+//     "utf-8"
+//   );
 
-  const customizedContent = htmlContent
-    .replace("{{subject}}", subject)
-    .replace("{{pklname}}", body.pklname)
-    .replace("{{creatorName}}", body.creatorName);
+//   const customizedContent = htmlContent
+//     .replace("{{subject}}", subject)
+//     .replace("{{pklname}}", body.pklname)
+//     .replace("{{creatorName}}", body.creatorName);
 
-  const mailOptions = {
-    from: '"No-Reply " <system-pkl@smkn2ketapang.sch.id>',
-    to: to.join(","),
-    subject: subject,
-    html: customizedContent,
-  };
+//   const mailOptions = {
+//     from: '"No-Reply " <system-pkl@smkn2ketapang.sch.id>',
+//     to: to.join(","),
+//     subject: subject,
+//     html: customizedContent,
+//   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error sending email:", error);
-    } else {
-      console.log(`Email sent to: ${mailOptions.to}`);
-      console.log(`Response: ${info.response}`);
-    }
-  });
-};
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.log("Error sending email:", error);
+//     } else {
+//       console.log(`Email sent to: ${mailOptions.to}`);
+//       console.log(`Response: ${info.response}`);
+//     }
+//   });
+// };
 
-export const sendNotificationEmail = (emailList, existingPkl) => {
-  const subject = "Notifikasi";
+// export const sendNotificationEmail = (emailList, existingPkl) => {
+//   const subject = "Notifikasi";
 
-  const pklname = `${existingPkl.name}`;
-  const creatorName = `${existingPkl.creator.name}`;
-  const body = {
-    pklname,
-    creatorName,
-  };
+//   const pklname = `${existingPkl.name}`;
+//   const creatorName = `${existingPkl.creator.name}`;
+//   const body = {
+//     pklname,
+//     creatorName,
+//   };
 
-  sendEmail(emailList, subject, body);
-};
+//   sendEmail(emailList, subject, body);
+// };
 
 // const db = mysql.createConnection({
 //   host: "amplangema.my.id",

@@ -1,7 +1,7 @@
 import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
-import { io, sendEmail, sendNotificationEmail } from "../../index.js";
+
 
 const BATCH_SIZE = 50;
 

@@ -291,22 +291,26 @@ app.use("/api/report", LaporanRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 
 // Realtime notification
-io.on("connection", (socket) => {
-  // console.log("A user connected");
-  socket.on("joinRoom", (userId) => {
-    socket.join(userId);
-    console.log(`User dengan ID ${userId} bergabung ke room`);
-  });
+// io.on("connection", (socket) => {
+//   // console.log("A user connected");
+//   socket.on("joinRoom", (userId) => {
+//     socket.join(userId);
+//     console.log(`User dengan ID ${userId} bergabung ke room`);
+//   });
 
-  socket.on("ping", (timestamp) => {
-    // Mengirimkan kembali waktu respons
-    console.log("Pong received:", timestamp);
-    socket.emit("pong", timestamp);
-  });
+//   socket.on("ping", (timestamp) => {
+//     // Mengirimkan kembali waktu respons
+//     console.log("Pong received:", timestamp);
+//     socket.emit("pong", timestamp);
+//   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
+//   socket.on("disconnect", () => {
+//     console.log("User disconnected");
+//   });
+// });
+app.get("/api/connection", (req, res) => { 
+  const timestamp = Date.now();
+  res.json({ timestamp });
 });
 
 httpServer.listen(PORT, () => {

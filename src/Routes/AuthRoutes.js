@@ -17,7 +17,7 @@ import {
   updatePasswordUser,
   updateSingleProfile,
 } from "../Controller/AuthController.js";
-import { uploadImage } from "../Config/Multer.js";
+
 import { middleware } from "../midleware/midleware.js";
 
 export const AuthRoutes = express.Router();

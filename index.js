@@ -221,13 +221,13 @@ const allowedOrigins = [
   "https://sipkl.smkn2ketapang.sch.id",
 ];
 
-export const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+// export const io = new SocketIOServer(httpServer, {
+//   cors: {
+//     origin: allowedOrigins,
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//   },
+// });
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

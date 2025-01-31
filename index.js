@@ -36,59 +36,6 @@ const httpServer = createServer(app);
 //   },
 // });
 
-const transporter = nodemailer.createTransport({
-  service: "SMTP",
-  host: "mail.smkn2ketapang.sch.id",
-  port: 465,
-  secure: true, // menggunakan SSL
-
-  auth: {
-    user: "system-pkl@smkn2ketapang.sch.id",
-    pass: "Genta@456", // Gantilah dengan password email Anda
-  },
-});
-
-// export const sendEmail = (to, subject, body) => {
-//   console.log(to);
-//   const htmlContent = fs.readFileSync(
-//     path.join(path.resolve(), "src", "Email", "index.html"),
-//     "utf-8"
-//   );
-
-//   const customizedContent = htmlContent
-//     .replace("{{subject}}", subject)
-//     .replace("{{pklname}}", body.pklname)
-//     .replace("{{creatorName}}", body.creatorName);
-
-//   const mailOptions = {
-//     from: '"No-Reply " <system-pkl@smkn2ketapang.sch.id>',
-//     to: to.join(","),
-//     subject: subject,
-//     html: customizedContent,
-//   };
-
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.log("Error sending email:", error);
-//     } else {
-//       console.log(`Email sent to: ${mailOptions.to}`);
-//       console.log(`Response: ${info.response}`);
-//     }
-//   });
-// };
-
-// export const sendNotificationEmail = (emailList, existingPkl) => {
-//   const subject = "Notifikasi";
-
-//   const pklname = `${existingPkl.name}`;
-//   const creatorName = `${existingPkl.creator.name}`;
-//   const body = {
-//     pklname,
-//     creatorName,
-//   };
-
-//   sendEmail(emailList, subject, body);
-// };
 
 // const db = mysql.createConnection({
 //   host: "amplangema.my.id",
@@ -212,14 +159,7 @@ const transporter = nodemailer.createTransport({
 //   sendEmail(["mgentaarya@gmail.com"], "Test Email");
 // });
 
-// Middleware
-app.use(express.json({ limit: "150mb" }));
-app.use(express.urlencoded({ limit: "150mb", extended: true }));
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://siabsen.apiservices.my.id",
-  "https://sipkl.smkn2ketapang.sch.id",
-];
+
 
 // export const io = new SocketIOServer(httpServer, {
 //   cors: {
@@ -229,6 +169,15 @@ const allowedOrigins = [
 //   },
 // });
 
+
+// Middleware
+app.use(express.json({ limit: "150mb" }));
+app.use(express.urlencoded({ limit: "150mb", extended: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://siabsen.apiservices.my.id",
+  "https://sipkl.smkn2ketapang.sch.id",
+];
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 

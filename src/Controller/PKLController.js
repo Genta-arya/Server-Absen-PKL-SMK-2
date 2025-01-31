@@ -1,7 +1,7 @@
 import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
-
+import { sendNotificationEmail } from "./EmailController.js";
 
 const BATCH_SIZE = 50;
 
@@ -72,6 +72,15 @@ export const createPKLWithAbsensi = async (req, res) => {
           },
         },
         isDelete: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        creator: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -203,6 +212,60 @@ export const createPKLWithAbsensi = async (req, res) => {
     await Promise.all(laporanPromises);
 
     console.log("Absensi dan laporan berhasil dibuat!");
+
+    // Notifikasi email ke siswa
+
+    const emailList = await prisma.user.findMany({
+      where: {
+        id: { in: [...allUsers] }, // Menggunakan ID dari user yang ada dalam PKL
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    const emails = emailList.map((user) => user.email);
+    // ambil data user pkl yg baru dibuat 
+
+    const pklData = await prisma.pkl.findFirst({
+      where: {
+        id: newPkl.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        tanggal_mulai: true,
+        tanggal_selesai: true,
+        creator: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    // map kan data name creator dan pkl name
+    if (!pklData) {
+      console.error("PKL tidak ditemukan atau tidak valid.");
+    } else {
+      // Ambil nama PKL dan nama creator
+      const pklname = pklData.name;
+      const creatorName = pklData.creator?.name || "Unknown";
+      const formatTanggal = (tanggal) => {
+        return new Intl.DateTimeFormat("id-ID", {
+          weekday: "long", // Nama hari (Senin, Selasa, ...)
+          day: "numeric", // Tanggal (1, 2, 3, ...)
+          month: "long", // Nama bulan (Januari, Februari, ...)
+          year: "numeric", // Tahun (2025, 2026, ...)
+        }).format(new Date(tanggal));
+      };
+      
+      // Contoh penggunaan
+      const tanggalMulai = formatTanggal(pklData.tanggal_mulai);
+      const tanggalSelesai = formatTanggal(pklData.tanggal_selesai);
+    
+      // Kirim email
+      sendNotificationEmail(emails, { pklname, creatorName, tanggalMulai, tanggalSelesai });
+    }
 
     return sendResponse(
       res,
@@ -592,7 +655,11 @@ export const updateStatusPkl = async (req, res) => {
 
     if (!checkPkl.status && currentDateOnly > checkPklTanggalSelesaiOnly) {
       console.log("Periode PKL sudah selesai");
-      return sendResponse(res, 400, "Periode PKL sudah selesai , Tidak bisa diaktifkan kembali");
+      return sendResponse(
+        res,
+        400,
+        "Periode PKL sudah selesai , Tidak bisa diaktifkan kembali"
+      );
     }
 
     const update = await prisma.pkl.update({

@@ -177,6 +177,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://siabsen.apiservices.my.id",
   "https://sipkl.smkn2ketapang.sch.id",
+  "https://pkl.smkn2ketapang.sch.id",
 ];
 app.use((req, res, next) => {
   const origin = req.headers.origin;

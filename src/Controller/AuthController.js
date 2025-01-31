@@ -1,4 +1,4 @@
-import { image_url } from "../Config/Constans.js";
+import { image_url, newDateIndonesia } from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { createToken, JWT_SECRET } from "../Library/CreateToken.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
@@ -209,10 +209,7 @@ export const checkLogin = async (req, res) => {
     });
     jwt.verify(token, JWT_SECRET);
 
-    const newDateIndonesia = new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta",
-      hour12: false,
-    });
+  
 
     // Mengonversi string tanggal dan waktu menjadi objek Date
     const dateIndonesia = new Date(newDateIndonesia);

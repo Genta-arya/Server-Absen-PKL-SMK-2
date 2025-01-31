@@ -3,8 +3,8 @@
     "builds": [
       {
         "src": "./index.js",
-        "use": "@vercel/node",
-        "config": { "maxPayload": "50mb" }
+        "use": "@vercel/node"
+        
      
       }
     ],

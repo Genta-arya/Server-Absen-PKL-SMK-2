@@ -65,9 +65,9 @@ export const updateAbsensi = async (req, res) => {
     return sendResponse(res, 400, "Jam absen Masuk telah lewat");
   }
 
-  if (currentHour > tenAM) {
-    return sendResponse(res, 400, "Jam absen Masuk telah lewat");
-  }
+  // if (currentHour > tenAM) {
+  //   return sendResponse(res, 400, "Jam absen Masuk telah lewat");
+  // }
 
   if (exits.hadir === "hadir") {
     return sendResponse(res, 400, "Anda sudah absen masuk");

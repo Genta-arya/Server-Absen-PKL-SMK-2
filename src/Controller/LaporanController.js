@@ -13,9 +13,13 @@ export const getLaporanByuser = async (req, res) => {
     if (!exitsUser) {
       return sendResponse(res, 404, "User tidak ditemukan");
     }
+   
     const data = await prisma.laporan.findMany({
       where: {
-        user_id: id,
+        user_id: exitsUser.id,
+        pkl:{
+          isDelete: false
+        },
         OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
       },
       select: {
@@ -24,6 +28,9 @@ export const getLaporanByuser = async (req, res) => {
         status_selesai: true,
       },
     });
+    if (!data) {
+      return sendResponse(res, 404, "Data tidak ditemukan");
+    }
 
     return sendResponse(res, 200, "Data ditemukan", data);
   } catch (error) {

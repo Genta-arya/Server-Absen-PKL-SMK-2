@@ -24,5 +24,6 @@ const minute = parts.find((p) => p.type === "minute").value;
 const second = parts.find((p) => p.type === "second").value;
 
 // Buat objek Date yang benar-benar di zona WIB
-export const newDateIndonesia = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}+07:00`);
+export const newDateIndonesia = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+console.log(newDateIndonesia.toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }));
 

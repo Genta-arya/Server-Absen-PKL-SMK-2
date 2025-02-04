@@ -1,4 +1,4 @@
-import { newDateIndonesia } from "../Config/Constans.js";
+import { newDateIndonesia , formattedHour } from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { DateTime } from "luxon";
@@ -42,7 +42,7 @@ export const updateAbsensi = async (req, res) => {
   const batasMasuk = jamMasuk.getHours() + 2; // Waktu batas masuk (jamMasuk + 2 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = newDateIndonesia.getHours(); // Jam sekarang (format 24 jam)
+  const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
   console.log("Jam Masuk Shift (Batas Akhir):", batasMasuk);
   console.log("Jam Sekarang:", currentHour);
 
@@ -130,7 +130,7 @@ export const absenPulang = async (req, res) => {
   const tenAM = jamPulang.getHours() + 2; // Waktu batas pulang (jamPulang + 1 jam)
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = newDateIndonesia.getHours(); // Jam sekarang (format 24 jam)
+  const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
   console.log("Jam Pulang Shift:", tenAM);
   console.log("Jam Sekarang:", currentHour);
 

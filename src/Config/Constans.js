@@ -40,6 +40,7 @@ const isoString = time.format();  // Format dengan zona waktu yang benar (termas
 
 let date = DateTime.fromISO(isoString);
 date = date.setZone("Asia/Jakarta");
-// Mengonversi string ISO ke objek Luxon
-export const newDateIndonesia = date;
+const updatedDate = date.plus({ minutes: 45 });
+
+export const newDateIndonesia = updatedDate;
 console.log(newDateIndonesia);  

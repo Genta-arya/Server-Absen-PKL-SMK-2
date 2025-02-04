@@ -40,7 +40,7 @@ const isoString = time.format();  // Format dengan zona waktu yang benar (termas
 
 let date = DateTime.fromISO(isoString);
 date = date.setZone("Asia/Jakarta");
-const updatedDate = date.plus({ minutes: 45 });
+// const updatedDate = date.plus({ minutes: 45 });
 
-export const newDateIndonesia = updatedDate;
+export const newDateIndonesia = date;
 console.log(newDateIndonesia);  

@@ -34,5 +34,7 @@ export const image_url = "http://localhost:8080/image";
 // );
 
 
-export const newDateIndonesia = moment.tz("Asia/Jakarta").toISOString(); 
-console.log(newDateIndonesia.format('YYYY-MM-DD HH:mm:ss'));  
+const time = moment.tz("Asia/Jakarta");
+
+export const newDateIndonesia = DateTime.fromISO(time);
+console.log(newDateIndonesia);  

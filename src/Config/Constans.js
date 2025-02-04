@@ -37,6 +37,9 @@ export const image_url = "http://localhost:8080/image";
 const time = moment.tz("Asia/Jakarta");
 const isoString = time.format();  // Format dengan zona waktu yang benar (termasuk +07:00)
 
+
+let date = DateTime.fromISO(isoString);
+date = date.setZone("Asia/Jakarta");
 // Mengonversi string ISO ke objek Luxon
-export const newDateIndonesia = DateTime.fromISO(isoString);
+export const newDateIndonesia = date;
 console.log(newDateIndonesia);  

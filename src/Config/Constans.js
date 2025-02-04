@@ -1,6 +1,6 @@
 
 import { DateTime } from "luxon";
-
+import moment from 'moment-timezone';
 export const image_url = "http://localhost:8080/image";
 
 // // Dapatkan waktu saat ini dalam zona waktu Indonesia (WIB, UTC+7)
@@ -34,8 +34,5 @@ export const image_url = "http://localhost:8080/image";
 // );
 
 
-
-export const newDateIndonesia = DateTime.now().setZone("Asia/Jakarta");
-
-// Tampilkan waktu dalam format lokal Indonesia
-console.log(newDateIndonesia.toFormat("yyyy-MM-dd HH:mm:ss"));
+const newDateIndonesia = moment.tz("Asia/Jakarta");
+console.log(newDateIndonesia.format('YYYY-MM-DD HH:mm:ss'));  

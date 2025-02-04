@@ -36,5 +36,5 @@ export const image_url = "http://localhost:8080/image";
 
 const time = moment.tz("Asia/Jakarta");
 
-export const newDateIndonesia = DateTime.fromISO(time);
+export const newDateIndonesia = DateTime.fromISO(time.toISOString());
 console.log(newDateIndonesia);  

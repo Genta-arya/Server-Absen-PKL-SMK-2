@@ -35,7 +35,7 @@ export const image_url = "http://localhost:8080/image";
 
 
 
-const newDateIndonesia = DateTime.now().setZone("Asia/Jakarta");
+export const newDateIndonesia = DateTime.now().setZone("Asia/Jakarta");
 
 // Tampilkan waktu dalam format lokal Indonesia
 console.log(newDateIndonesia.toFormat("yyyy-MM-dd HH:mm:ss"));

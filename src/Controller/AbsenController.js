@@ -197,7 +197,7 @@ export const updateStatusCron = async (req, res) => {
   try {
     // Mendapatkan waktu Indonesia (Asia/Jakarta) dan set ke jam 00:00:00
     const currentDate = DateTime.now().setZone("Asia/Jakarta").startOf("day");
-    console.log("Current Date (Indonesia Time):", currentDate.toISODate());
+    // console.log("Current Date (Indonesia Time):", currentDate.toISODate());
 
     // Mengambil data absensi yang tanggalnya sudah lewat
     const data = await prisma.absensi.findMany({

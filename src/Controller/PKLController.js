@@ -2,6 +2,7 @@ import { prisma } from "../Config/Prisma.js";
 import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { sendNotificationEmail } from "./EmailController.js";
+import { DateTime } from "luxon";
 
 const BATCH_SIZE = 50;
 
@@ -225,7 +226,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     });
 
     const emails = emailList.map((user) => user.email);
-    // ambil data user pkl yg baru dibuat 
+    // ambil data user pkl yg baru dibuat
 
     const pklData = await prisma.pkl.findFirst({
       where: {
@@ -258,13 +259,18 @@ export const createPKLWithAbsensi = async (req, res) => {
           year: "numeric", // Tahun (2025, 2026, ...)
         }).format(new Date(tanggal));
       };
-      
+
       // Contoh penggunaan
       const tanggalMulai = formatTanggal(pklData.tanggal_mulai);
       const tanggalSelesai = formatTanggal(pklData.tanggal_selesai);
-    
+
       // Kirim email
-      sendNotificationEmail(emails, { pklname, creatorName, tanggalMulai, tanggalSelesai });
+      sendNotificationEmail(emails, {
+        pklname,
+        creatorName,
+        tanggalMulai,
+        tanggalSelesai,
+      });
     }
 
     return sendResponse(
@@ -792,15 +798,9 @@ export const getAnggotaPkl = async (req, res) => {
 export const updateStatusPKLCron = async (req, res) => {
   try {
     // Mendapatkan waktu Indonesia
-    const newDateIndonesia = new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta",
-      hour12: false,
-    });
-
-    const currentDate = new Date(newDateIndonesia);
-    currentDate.setHours(0, 0, 0, 0);
-    console.log("Current Date (Indonesia Time):", currentDate);
-
+    const newDateIndonesia = DateTime.now()
+      .setZone("Asia/Jakarta")
+      .startOf("day");
     // Mengambil data absensi yang tanggalnya sudah lewat
     const data = await prisma.pkl.findMany({
       where: {
@@ -810,7 +810,7 @@ export const updateStatusPKLCron = async (req, res) => {
           },
           {
             tanggal_selesai: {
-              lt: currentDate, // Ambil data dengan tanggal_selesai sebelum hari ini
+              lt: newDateIndonesia.toJSDate(), // Ambil data dengan tanggal_selesai sebelum hari ini
             },
           },
         ],

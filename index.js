@@ -217,6 +217,25 @@ cron.schedule("0 * * * *", async () => {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }
 });
+cron.schedule("*/1 * * * * *", async () => { // Menjadwalkan setiap detik
+  try {
+    console.log("Menjalankan cron job setiap detik...");
+
+    // Menjalankan updateStatusCron setiap 2 detik
+    const interval = setInterval(async () => {
+      console.log("Menjalankan updateStatusCron dan updateStatusPKLCron setiap 2 detik...");
+
+      await updateStatusCron();
+      await updateStatusPKLCron();
+
+      // Setelah menjalankan 5 kali (misalnya), stop interval
+      // Kamu bisa menyesuaikan jumlah iterasi sesuai kebutuhan
+      clearInterval(interval); // Stop interval setelah selesai
+    }, 2000); // 2000ms = 2 detik
+  } catch (error) {
+    console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+  }
+});
 
 // cron.schedule('* * * * *', async () => {
 //   try {

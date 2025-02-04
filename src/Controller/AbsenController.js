@@ -1,7 +1,7 @@
 import { newDateIndonesia } from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
-
+import { DateTime } from "luxon";
 export const updateAbsensi = async (req, res) => {
   const { id } = req.params;
   const { jam_masuk, gps, posisi, foto } = req.body;
@@ -30,20 +30,6 @@ export const updateAbsensi = async (req, res) => {
   if (!exits) {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
-
-  // const newDateIndonesia = new Date().toLocaleString("en-US", {
-  //   timeZone: "Asia/Jakarta",
-  //   hour12: false,
-  // });
-  // const currentDate = new Date(newDateIndonesia);
-  // const jamMasuk = new Date(exits.shift.jamMasuk);
-
-  // const tenAM = jamMasuk.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
-
-  // // Ambil jam dari currentDate untuk perbandingan
-  // const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
-  // console.log("Jam Masuk Shift:", tenAM);
-  // console.log("Jam Sekarang:", currentHour);
 
   // Ambil jamMasuk dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamMasuk = new Date(newDateIndonesia);
@@ -123,29 +109,6 @@ export const absenPulang = async (req, res) => {
   if (!exits) {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
-
-  // const newDateIndonesia = new Date().toLocaleString("en-US", {
-  //   timeZone: "Asia/Jakarta",
-  //   hour12: false,
-  // });
-  // const currentDate = new Date(newDateIndonesia); // Waktu saat ini di Jakarta (UTC+7)
-
-  // // Ambil jamPulalng dan konversi ke Date object
-  // const jamPulang = new Date(exits.shift.jamPulang); // Pastikan jamPulang dalam format yang benar
-
-  // // Ambil jam dari jamPulang untuk dibandingkan
-  // const tenAM = jamPulang.getHours() + 2; // Mendapatkan jam dari jamPulang (format 24 jam)
-
-  // // Ambil jam dari currentDate untuk perbandingan
-  // const currentHour = currentDate.getHours(); // Jam sekarang (format 24 jam)
-  // console.log("Jam Pulang Shift:", tenAM);
-  // console.log("Jam Sekarang:", currentHour);
-  // // Cek apakah jam absen pulang telah lewat
-  // if (currentHour > tenAM) {
-  //   console.log("Jam Pulang Shift:", tenAM);
-  //   console.log("Jam Sekarang:", currentHour);
-  //   return sendResponse(res, 400, "Jam absen Pulang telah lewat");
-  // }
 
 
 
@@ -228,24 +191,20 @@ export const getDataAbsen = async (req, res) => {
     sendError(res, error);
   }
 };
+
+
 export const updateStatusCron = async (req, res) => {
   try {
-    // Mendapatkan waktu Indonesia
-    const newDateIndonesia = new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta",
-      hour12: false,
-    });
-
-    const currentDate = new Date(newDateIndonesia);
-    currentDate.setHours(0, 0, 0, 0);
-    console.log("Current Date (Indonesia Time):", currentDate);
+    // Mendapatkan waktu Indonesia (Asia/Jakarta) dan set ke jam 00:00:00
+    const currentDate = DateTime.now().setZone("Asia/Jakarta").startOf("day");
+    console.log("Current Date (Indonesia Time):", currentDate.toISODate());
 
     // Mengambil data absensi yang tanggalnya sudah lewat
     const data = await prisma.absensi.findMany({
       where: {
         OR: [{ isDelete: false }, { isDelete: null }],
         tanggal: {
-          lt: currentDate, // hanya ambil data dengan tanggal sebelum hari ini
+          lt: currentDate.toJSDate(), // Konversi ke format Date untuk Prisma
         },
         hadir: null,
         OR: [{ pulang: null }, { datang: null }],
@@ -261,7 +220,7 @@ export const updateStatusCron = async (req, res) => {
       await prisma.absensi.updateMany({
         where: {
           id: {
-            in: data.map((item) => item.id), // Menggunakan ID data yang sudah diambil
+            in: data.map((item) => item.id),
           },
         },
         data: {
@@ -278,5 +237,78 @@ export const updateStatusCron = async (req, res) => {
     }
   } catch (error) {
     console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
+    res.status(500).json({ error: "Gagal memperbarui status absensi." });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// export const updateStatusCron = async (req, res) => {
+//   try {
+//     // Mendapatkan waktu Indonesia
+//     const newDateIndonesia = new Date().toLocaleString("en-US", {
+//       timeZone: "Asia/Jakarta",
+//       hour12: false,
+//     });
+
+//     const currentDate = new Date(newDateIndonesia);
+//     currentDate.setHours(0, 0, 0, 0);
+//     console.log("Current Date (Indonesia Time):", currentDate);
+
+//     // Mengambil data absensi yang tanggalnya sudah lewat
+//     const data = await prisma.absensi.findMany({
+//       where: {
+//         OR: [{ isDelete: false }, { isDelete: null }],
+//         tanggal: {
+//           lt: currentDate, // hanya ambil data dengan tanggal sebelum hari ini
+//         },
+//         hadir: null,
+//         OR: [{ pulang: null }, { datang: null }],
+//       },
+//     });
+
+//     console.log("Data absensi yang ditemukan:", data);
+
+//     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+//     if (data.length > 0) {
+//       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+
+//       await prisma.absensi.updateMany({
+//         where: {
+//           id: {
+//             in: data.map((item) => item.id), // Menggunakan ID data yang sudah diambil
+//           },
+//         },
+//         data: {
+//           hadir: "tidak_hadir",
+//         },
+//       });
+
+//       console.log(
+//         "Status hadir berhasil diupdate menjadi 'tidak_hadir' untuk absensi dengan ID:",
+//         data.map((item) => item.id)
+//       );
+//     } else {
+//       console.log("Tidak ada absensi yang perlu diperbarui.");
+//     }
+//   } catch (error) {
+//     console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
+//   }
+// };

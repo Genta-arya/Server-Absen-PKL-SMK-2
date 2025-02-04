@@ -34,5 +34,5 @@ export const image_url = "http://localhost:8080/image";
 // );
 
 
-const newDateIndonesia = moment.tz("Asia/Jakarta");
+export const newDateIndonesia = moment.tz("Asia/Jakarta");
 console.log(newDateIndonesia.format('YYYY-MM-DD HH:mm:ss'));  

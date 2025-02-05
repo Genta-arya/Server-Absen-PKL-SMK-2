@@ -4,7 +4,10 @@ import cors from "cors";
 import { AuthRoutes } from "./src/Routes/AuthRoutes.js";
 import { PKLRoutes } from "./src/Routes/PKLRoutes.js";
 import cron from "node-cron";
-import { deleteAllPkl, updateStatusPKLCron } from "./src/Controller/PKLController.js";
+import {
+  deleteAllPkl,
+  updateStatusPKLCron,
+} from "./src/Controller/PKLController.js";
 import { Server as SocketIOServer } from "socket.io";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
@@ -19,158 +22,54 @@ import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
 import { updateStatusCron } from "./src/Controller/AbsenController.js";
 import { LaporanRoutes } from "./src/Routes/LaporanRoutes.js";
+
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import hpp from "hpp";
+import mongoSanitize from "express-mongo-sanitize";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 const httpServer = createServer(app);
 
-// const transporter = nodemailer.createTransport({
-//   service: "SMTP",
-//   host: "mail.mgentaarya.my.id",
-//   port: 465,
-//   secure: true, // menggunakan SSL
-//   auth: {
-//     user: "admin@mgentaarya.my.id",
-//     pass: "Genta@456", // Gantilah dengan password email Anda
-//   },
-// });
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    referrerPolicy: { policy: "no-referrer" },
+  })
+);
+app.use(
+  hpp({
+    checkBody: true,
+    checkQuery: true,
+    checkBodyOnlyForContentTypes: [
+      "application/json",
+      "application/x-www-form-urlencoded",
+    ],
+    whitelist: ["Content-Type", "Authorization"],
+  })
+);
+app.use(mongoSanitize({
+  replaceWith: "_",
+}));
 
-
-// const db = mysql.createConnection({
-//   host: "amplangema.my.id",
-//   port: 3306,
-//   user: "afyungs2_siakel", // Ganti dengan username MySQL Anda
-//   password: "Genta456", // Ganti dengan password MySQL Anda
-//   database: "afyungs2_siakel", // Ganti dengan nama database Anda
-// });
-
-// db.connect((err) => {
-//   if (err) {
-//     console.error("Koneksi database gagal:", err);
-//   } else {
-//     console.log("Terhubung ke database.");
-//   }
-// });
-// const BATCH_SIZE = 100;
-
-// const processBatch = async (batch) => {
-//   const hashedBatch = await Promise.all(
-//     batch.map(async (row) => {
-//       const hashedPassword = await bcrypt.hash(row.nim, 10);
-//       return [uuidv4(), row.nim, row.name, hashedPassword, "user"];
-//     })
-//   );
-//   return hashedBatch;
-// };
-
-// Fungsi untuk memeriksa dan membuat kelas jika belum ada
-// const findOrCreateKelas = async (kelasNama) => {
-//   // Cari kelas berdasarkan nama
-//   let kelas = await prisma.kelas.findFirst({
-//     where: {
-//       nama: kelasNama,
-//     },
-//   });
-
-//   // Jika kelas tidak ada, buat kelas baru
-//   if (!kelas) {
-//     kelas = await prisma.kelas.create({
-//       data: {
-//         nama: kelasNama,
-//       },
-//     });
-//     console.log(`Kelas ${kelasNama} berhasil dibuat.`);
-//   } else {
-//     console.log(`Kelas ${kelasNama} sudah ada.`);
-//   }
-
-//   return kelas;
-// };
-
-// // Fungsi untuk mengimpor CSV dan menambahkan kelas
-// const importCsvToDatabase = async (filePath) => {
-//   const users = [];
-//   const promises = [];
-
-//   const stream = createReadStream(filePath).pipe(csv({ separator: ";" }));
-
-//   for await (const row of stream) {
-//     const userId = uuidv4();
-//     const nim = row.nim;
-//     const name = row.name;
-//     const kelas = row.kelas;
-
-//     // Cek apakah kelas sudah ada
-//     const kelasData = await findOrCreateKelas(kelas);
-
-//     // Hash password jika perlu
-//     const hashedPassword = await bcrypt.hash(nim, 10);
-
-//     // Buat user
-//     const userData = {
-//       id: userId,
-//       nim: nim,
-//       name: name,
-//       password: hashedPassword,
-//       role: "user",
-//     };
-
-//     // Tambahkan user ke array
-//     users.push(userData);
-
-//     // Simpan relasi antara user dan kelas
-//     promises.push(
-//       prisma.user.upsert({
-//         where: { nim: nim }, // Upsert berdasarkan nim agar tidak duplikat
-//         update: {},
-//         create: userData,
-//       }).then((user) => {
-//         return prisma.kelas.update({
-//           where: { id: kelasData.id },
-//           data: {
-//             users: {
-//               connect: { id: user.id },
-//             },
-//           },
-//         });
-//       })
-//     );
-//   }
-
-//   // Tunggu semua promise selesai
-//   await Promise.all(promises);
-
-//   console.log("CSV berhasil diimpor. Data telah ditambahkan.");
-// };
-
-// Import CSV
-
-// const filePath = path.join(path.resolve(), "Public", "CSV", "Data.csv");
-// if (fs.existsSync(filePath)) {
-//   console.log("File CSV ditemukan. Memulai impor data...");
-//   importCsvToDatabase(filePath);
-// } else {
-//   console.error("File CSV tidak ditemukan. Proses impor dibatalkan.");
-// }
-
-// cron.schedule("*/10 * * * * *", () => {
-//   console.log("Sending email every 10 seconds...");
-//   sendEmail(["mgentaarya@gmail.com"], "Test Email");
-// });
-
-
-
-// export const io = new SocketIOServer(httpServer, {
-//   cors: {
-//     origin: allowedOrigins,
-//     methods: ["GET", "POST"],
-//     credentials: true,
-//   },
-// });
-
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 150,
+  message: "Terlalu banyak permintaan, coba lagi nanti",
+  statusCode: 403,
+});
 
 // Middleware
+app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 app.use(express.urlencoded({ limit: "150mb", extended: true }));
 const allowedOrigins = [
@@ -217,41 +116,7 @@ cron.schedule("0 * * * *", async () => {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }
 });
-// cron.schedule("*/1 * * * * *", async () => { // Menjadwalkan setiap detik
-//   try {
-//     console.log("Menjalankan cron job setiap detik...");
 
-//     // Menjalankan updateStatusCron setiap 2 detik
-//     const interval = setInterval(async () => {
-//       console.log("Menjalankan updateStatusCron dan updateStatusPKLCron setiap 2 detik...");
-
-//       await updateStatusCron();
-//       await updateStatusPKLCron();
-
-//       // Setelah menjalankan 5 kali (misalnya), stop interval
-//       // Kamu bisa menyesuaikan jumlah iterasi sesuai kebutuhan
-//       clearInterval(interval); // Stop interval setelah selesai
-//     }, 2000); // 2000ms = 2 detik
-//   } catch (error) {
-//     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
-//   }
-// });
-
-// cron.schedule('* * * * *', async () => {
-//   try {
-//     console.log("Menjalankan cron job updateStatusCron...");
-//     // Panggil fungsi pada 0 detik
-//     await updateStatusCron();
-
-//     // Panggil fungsi pada 20 detik
-//     setTimeout(async () => await updateStatusCron(), 10000); // 20 detik
-
-//     // Panggil fungsi pada 40 detik
-//     setTimeout(async () => await updateStatusCron(), 20000); // 40 detik
-//   } catch (error) {
-//     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
-//   }
-// });
 // Endpoints
 app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);
@@ -259,25 +124,7 @@ app.use("/api/absensi", AbsensRoutes);
 app.use("/api/report", LaporanRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 
-// Realtime notification
-// io.on("connection", (socket) => {
-//   // console.log("A user connected");
-//   socket.on("joinRoom", (userId) => {
-//     socket.join(userId);
-//     console.log(`User dengan ID ${userId} bergabung ke room`);
-//   });
-
-//   socket.on("ping", (timestamp) => {
-//     // Mengirimkan kembali waktu respons
-//     console.log("Pong received:", timestamp);
-//     socket.emit("pong", timestamp);
-//   });
-
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected");
-//   });
-// });
-app.get("/api/connection", (req, res) => { 
+app.get("/api/connection", (req, res) => {
   const timestamp = Date.now();
   res.json({ timestamp });
 });

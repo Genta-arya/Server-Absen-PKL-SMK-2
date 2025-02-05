@@ -1,4 +1,8 @@
-import { newDateIndonesia , formattedHour } from "../Config/Constans.js";
+import {
+  newDateIndonesia,
+  formattedHour,
+  getTimeInJakarta,
+} from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { DateTime } from "luxon";
@@ -30,6 +34,8 @@ export const updateAbsensi = async (req, res) => {
   if (!exits) {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
+
+  await getTimeInJakarta();
 
   // Ambil jamMasuk dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamMasuk = new Date(newDateIndonesia);
@@ -110,7 +116,7 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-
+  await getTimeInJakarta();
 
   console.log("Waktu Indonesia saat ini:", newDateIndonesia);
 
@@ -192,7 +198,6 @@ export const getDataAbsen = async (req, res) => {
   }
 };
 
-
 export const updateStatusCron = async (req, res) => {
   try {
     // Mendapatkan waktu Indonesia (Asia/Jakarta) dan set ke jam 00:00:00
@@ -240,25 +245,6 @@ export const updateStatusCron = async (req, res) => {
     res.status(500).json({ error: "Gagal memperbarui status absensi." });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // export const updateStatusCron = async (req, res) => {
 //   try {

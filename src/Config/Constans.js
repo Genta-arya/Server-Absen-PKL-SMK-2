@@ -17,38 +17,70 @@ export let formattedHour;
 export let newDateIndonesia;
 
 export const getTimeInJakarta = async () => {
-  try {
-    const apiKey = "9DYFOGZS7MVB"; // Ganti dengan API key dari TimeZoneDB
-    const response = await axios.get(
-      `http://api.timezonedb.com/v2.1/get-time-zone`,
-      {
-        params: {
-          key: apiKey,
-          format: "json",
-          by: "zone",
-          zone: "Asia/Jakarta",
-        },
+    try {
+      const apiKey = "9DYFOGZS7MVB"; // Kunci API pertama
+      const response = await axios.get(
+        `http://api.timezonedb.com/v2.1/get-time-zone`,
+        {
+          params: {
+            key: apiKey,
+            format: "json",
+            by: "zone",
+            zone: "Asia/Jakarta",
+          },
+        }
+      );
+  
+      const jakartaTime = response.data.formatted;
+  
+      const time = moment.tz(jakartaTime, "Asia/Jakarta");
+      const isoString = time.format();
+  
+      let date = DateTime.fromISO(isoString);
+      date = date.setZone("Asia/Jakarta");
+  
+      formattedHour = date.toJSDate();
+  
+      newDateIndonesia = date;
+  
+      console.log(newDateIndonesia);
+    } catch (error) {
+      console.error("Error with the first API key:", error);
+      
+      // Coba API key kedua jika yang pertama gagal
+      try {
+        const apiKey = "SGHKJRN8UKM4"; // Ganti dengan kunci API yang berbeda
+        const response = await axios.get(
+          `http://api.timezonedb.com/v2.1/get-time-zone`,
+          {
+            params: {
+              key: apiKey,
+              format: "json",
+              by: "zone",
+              zone: "Asia/Jakarta",
+            },
+          }
+        );
+  
+        const jakartaTime = response.data.formatted;
+  
+        const time = moment.tz(jakartaTime, "Asia/Jakarta");
+        const isoString = time.format();
+  
+        let date = DateTime.fromISO(isoString);
+        date = date.setZone("Asia/Jakarta");
+  
+        formattedHour = date.toJSDate();
+  
+        newDateIndonesia = date;
+  
+        console.log(newDateIndonesia);
+      } catch (secondError) {
+        console.error("Error with the second API key:", secondError);
       }
-    );
-
-    const jakartaTime = response.data.formatted;
-
-    const time = moment.tz(jakartaTime, "Asia/Jakarta");
-    const isoString = time.format();
-
-    let date = DateTime.fromISO(isoString);
-    date = date.setZone("Asia/Jakarta");
-
-    formattedHour = date.toJSDate();
-
-    newDateIndonesia = date;
-
-    console.log(newDateIndonesia);
-  } catch (error) {
-    console.error("Terjadi kesalahan saat mengambil waktu:", error);
-  }
-};
-
+    }
+  };
+  
 // // Dapatkan waktu saat ini dalam zona waktu Indonesia (WIB, UTC+7)
 // const currentDate = new Date();
 // const formatter = new Intl.DateTimeFormat("en-US", {

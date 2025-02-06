@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  // provider          = "mysql"
-  provider = "postgresql"
+  provider          = "mysql"
+  // provider = "postgresql"
   url      = env("DATABASE_URL")
  
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
@@ -34,6 +34,7 @@ model User {
   Absensi      Absensi[]
   shifts       Shift[]   @relation("UserShift")
   laporan      Laporan[] @relation("UserLaporan")
+  laporan_mingguan LaporanMingguan[] @relation("UserLaporanMingguan")
 }
 
 model Shift {
@@ -51,7 +52,9 @@ model Shift {
 model Foto_laporan {
   id         String   @id @default(uuid())
   laporan_id String
+  laporan_mingguan_id String
   laporan    Laporan? @relation("LaporanFoto", fields: [laporan_id], references: [id], onDelete: Cascade)
+  laporan_mingguan LaporanMingguan? @relation("LaporanMingguanFoto", fields: [laporan_mingguan_id], references: [id], onDelete: Cascade)
   foto_url   String
 }
 
@@ -65,6 +68,7 @@ model Pkl {
   absensi         Absensi[] @relation("PklAbsensi")
   shifts          Shift[]   @relation("PklShift")
   laporan         Laporan[] @relation("PklLaporan")
+  laporan_mingguan LaporanMingguan[] @relation("PklLaporanMingguan")
   isDelete        Boolean?  @default(false)
   link_grup       String?
   tanggal_mulai   DateTime?
@@ -94,13 +98,39 @@ model Laporan {
   status Boolean?
 }
 
+
+model LaporanMingguan {
+  id        String   @id @default(uuid())
+  pkl_id    String
+  pkl       Pkl?     @relation("PklLaporanMingguan", fields: [pkl_id], references: [id], onDelete: Cascade)
+  user_id   String
+  pembimbingId String?
+  user      User?    @relation("UserLaporanMingguan", fields: [user_id], references: [id], onDelete: Cascade)
+  absensi   Absensi? @relation(fields: [absensi_id], references: [id])
+  absensi_id String?
+  fotos     Foto_laporan[] @relation("LaporanMingguanFoto")
+ 
+  nama_instruktur      String?
+  nama_pekerjaan String?
+  catatan String?
+  status    Boolean?
+  status_selesai String @default("Belum")
+  createdAt DateTime  @default(now())
+}
+
+
+
+
+
+
+
 model Absensi {
   id       String  @id @default(uuid())
   pkl_id   String
   pkl      Pkl?    @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
   shift_id String?
   shift    Shift?  @relation(fields: [shift_id], references: [id])
-
+  laporan_mingguan LaporanMingguan[]
   isDelete Boolean?
   user_id  String
   user     User?     @relation(fields: [user_id], references: [id])

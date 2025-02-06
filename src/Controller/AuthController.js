@@ -1,4 +1,8 @@
-import { getTimeInJakarta, image_url, newDateIndonesia } from "../Config/Constans.js";
+import {
+  getTimeInJakarta,
+  image_url,
+  newDateIndonesia,
+} from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
 import { createToken, JWT_SECRET } from "../Library/CreateToken.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
@@ -153,7 +157,7 @@ export const checkLogin = async (req, res) => {
       },
     });
 
-    console.log(getID_PKL.id);
+
     const findUser = await prisma.user.findFirst({
       where: { token },
       select: {
@@ -208,20 +212,15 @@ export const checkLogin = async (req, res) => {
       },
     });
     jwt.verify(token, JWT_SECRET);
-    await getTimeInJakarta(); 
-  
+    await getTimeInJakarta();
 
-    // Mengonversi string tanggal dan waktu menjadi objek Date
     const dateIndonesia = new Date(newDateIndonesia);
 
-    // Menambahkan offset zona waktu Jakarta (UTC+7), jika diperlukan
-    const jakartaOffset = 7 * 60 * 60 * 1000; // UTC+7 dalam milidetik
+    const jakartaOffset = 7 * 60 * 60 * 1000;
     const adjustedDate = new Date(dateIndonesia.getTime() + jakartaOffset);
 
-    // Mengonversi menjadi ISO dan mengambil tanggal saja (YYYY-MM-DD)
     const isoDateIndonesia = adjustedDate.toISOString().split("T")[0];
 
-    // findUser.Absensi = absensi;
     findUser.DateIndonesia = newDateIndonesia;
     findUser.tanggal = isoDateIndonesia;
 
@@ -329,9 +328,8 @@ export const getUserByRole = async (req, res) => {
           select: {
             id: true,
             nama: true,
-            
-          }
-        }
+          },
+        },
       },
     });
     if (!exitsUser) {
@@ -382,6 +380,10 @@ export const updatePasswordUser = async (req, res) => {
     sendError(res, error);
   }
 };
+
+
+
+
 
 // export const updateFotoProfile = async (req, res) => {
 //   const { id } = req.params;

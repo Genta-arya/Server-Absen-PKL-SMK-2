@@ -183,6 +183,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     const absensiBaru = await prisma.absensi.findMany({
       where: {
         user_id: { in: absensiData.map((a) => a.user_id) },
+        pkl_id: { in: absensiData.map((a) => a.pkl_id) },
         tanggal: { in: absensiData.map((a) => a.tanggal) },
       },
     });
@@ -211,10 +212,37 @@ export const createPKLWithAbsensi = async (req, res) => {
       laporanPromises.push(prisma.laporan.createMany({ data: batch }));
     }
     await Promise.all(laporanPromises);
+    const lengthAbsensi = absensiBaru.length;
+    const jumlahMinggu = Math.ceil(lengthAbsensi / 7); // Pembagian jumlah absensi per 7 hari = jumlah minggu
 
-    console.log("Absensi dan laporan berhasil dibuat!");
+    console.log(`Jumlah minggu: ${jumlahMinggu}`);
 
-    // Notifikasi email ke siswa
+    // Membuat laporan mingguan sesuai dengan jumlah minggu
+    const laporanMingguanPromises = [];
+    for (let i = 0; i < jumlahMinggu; i++) {
+      const startIndex = i * 7;
+      const endIndex = Math.min((i + 1) * 7, lengthAbsensi);
+
+      const mingguAbsensi = absensiBaru.slice(startIndex, endIndex);
+     
+
+      laporanMingguanPromises.push(
+        prisma.laporanMingguan.create({
+          data: {
+           
+            pkl_id: newPkl.id,
+            absensi_id : absensiBaru[0]?.id ?? "unknown_absensi",
+            user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
+            pembimbingId: creatorId,
+            status_selesai: "Belum",
+            status: true,
+          },
+        })
+      );
+    }
+
+    // Tunggu hingga semua laporan mingguan selesai dibuat
+    await Promise.all(laporanMingguanPromises);
 
     const emailList = await prisma.user.findMany({
       where: {

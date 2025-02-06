@@ -171,7 +171,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     });
 
     // Masukkan absensi ke dalam database
-    const BATCH_SIZE = 1000; // Atur ukuran batch untuk efisiensi
+    const BATCH_SIZE = 1000;
     const batchPromises = [];
     for (let i = 0; i < absensiData.length; i += BATCH_SIZE) {
       const batch = absensiData.slice(i, i + BATCH_SIZE);
@@ -215,8 +215,6 @@ export const createPKLWithAbsensi = async (req, res) => {
     const lengthAbsensi = absensiBaru.length;
     const jumlahMinggu = Math.ceil(lengthAbsensi / 7); // Pembagian jumlah absensi per 7 hari = jumlah minggu
 
-    console.log(`Jumlah minggu: ${jumlahMinggu}`);
-
     // Membuat laporan mingguan sesuai dengan jumlah minggu
     const laporanMingguanPromises = [];
     for (let i = 0; i < jumlahMinggu; i++) {
@@ -224,14 +222,12 @@ export const createPKLWithAbsensi = async (req, res) => {
       const endIndex = Math.min((i + 1) * 7, lengthAbsensi);
 
       const mingguAbsensi = absensiBaru.slice(startIndex, endIndex);
-     
 
       laporanMingguanPromises.push(
         prisma.laporanMingguan.create({
           data: {
-           
             pkl_id: newPkl.id,
-            absensi_id : absensiBaru[0]?.id ?? "unknown_absensi",
+            absensi_id: absensiBaru[0]?.id ?? "unknown_absensi",
             user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
             pembimbingId: creatorId,
             status_selesai: "Belum",
@@ -438,6 +434,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
     const absensiBaru = await prisma.absensi.findMany({
       where: {
         user_id: { in: absensiData.map((a) => a.user_id) },
+        pkl_id: { in: absensiData.map((a) => a.pkl_id) },
         tanggal: { in: absensiData.map((a) => a.tanggal) },
       },
     });
@@ -445,6 +442,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
     const findCreator = await prisma.pkl.findFirst({
       where: {
         id: pkl_id,
+      
       },
     });
 
@@ -472,6 +470,34 @@ export const addSiswaToExistingPKL = async (req, res) => {
       laporanPromises.push(prisma.laporan.createMany({ data: batch }));
     }
     await Promise.all(laporanPromises);
+
+    const lengthAbsensi = absensiBaru.length;
+    const jumlahMinggu = Math.ceil(lengthAbsensi / 7); // Pembagian jumlah absensi per 7 hari = jumlah minggu
+
+    // Membuat laporan mingguan sesuai dengan jumlah minggu
+    const laporanMingguanPromises = [];
+    for (let i = 0; i < jumlahMinggu; i++) {
+      const startIndex = i * 7;
+      const endIndex = Math.min((i + 1) * 7, lengthAbsensi);
+
+      const mingguAbsensi = absensiBaru.slice(startIndex, endIndex);
+
+      laporanMingguanPromises.push(
+        prisma.laporanMingguan.create({
+          data: {
+            pkl_id: pkl_id ?? "unknown_pkl",
+            absensi_id: absensiBaru[0]?.id ?? "unknown_absensi",
+            user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
+            pembimbingId: findCreator.creatorId ?? "default_pembimbing",
+            status_selesai: "Belum",
+            status: true,
+          },
+        })
+      );
+    }
+
+    // Tunggu hingga semua laporan mingguan selesai dibuat
+    await Promise.all(laporanMingguanPromises);
 
     // Hubungkan semua user ke PKL
     await prisma.pkl.update({

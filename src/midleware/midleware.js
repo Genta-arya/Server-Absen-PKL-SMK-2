@@ -9,7 +9,7 @@ export const middleware = async (req, res, next) => {
 
   // Periksa apakah header Authorization ada dan formatnya benar
   if (!authHeader || !authHeader.startsWith("Bearer")) {
-    return sendResponse(res, 403, "Authorization header missing or invalid");
+    return sendResponse(res, 403, "Silahkan login terlebih dahulu");
   }
 
   // Ambil token dari header

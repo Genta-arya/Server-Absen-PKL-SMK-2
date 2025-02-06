@@ -225,7 +225,7 @@ export const checkLogin = async (req, res) => {
     findUser.tanggal = isoDateIndonesia;
 
     if (!findUser) {
-      return sendResponse(res, 409, "User tidak ditemukan");
+      return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
 
     return sendResponse(res, 200, "User ditemukan", findUser);

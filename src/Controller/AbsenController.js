@@ -35,7 +35,7 @@ export const updateAbsensi = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  // await getTimeInJakarta();
+  await getTimeInJakarta();
 
   // Ambil jamMasuk dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamMasuk = new Date(newDateIndonesia);
@@ -116,7 +116,7 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  // await getTimeInJakarta();
+  await getTimeInJakarta();
 
   console.log("Waktu Indonesia saat ini:", newDateIndonesia);
 

@@ -128,7 +128,7 @@ export const handleLogin = async (req, res) => {
 
     res.cookie("token", getUser.token, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
       secure: true,
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     });
@@ -236,7 +236,7 @@ export const checkLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
       secure: true,
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     });

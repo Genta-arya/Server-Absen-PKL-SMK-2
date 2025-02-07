@@ -10,6 +10,7 @@ import { isValidRole } from "../Utils/Role.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import { CreateCookie } from "../Config/Cookie.js";
 
 export const handleRegister = async (req, res) => {
   const { nim, password, role, name } = req.body;
@@ -126,12 +127,7 @@ export const handleLogin = async (req, res) => {
       },
     });
 
-    res.cookie("token", getUser.token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    });
+    CreateCookie(res, getUser.token);
 
     return sendResponse(res, 200, "Login berhasil", getUser);
   } catch (error) {
@@ -140,7 +136,6 @@ export const handleLogin = async (req, res) => {
 };
 
 export const checkLogin = async (req, res) => {
- 
   const token = req.cookies.token;
 
   if (!token || typeof token !== "string" || token.trim() === "") {
@@ -234,12 +229,7 @@ export const checkLogin = async (req, res) => {
       return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    });
+    CreateCookie(res, token);
 
     return sendResponse(res, 200, "User ditemukan", findUser);
   } catch (error) {

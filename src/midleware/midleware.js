@@ -7,6 +7,8 @@ export const middleware = async (req, res, next) => {
  
   const token = req.cookies.token; 
 
+  console.log(token);
+
 
   if (!token) {
     return sendResponse(res, 403, "Silahkan login terlebih dahulu");

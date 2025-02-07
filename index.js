@@ -8,7 +8,8 @@ import {
   deleteAllPkl,
   updateStatusPKLCron,
 } from "./src/Controller/PKLController.js";
-import { Server as SocketIOServer } from "socket.io";
+import csurf from "csurf";
+
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import fs from "fs";
@@ -27,6 +28,8 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
+import { csrfProtection } from "./src/Config/Cookie.js";
+
 dotenv.config();
 
 const app = express();
@@ -59,10 +62,13 @@ app.use(
     whitelist: ["Content-Type", "Authorization"],
   })
 );
-app.use(mongoSanitize({
-  replaceWith: "_",
-}));
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+  })
+);
 app.set("trust proxy", 1);
+
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 150,
@@ -73,13 +79,14 @@ const limiter = rateLimit({
 // Middleware
 app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
-app.use(express.urlencoded({ limit: "150mb", extended: true }));
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://siabsen.apiservices.my.id",
   "https://sipkl.smkn2ketapang.sch.id",
   "https://pkl.smkn2ketapang.sch.id",
 ];
+
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
@@ -96,7 +103,8 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: allowedOrigins,
-    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+    allowedHeaders: ["Content-Type", "Authorization", " X-CSRF-Token"],
     credentials: true,
   })
 );
@@ -119,6 +127,22 @@ cron.schedule("0 * * * *", async () => {
   }
 });
 
+app.use(csrfProtection);
+app.use((err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    return res.status(403).json({
+      status: 403,
+      message: "Sesi Anda telah habis.",
+    });
+  }
+  next(err);
+});
+
+app.get("/api/csrf-token", (req, res) => {
+  console.log(req.csrfToken());
+  res.json({ csrfToken: req.csrfToken() });
+});
+
 // Endpoints
 app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);
@@ -126,12 +150,13 @@ app.use("/api/absensi", AbsensRoutes);
 app.use("/api/report", LaporanRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 app.get("/api/get-token", (req, res) => {
-  const token = req.cookies.token; // Ambil cookie dari request
+  const token = req.cookies.token;
   if (!token) {
     return res.status(403).json({ message: "Silahkan login terlebih dahulu" });
   }
   res.json({ token });
 });
+
 app.get("/api/connection", (req, res) => {
   const timestamp = Date.now();
   res.json({ timestamp });

@@ -9,9 +9,8 @@ import { sendError, sendResponse } from "../Utils/Response.js";
 import { isValidRole } from "../Utils/Role.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import path from "path";
-import fs from "fs";
-import dayjs from "dayjs";
+import cookieParser from "cookie-parser";
+
 export const handleRegister = async (req, res) => {
   const { nim, password, role, name } = req.body;
   if (!nim) {
@@ -127,6 +126,13 @@ export const handleLogin = async (req, res) => {
       },
     });
 
+    res.cookie("token", getUser.token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    });
+
     return sendResponse(res, 200, "Login berhasil", getUser);
   } catch (error) {
     sendError(res, error);
@@ -134,7 +140,8 @@ export const handleLogin = async (req, res) => {
 };
 
 export const checkLogin = async (req, res) => {
-  const { token } = req.body;
+ 
+  const token = req.cookies.token;
 
   if (!token || typeof token !== "string" || token.trim() === "") {
     return sendResponse(res, 400, "Silahkan Login terlebih dahulu");
@@ -156,7 +163,6 @@ export const checkLogin = async (req, res) => {
         id: true,
       },
     });
-
 
     const findUser = await prisma.user.findFirst({
       where: { token },
@@ -228,6 +234,13 @@ export const checkLogin = async (req, res) => {
       return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    });
+
     return sendResponse(res, 200, "User ditemukan", findUser);
   } catch (error) {
     const findUsers = await prisma.user.findFirst({
@@ -237,7 +250,7 @@ export const checkLogin = async (req, res) => {
       },
     });
     if (!findUsers) {
-      return sendResponse(res, 409, "User tidak ditemukan");
+      return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
     if (error instanceof jwt.TokenExpiredError) {
       await prisma.user.update({
@@ -272,6 +285,12 @@ export const handleLogout = async (req, res) => {
     const resposen = await prisma.user.update({
       where: { id },
       data: { status_login: false, token: null },
+    });
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
     });
     return sendResponse(res, 200, "Logout berhasil", resposen);
   } catch (error) {
@@ -380,10 +399,6 @@ export const updatePasswordUser = async (req, res) => {
     sendError(res, error);
   }
 };
-
-
-
-
 
 // export const updateFotoProfile = async (req, res) => {
 //   const { id } = req.params;

@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
 import { updateStatusCron } from "./src/Controller/AbsenController.js";
 import { LaporanRoutes } from "./src/Routes/LaporanRoutes.js";
-
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
@@ -32,6 +32,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 const httpServer = createServer(app);
+
+app.use(cookieParser());
 
 app.use(
   helmet({
@@ -123,7 +125,13 @@ app.use("/api/pkl", PKLRoutes);
 app.use("/api/absensi", AbsensRoutes);
 app.use("/api/report", LaporanRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
-
+app.get("/api/get-token", (req, res) => {
+  const token = req.cookies.token; // Ambil cookie dari request
+  if (!token) {
+    return res.status(403).json({ message: "Silahkan login terlebih dahulu" });
+  }
+  res.json({ token });
+});
 app.get("/api/connection", (req, res) => {
   const timestamp = Date.now();
   res.json({ timestamp });

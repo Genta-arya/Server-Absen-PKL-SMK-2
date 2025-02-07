@@ -4,7 +4,7 @@ export const csrfProtection = csurf({
   cookie: {
     httpOnly: true,
     secure: true,
-    sameSite: "Lax",
+    sameSite: "lax",
   },
 });
 

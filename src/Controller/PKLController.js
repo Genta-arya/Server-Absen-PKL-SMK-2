@@ -395,14 +395,12 @@ export const addSiswaToExistingPKL = async (req, res) => {
         const existingShifts = await prisma.shift.findMany({
           where: {
             jamMasuk: DateTime.fromISO(
-              `${getCurrentDate()}T${shift.jam_masuk}:00`,
-              { zone: "Asia/Jakarta" }
+              `${getCurrentDate()}T${shift.jam_masuk}:00`
             )
               .toUTC()
               .toJSDate(),
             jamPulang: DateTime.fromISO(
-              `${getCurrentDate()}T${shift.jam_keluar}:00`,
-              { zone: "Asia/Jakarta" }
+              `${getCurrentDate()}T${shift.jam_keluar}:00`
             )
               .toUTC()
               .toJSDate(),

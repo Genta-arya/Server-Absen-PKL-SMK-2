@@ -404,8 +404,18 @@ export const addSiswaToExistingPKL = async (req, res) => {
           const newShift = await prisma.shift.create({
             data: {
               name: shift.shift_name,
-              jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
-              jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
+              jamMasuk: DateTime.fromISO(
+                `${getCurrentDate()}T${shift.jam_masuk}:00`,
+                { zone: "Asia/Jakarta" }
+              )
+                .toUTC()
+                .toJSDate(),
+              jamPulang: DateTime.fromISO(
+                `${getCurrentDate()}T${shift.jam_keluar}:00`,
+                { zone: "Asia/Jakarta" }
+              )
+                .toUTC()
+                .toJSDate(),
 
               pkl: { connect: { id: pkl_id } },
               users: {

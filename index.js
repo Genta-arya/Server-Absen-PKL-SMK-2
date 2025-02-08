@@ -127,6 +127,8 @@ cron.schedule("0 * * * *", async () => {
   }
 });
 
+
+
 app.use(csrfProtection);
 app.use((err, req, res, next) => {
   if (err.code === "EBADCSRFTOKEN") {

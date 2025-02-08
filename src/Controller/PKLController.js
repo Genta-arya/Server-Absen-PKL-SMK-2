@@ -866,7 +866,9 @@ export const updateStatusPKLCron = async (req, res) => {
             tanggal_selesai: {
               lt: newDateIndonesia.toJSDate(), // Ambil data dengan tanggal_selesai sebelum hari ini
             },
+            status: true,
           },
+
         ],
       },
     });

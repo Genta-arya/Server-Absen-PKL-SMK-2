@@ -782,6 +782,22 @@ export const removeSiswaFromPkl = async (req, res) => {
       },
     });
 
+    // hapus data laporan
+    await prisma.laporan.deleteMany({
+      where: {
+        pkl_id: id,
+        user_id: siswaId,
+      },
+    });
+
+    // hapus data laporan mingguan
+    await prisma.laporanMingguan.deleteMany({
+      where: {
+        pkl_id: id,
+        user_id: siswaId,
+      },
+    });
+
     // hapus relasi siswa dari shift
     await prisma.$executeRaw`
     DELETE FROM \`_UserShift\`

@@ -330,22 +330,13 @@ export const addSiswaToExistingPKL = async (req, res) => {
         return sendResponse(res, 400, "Nama shift harus diisi");
       }
 
-      const jamMasuk = DateTime.fromFormat(jam_masuk, "HH:mm", {
-        zone: "Asia/Jakarta",
-      });
-      const jamKeluar = DateTime.fromFormat(jam_keluar, "HH:mm", {
-        zone: "Asia/Jakarta",
-      });
-      if (!jamMasuk.isValid || !jamKeluar.isValid) {
-        return sendResponse(res, 400, "Format jam tidak valid");
-      }
       // Validasi jam masuk dan jam keluar
       if (!jam_masuk || !jam_keluar) {
         return sendResponse(res, 400, "Jam masuk dan jam keluar harus diisi");
       }
 
       // Cek apakah jam masuk lebih besar dari jam keluar
-      if (jamMasuk >= jamKeluar) {
+      if (jam_masuk >= jam_keluar) {
         return sendResponse(
           res,
           400,
@@ -375,39 +366,41 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     const { tanggal_mulai, tanggal_selesai } = existingPkl;
 
-    const tanggalMulai = DateTime.fromISO(tanggal_mulai, {
-      zone: "Asia/Jakarta",
-    });
-    const tanggalSelesai = DateTime.fromISO(tanggal_selesai, {
-      zone: "Asia/Jakarta",
-    });
-
-    if (!tanggalMulai.isValid || !tanggalSelesai.isValid) {
-      return sendResponse(res, 400, "Tanggal PKL tidak valid");
-    }
+    console.log("Tanggal Mulai:", tanggal_mulai);
 
     const absensiData = [];
-    let currentDate = tanggalMulai;
+    let currentDate = DateTime.fromJSDate(new Date(tanggal_mulai)).setZone(
+      "Asia/Jakarta"
+    );
+    const endDate = DateTime.fromJSDate(new Date(tanggal_selesai)).setZone(
+      "Asia/Jakarta"
+    );
+
+    console.log(
+      "Parsed Tanggal Mulai:",
+      currentDate.toISO(),
+      "Valid:",
+      currentDate.isValid
+    );
+    console.log(
+      "Parsed Tanggal Selesai:",
+      endDate.toISO(),
+      "Valid:",
+      endDate.isValid
+    );
+
+    let jsCurrentDate = currentDate.toJSDate();
+    jsCurrentDate.setDate(jsCurrentDate.getDate() + 1);
+
+    // Kembalikan ke Luxon DateTime setelah modifikasi
+    currentDate = DateTime.fromJSDate(jsCurrentDate).setZone("Asia/Jakarta");
+    const getCurrentDate = () =>
+      DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
 
     while (currentDate <= endDate) {
       // Iterasi melalui setiap shift
       for (const shift of shift_data) {
         const { user_id } = shift;
-        const jamMasuk = DateTime.fromFormat(jam_masuk, "HH:mm", {
-          zone: "Asia/Jakarta",
-        });
-        const jamKeluar = DateTime.fromFormat(jam_keluar, "HH:mm", {
-          zone: "Asia/Jakarta",
-        });
-
-        const jamMasukFull = DateTime.fromISO(
-          `${currentDate.toISODate()}T${jamMasuk.toFormat("HH:mm")}`,
-          { zone: "Asia/Jakarta" }
-        ).toJSDate();
-        const jamKeluarFull = DateTime.fromISO(
-          `${currentDate.toISODate()}T${jamKeluar.toFormat("HH:mm")}`,
-          { zone: "Asia/Jakarta" }
-        ).toJSDate();
 
         // Buat shift baru dan ambil shift_id setelah shift dibuat
         let id_shift = null;
@@ -415,8 +408,8 @@ export const addSiswaToExistingPKL = async (req, res) => {
         // Cek apakah shift dengan jam yang sama sudah ada
         const existingShifts = await prisma.shift.findMany({
           where: {
-            jamMasuk: jamMasukFull,
-            jamPulang: jamKeluarFull,
+            jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
+            jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
           },
         });
 
@@ -426,8 +419,9 @@ export const addSiswaToExistingPKL = async (req, res) => {
           const newShift = await prisma.shift.create({
             data: {
               name: shift.shift_name,
-              jamMasuk: jamMasukFull,
-              jamPulang: jamKeluarFull,
+              jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
+              jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
+
               pkl: { connect: { id: pkl_id } },
               users: {
                 connect: shift.user_id.map((id) => ({ id })),
@@ -451,7 +445,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
         });
       }
 
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate = currentDate.plus({ days: 1 });
     }
 
     if (absensiData.length > 0) {
@@ -479,9 +473,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
     });
 
     if (absensiBaru.length === 0) {
-      throw new Error(
-        "Tidak ada data absensi yang ditemukan! Periksa proses penyimpanan absensi."
-      );
+      return sendResponse(res, 400, "Data absensi tidak ditemukan");
     }
 
     console.log(
@@ -839,11 +831,12 @@ export const removeSiswaFromPkl = async (req, res) => {
     // `;
     try {
       await prisma.$executeRaw`
-        DELETE FROM _UserShift
-        WHERE B = ${siswaId} AND A IN (
-          SELECT id FROM Shift WHERE pklId = ${id}
-        )
-      `;
+    DELETE FROM "_UserShift"
+  WHERE "B" = ${siswaId} 
+  AND "A" IN (
+    SELECT "id" FROM "Shift" WHERE "pklId" = ${id}
+  )
+  `;
       console.log("Relasi siswa dari shift berhasil dihapus.");
     } catch (error) {
       console.error("Gagal menghapus relasi siswa dari shift:", error);

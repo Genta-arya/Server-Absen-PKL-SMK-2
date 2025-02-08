@@ -442,7 +442,6 @@ export const addSiswaToExistingPKL = async (req, res) => {
     const findCreator = await prisma.pkl.findFirst({
       where: {
         id: pkl_id,
-      
       },
     });
 
@@ -799,12 +798,18 @@ export const removeSiswaFromPkl = async (req, res) => {
     });
 
     // hapus relasi siswa dari shift
+    //   await prisma.$executeRaw`
+    //   DELETE FROM \`_UserShift\`
+    //   WHERE B = ${siswaId} AND A IN (
+    //     SELECT id FROM \`Shift\` WHERE pklId = ${id}
+    //   )
+    // `;
     await prisma.$executeRaw`
-    DELETE FROM \`_UserShift\`
-    WHERE B = ${siswaId} AND A IN (
-      SELECT id FROM \`Shift\` WHERE pklId = ${id}
-    )
-  `;
+  DELETE FROM _UserShift
+  WHERE B = ${siswaId} AND A IN (
+    SELECT id FROM Shift WHERE pklId = ${id}
+  )
+`;
 
     return sendResponse(
       res,
@@ -884,7 +889,6 @@ export const updateStatusPKLCron = async (req, res) => {
             },
             status: true,
           },
-
         ],
       },
     });

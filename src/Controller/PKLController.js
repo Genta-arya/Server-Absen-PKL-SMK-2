@@ -380,7 +380,8 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     // Kembalikan ke Luxon DateTime setelah modifikasi
     currentDate = DateTime.fromJSDate(jsCurrentDate).setZone("Asia/Jakarta");
-    const getCurrentDate = () => DateTime.utc().toFormat("yyyy-MM-dd"); // Selalu UTC
+    const getCurrentDate = () =>
+      DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
 
     while (currentDate <= endDate) {
       // Iterasi melalui setiap shift
@@ -678,7 +679,7 @@ export const deletePkl = async (req, res) => {
       data: {
         isDelete: true,
       },
-    })
+    });
     return sendResponse(res, 200, "Data berhasil dihapus", deletePkl);
   } catch (error) {
     sendError(res, error);

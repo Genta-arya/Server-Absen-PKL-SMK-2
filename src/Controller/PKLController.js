@@ -804,12 +804,17 @@ export const removeSiswaFromPkl = async (req, res) => {
     //     SELECT id FROM \`Shift\` WHERE pklId = ${id}
     //   )
     // `;
-    await prisma.$executeRaw`
-  DELETE FROM _UserShift
-  WHERE B = ${siswaId} AND A IN (
-    SELECT id FROM Shift WHERE pklId = ${id}
-  )
-`;
+    try {
+      await prisma.$executeRaw`
+        DELETE FROM _UserShift
+        WHERE B = ${siswaId} AND A IN (
+          SELECT id FROM Shift WHERE pklId = ${id}
+        )
+      `;
+      console.log("Relasi siswa dari shift berhasil dihapus.");
+    } catch (error) {
+      console.error("Gagal menghapus relasi siswa dari shift:", error);
+    }
 
     return sendResponse(
       res,

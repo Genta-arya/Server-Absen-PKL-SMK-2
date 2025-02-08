@@ -375,10 +375,10 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     const { tanggal_mulai, tanggal_selesai } = existingPkl;
 
-    const tanggalMulai = DateTime.fromISO(existingPkl.tanggal_mulai, {
+    const tanggalMulai = DateTime.fromISO(tanggal_mulai, {
       zone: "Asia/Jakarta",
     });
-    const tanggalSelesai = DateTime.fromISO(existingPkl.tanggal_selesai, {
+    const tanggalSelesai = DateTime.fromISO(tanggal_selesai, {
       zone: "Asia/Jakarta",
     });
 

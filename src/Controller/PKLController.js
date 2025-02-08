@@ -670,6 +670,15 @@ export const deletePkl = async (req, res) => {
         isDelete: true,
       },
     });
+
+    await prisma.shift.updateMany({
+      where: {
+        pkl_id: id,
+      },
+      data: {
+        isDelete: true,
+      },
+    })
     return sendResponse(res, 200, "Data berhasil dihapus", deletePkl);
   } catch (error) {
     sendError(res, error);

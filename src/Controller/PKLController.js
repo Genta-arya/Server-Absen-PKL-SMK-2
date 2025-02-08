@@ -366,27 +366,13 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     const { tanggal_mulai, tanggal_selesai } = existingPkl;
 
-    console.log("Tanggal Mulai:", tanggal_mulai);
-
     const absensiData = [];
     let currentDate = DateTime.fromJSDate(new Date(tanggal_mulai)).setZone(
       "Asia/Jakarta"
     );
+
     const endDate = DateTime.fromJSDate(new Date(tanggal_selesai)).setZone(
       "Asia/Jakarta"
-    );
-
-    console.log(
-      "Parsed Tanggal Mulai:",
-      currentDate.toISO(),
-      "Valid:",
-      currentDate.isValid
-    );
-    console.log(
-      "Parsed Tanggal Selesai:",
-      endDate.toISO(),
-      "Valid:",
-      endDate.isValid
     );
 
     let jsCurrentDate = currentDate.toJSDate();
@@ -394,8 +380,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     // Kembalikan ke Luxon DateTime setelah modifikasi
     currentDate = DateTime.fromJSDate(jsCurrentDate).setZone("Asia/Jakarta");
-    const getCurrentDate = () =>
-      DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
+    const getCurrentDate = () => DateTime.utc().toFormat("yyyy-MM-dd"); // Selalu UTC
 
     while (currentDate <= endDate) {
       // Iterasi melalui setiap shift

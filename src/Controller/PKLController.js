@@ -674,7 +674,7 @@ export const deletePkl = async (req, res) => {
 
     await prisma.shift.updateMany({
       where: {
-        pkl_id: id,
+        pklId: id,
       },
       data: {
         isDelete: true,

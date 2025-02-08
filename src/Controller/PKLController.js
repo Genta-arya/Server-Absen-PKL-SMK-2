@@ -588,9 +588,13 @@ export const getSinglePkl = async (req, res) => {
           },
         },
         shifts: {
+          where:{
+            isDelete: false
+          },
           select: {
             id: true,
             name: true,
+            
             jamMasuk: true,
             jamPulang: true,
           },

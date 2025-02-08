@@ -330,8 +330,12 @@ export const addSiswaToExistingPKL = async (req, res) => {
         return sendResponse(res, 400, "Nama shift harus diisi");
       }
 
-      const jamMasuk = DateTime.fromISO(jam_masuk, { zone: "Asia/Jakarta" });
-      const jamKeluar = DateTime.fromISO(jam_keluar, { zone: "Asia/Jakarta" });
+      const jamMasuk = DateTime.fromFormat(jam_masuk, "HH:mm", {
+        zone: "Asia/Jakarta",
+      });
+      const jamKeluar = DateTime.fromFormat(jam_keluar, "HH:mm", {
+        zone: "Asia/Jakarta",
+      });
       if (!jamMasuk.isValid || !jamKeluar.isValid) {
         return sendResponse(res, 400, "Format jam tidak valid");
       }
@@ -389,6 +393,21 @@ export const addSiswaToExistingPKL = async (req, res) => {
       // Iterasi melalui setiap shift
       for (const shift of shift_data) {
         const { user_id } = shift;
+        const jamMasuk = DateTime.fromFormat(jam_masuk, "HH:mm", {
+          zone: "Asia/Jakarta",
+        });
+        const jamKeluar = DateTime.fromFormat(jam_keluar, "HH:mm", {
+          zone: "Asia/Jakarta",
+        });
+
+        const jamMasukFull = DateTime.fromISO(
+          `${currentDate.toISODate()}T${jamMasuk.toFormat("HH:mm")}`,
+          { zone: "Asia/Jakarta" }
+        ).toJSDate();
+        const jamKeluarFull = DateTime.fromISO(
+          `${currentDate.toISODate()}T${jamKeluar.toFormat("HH:mm")}`,
+          { zone: "Asia/Jakarta" }
+        ).toJSDate();
 
         // Buat shift baru dan ambil shift_id setelah shift dibuat
         let id_shift = null;
@@ -396,14 +415,8 @@ export const addSiswaToExistingPKL = async (req, res) => {
         // Cek apakah shift dengan jam yang sama sudah ada
         const existingShifts = await prisma.shift.findMany({
           where: {
-            jamMasuk: DateTime.fromISO(
-              `${currentDate.toISODate()}T${shift.jam_masuk}`,
-              { zone: "Asia/Jakarta" }
-            ).toJSDate(),
-            jamPulang: DateTime.fromISO(
-              `${currentDate.toISODate()}T${shift.jam_keluar}`,
-              { zone: "Asia/Jakarta" }
-            ).toJSDate(),
+            jamMasuk: jamMasukFull,
+            jamPulang: jamKeluarFull,
           },
         });
 
@@ -413,14 +426,8 @@ export const addSiswaToExistingPKL = async (req, res) => {
           const newShift = await prisma.shift.create({
             data: {
               name: shift.shift_name,
-              jamMasuk: DateTime.fromISO(
-                `${currentDate.toISODate()}T${shift.jam_masuk}`,
-                { zone: "Asia/Jakarta" }
-              ).toJSDate(),
-              jamPulang: DateTime.fromISO(
-                `${currentDate.toISODate()}T${shift.jam_keluar}`,
-                { zone: "Asia/Jakarta" }
-              ).toJSDate(),
+              jamMasuk: jamMasukFull,
+              jamPulang: jamKeluarFull,
               pkl: { connect: { id: pkl_id } },
               users: {
                 connect: shift.user_id.map((id) => ({ id })),

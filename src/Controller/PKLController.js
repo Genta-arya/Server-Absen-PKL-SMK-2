@@ -394,8 +394,18 @@ export const addSiswaToExistingPKL = async (req, res) => {
         // Cek apakah shift dengan jam yang sama sudah ada
         const existingShifts = await prisma.shift.findMany({
           where: {
-            jamMasuk: new Date(`${getCurrentDate()}T${shift.jam_masuk}:00`),
-            jamPulang: new Date(`${getCurrentDate()}T${shift.jam_keluar}:00`),
+            jamMasuk: DateTime.fromISO(
+              `${getCurrentDate()}T${shift.jam_masuk}:00`,
+              { zone: "Asia/Jakarta" }
+            )
+              .toUTC()
+              .toJSDate(),
+            jamPulang: DateTime.fromISO(
+              `${getCurrentDate()}T${shift.jam_keluar}:00`,
+              { zone: "Asia/Jakarta" }
+            )
+              .toUTC()
+              .toJSDate(),
           },
         });
 
@@ -588,13 +598,13 @@ export const getSinglePkl = async (req, res) => {
           },
         },
         shifts: {
-          where:{
-            isDelete: false
+          where: {
+            isDelete: false,
           },
           select: {
             id: true,
             name: true,
-            
+
             jamMasuk: true,
             jamPulang: true,
           },

@@ -52,8 +52,8 @@ model Shift {
 
 model Foto_laporan {
   id         String   @id @default(uuid())
-  laporan_id String
-  laporan_mingguan_id String
+  laporan_id String?
+  laporan_mingguan_id String?
   laporan    Laporan? @relation("LaporanFoto", fields: [laporan_id], references: [id], onDelete: Cascade)
   laporan_mingguan LaporanMingguan? @relation("LaporanMingguanFoto", fields: [laporan_mingguan_id], references: [id], onDelete: Cascade)
   foto_url   String

@@ -174,3 +174,140 @@ export const getSingleLaporanMingguan = async (req, res) => {
     sendError(res, error);
   }
 };
+
+export const uploadLaporanHarian = async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  try {
+    const exitsLaporan = await prisma.laporan.findUnique({
+      where: { id },
+      select: {
+        fotos: {
+          select: {
+            id: true,
+            foto_url: true,
+          },
+        },
+      },
+    });
+    if (!exitsLaporan) {
+      return sendResponse(res, 404, "Laporan tidak ditemukan");
+    }
+    const {
+      pembimbingId,
+      nama_instruktur,
+      pelaksanaan_kegiatan,
+      catatan_instruktur,
+      nama_pekerjaan,
+      perencanaan_kegiatan,
+
+      tanggal,
+
+      fotos, // Array foto dari frontend
+    } = data;
+
+    if (
+      !pembimbingId ||
+      !nama_instruktur ||
+      !pelaksanaan_kegiatan ||
+      !catatan_instruktur ||
+      !nama_pekerjaan ||
+      !perencanaan_kegiatan ||
+      !tanggal ||
+      !fotos
+    ) {
+      return sendResponse(res, 400, "Invalid request");
+    }
+
+    const fotoArray = Array.isArray(fotos) ? fotos : [];
+
+    // validasi max fotoArray hanya 3
+    if (fotoArray.length > 3) {
+      return sendResponse(res, 400, "Maksimal 3 foto");
+    }
+
+    const updatedLaporan = await prisma.laporan.update({
+      where: { id },
+      data: {
+        pembimbingId,
+        catatan_instruktur,
+        nama_instruktur,
+        pelaksanaan_kegiatan,
+        nama_pekerjaan,
+        perencanaan_kegiatan,
+        status_selesai:
+          exitsLaporan.fotos.length > 0 || fotoArray.length > 0
+            ? "Selesai"
+            : "Belum",
+        tanggal,
+      },
+    });
+
+    const existingFotos = await prisma.foto_laporan.findMany({
+      where: {
+        laporan_id: id,
+        foto_url: { in: fotoArray.map((foto) => foto.foto_url) },
+      },
+      select: { foto_url: true },
+    });
+
+    const existingFotoUrls = existingFotos.map((foto) => foto.foto_url);
+
+    const newFotos = fotoArray.filter(
+      (foto) => !existingFotoUrls.includes(foto.foto_url)
+    );
+
+    if (newFotos.length > 0) {
+      await prisma.foto_laporan.createMany({
+        data: newFotos.map((foto) => ({
+          laporan_id: id,
+          foto_url: foto.foto_url,
+        })),
+      });
+    } else {
+      console.log(
+        "Semua foto sudah ada di database, tidak ada yang ditambahkan."
+      );
+    }
+    const updatedFotos = await prisma.foto_laporan.findMany({
+      where: { laporan_id: id },
+      select: { id: true, foto_url: true },
+    });
+
+    return sendResponse(
+      res,
+      200,
+      "Data laporan berhasil disubmit",
+      { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
+    );
+  } catch (error) {
+    console.log(error);
+    sendError(res, error);
+  }
+};
+
+export const deleteSingleImage = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  try {
+    const exitsImage = await prisma.foto_laporan.findUnique({
+      where: { id },
+    });
+    if (!exitsImage) {
+      return sendResponse(res, 404, "Image tidak ditemukan");
+    }
+    const deletedImage = await prisma.foto_laporan.delete({
+      where: { id },
+    });
+    return sendResponse(res, 200, "Data berhasil dihapus", deletedImage);
+  } catch (error) {
+    console.log(error);
+    sendError(res, error);
+  }
+};

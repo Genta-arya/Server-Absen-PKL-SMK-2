@@ -200,16 +200,13 @@ export const getDataAbsen = async (req, res) => {
 
 export const updateStatusCron = async (req, res) => {
   try {
-    // Mendapatkan waktu Indonesia (Asia/Jakarta) dan set ke jam 00:00:00
     const currentDate = DateTime.now().setZone("Asia/Jakarta").startOf("day");
-    // console.log("Current Date (Indonesia Time):", currentDate.toISODate());
 
-    // Mengambil data absensi yang tanggalnya sudah lewat
     const data = await prisma.absensi.findMany({
       where: {
         OR: [{ isDelete: false }, { isDelete: null }],
         tanggal: {
-          lt: currentDate.toJSDate(), // Konversi ke format Date untuk Prisma
+          lt: currentDate.toJSDate(),
         },
         hadir: null,
         OR: [{ pulang: null }, { datang: null }],
@@ -298,3 +295,58 @@ export const updateStatusCron = async (req, res) => {
 //     console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
 //   }
 // };
+
+export const rekapDaftarAbsensi = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const data = await prisma.absensi.findMany({
+      where: {
+        pkl_id: id,
+        OR: [{ isDelete: false }, { isDelete: null }],
+      },
+
+      select: {
+        hadir: true,
+        tanggal: true,
+
+        pkl: {
+          select: {
+            name: true,
+            tanggal_mulai: true,
+            tanggal_selesai: true,
+            alamat: true,
+            creator: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+
+        user: {
+          select: {
+            nim: true,
+            name: true,
+            shifts: {
+              select: {
+                name: true,
+                jamMasuk: true,
+                jamPulang: true,
+              },
+            },
+            Kelas: {
+              select: {
+                nama: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return sendResponse(res, 200, "Data ditemukan", data);
+  } catch (error) {
+    sendError(res, error);
+  }
+};

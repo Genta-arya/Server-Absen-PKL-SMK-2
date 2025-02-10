@@ -129,21 +129,7 @@ cron.schedule("0 */30 * * *", async () => {
 
 
 
-app.use(csrfProtection);
-app.use((err, req, res, next) => {
-  if (err.code === "EBADCSRFTOKEN") {
-    return res.status(403).json({
-      status: 403,
-      message: "Sesi Anda telah habis.",
-    });
-  }
-  next(err);
-});
 
-app.get("/api/csrf-token", (req, res) => {
-  console.log(req.csrfToken());
-  res.json({ csrfToken: req.csrfToken() });
-});
 
 // Endpoints
 app.use("/api/auth", AuthRoutes);

@@ -7,6 +7,7 @@ import {
   getSingleLaporan,
   getSingleLaporanMingguan,
   uploadLaporanHarian,
+  uploadLaporanHarianMingguan,
 } from "../Controller/LaporanController.js";
 import { middleware } from "../midleware/midleware.js";
 
@@ -25,4 +26,5 @@ LaporanRoutes.get(
   getSingleLaporanMingguan
 );
 LaporanRoutes.post("/laporan/harian/:id", middleware, uploadLaporanHarian);
+LaporanRoutes.post("/laporan/mingguan/:id", middleware, uploadLaporanHarianMingguan);
 LaporanRoutes.delete("/delete/image/:id", middleware, deleteSingleImage);

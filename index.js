@@ -117,10 +117,10 @@ cron.schedule("0 0 1 1,9 *", () => {
 
 // Cron Job Update Status absen
 
-cron.schedule("0 * * * *", async () => {
+cron.schedule("0 */30 * * *", async () => {
   try {
-    console.log("Menjalankan cron job updateStatusCron...");
-    await updateStatusCron(); // Memanggil fungsi update status
+    console.log("Menjalankan cron job updateStatusCron setiap 30 menit...");
+    await updateStatusCron();
     await updateStatusPKLCron();
   } catch (error) {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);

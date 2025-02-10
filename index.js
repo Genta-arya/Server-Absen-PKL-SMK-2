@@ -115,7 +115,7 @@ cron.schedule("0 0 1 1,9 *", () => {
   console.log("Cron job dijalankan setiap 8 bulan sekali");
 });
 
-// Cron Job Update Status absen
+
 
 cron.schedule("*/30 * * * * *", async () => {
   try {

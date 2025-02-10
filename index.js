@@ -76,7 +76,7 @@ const limiter = rateLimit({
   statusCode: 403,
 });
 
-// Middleware
+
 app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 

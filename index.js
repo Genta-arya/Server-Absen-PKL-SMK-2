@@ -92,7 +92,7 @@ app.use((req, res, next) => {
   const userAgent = req.headers["user-agent"];
 
   // Izinkan jika berasal dari daftar origin atau dari Vercel Cron (cek User-Agent)
-  if (!origin || allowedOrigins.includes(origin) || userAgent.includes("VercelCron")) {
+  if (allowedOrigins.includes(origin) || userAgent.includes("VercelCron")) {
     next();
   } else {
     res.status(403).json({

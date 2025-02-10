@@ -103,7 +103,7 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", " X-CSRF-Token"],
     credentials: true,
   })
@@ -127,9 +127,17 @@ cron.schedule("*/30 * * * * *", async () => {
   }
 });
 
-
-
-
+app.get("/api/cron", async (req, res) => {
+  try {
+    console.log("Menjalankan cron job di Vercel...");
+    await updateStatusCron();
+    await updateStatusPKLCron();
+    res.json({ message: "Cron job berhasil dijalankan" });
+  } catch (error) {
+    console.error("Error menjalankan cron job:", error);
+    res.status(500).json({ error: "Cron job gagal" });
+  }
+});
 
 // Endpoints
 app.use("/api/auth", AuthRoutes);

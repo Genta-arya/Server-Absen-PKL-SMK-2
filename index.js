@@ -89,8 +89,10 @@ const allowedOrigins = [
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+  const userAgent = req.headers["user-agent"];
 
-  if (allowedOrigins.includes(origin)) {
+ 
+  if (allowedOrigins.includes(origin) || userAgent.includes("VercelCron")) {
     next();
   } else {
     res.status(403).json({
@@ -99,6 +101,7 @@ app.use((req, res, next) => {
     });
   }
 });
+
 
 app.use(
   cors({

@@ -92,7 +92,7 @@ app.use((req, res, next) => {
   const userAgent = req.headers["user-agent"];
 
  
-  if (allowedOrigins.includes(origin) || userAgent.includes("VercelCron")) {
+  if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
     next();
   } else {
     res.status(403).json({

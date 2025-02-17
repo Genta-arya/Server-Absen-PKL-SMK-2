@@ -20,7 +20,7 @@ export const getLaporanByuser = async (req, res) => {
         pkl: {
           isDelete: false,
         },
-        OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
+        OR: [{ absensi: { hadir: "selesai" } }, { absensi: { hadir: null } }],
       },
       select: {
         id: true,

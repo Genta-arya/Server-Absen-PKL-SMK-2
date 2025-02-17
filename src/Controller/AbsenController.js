@@ -151,6 +151,19 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 400, "Anda sudah absen pulang");
   }
   try {
+
+    const checkAbsenMasuk = await prisma.absensi.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        datang: true,
+      },
+    })
+
+    if (!checkAbsenMasuk) {
+      return sendResponse(res, 400, "Tidak bisa absen pulang, Anda belum absen masuk");
+    }
     await prisma.absensi.update({
       where: {
         id,

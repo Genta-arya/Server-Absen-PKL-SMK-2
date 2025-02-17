@@ -230,6 +230,20 @@ export const uploadLaporanHarian = async (req, res) => {
       return sendResponse(res, 400, "Maksimal 3 foto");
     }
 
+    // check sudah absen atau belum
+    const checkAbsenMasuk = await prisma.absensi.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        datang: true,
+        pulang: true,
+      },
+    });
+    if (!checkAbsenMasuk) {
+      return sendResponse(res, 400, "Tidak bisa membuat laporan , anda belum absen");
+    }
+
     const updatedLaporan = await prisma.laporan.update({
       where: { id },
       data: {

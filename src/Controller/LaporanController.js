@@ -241,7 +241,7 @@ export const uploadLaporanHarian = async (req, res) => {
         pulang: true,
       },
     });
-    if (!checkAbsenMasuk) {
+    if (!checkAbsenMasuk || !checkAbsenMasuk.datang || !checkAbsenMasuk.pulang) {
       return sendResponse(res, 400, "Tidak bisa membuat laporan , anda belum absen");
     }
 

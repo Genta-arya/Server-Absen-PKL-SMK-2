@@ -210,13 +210,12 @@ export const updateStatusCron = async (req, res) => {
         tanggal: {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
-        datang: null, // Datang kosong
+
         pulang: null, // Pulang juga kosong
       },
     });
-    
+
     console.log(data);
-    
 
     console.log("Data absensi yang ditemukan:", data);
 

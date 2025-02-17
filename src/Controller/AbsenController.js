@@ -170,6 +170,7 @@ export const absenPulang = async (req, res) => {
       },
       data: {
         pulang: jam_pulang,
+        hadir: "selesai"
       },
     });
     return sendResponse(res, 200, "Berhasil absen", jam_pulang);

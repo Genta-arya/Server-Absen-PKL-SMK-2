@@ -204,9 +204,7 @@ export const updateStatusCron = async (req, res) => {
 
     const data = await prisma.absensi.findMany({
       where: {
-        isDelete: {
-          not: true, // Data tidak dihapus
-        },
+        OR: [{ isDelete: false }, { isDelete: null }],
         tanggal: {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
@@ -214,6 +212,8 @@ export const updateStatusCron = async (req, res) => {
         pulang: null, // Pulang juga kosong
       },
     });
+
+    console.log(currentDate);
 
     console.log(data);
 

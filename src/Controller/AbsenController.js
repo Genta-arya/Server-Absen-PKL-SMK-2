@@ -233,6 +233,14 @@ export const updateStatusCron = async (req, res) => {
     console.log("Data absensi yang ditemukan:", data);
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+    await prisma.absensi.updateMany({
+      where: {
+        hadir: "hadir",
+      },
+      data:{
+        hadir:"selesai"
+      }
+    })
     if (data.length > 0) {
       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
 

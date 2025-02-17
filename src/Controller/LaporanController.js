@@ -192,6 +192,7 @@ export const uploadLaporanHarian = async (req, res) => {
             foto_url: true,
           },
         },
+        absensi_id: true,
       },
     });
     if (!exitsLaporan) {
@@ -233,7 +234,7 @@ export const uploadLaporanHarian = async (req, res) => {
     // check sudah absen atau belum
     const checkAbsenMasuk = await prisma.absensi.findUnique({
       where: {
-        id,
+        id: exitsLaporan.absensi_id,
       },
       select: {
         datang: true,

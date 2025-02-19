@@ -81,7 +81,7 @@ app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "digital.smkn2ketapang.sch.id",
+  "https://digital.smkn2ketapang.sch.id",
   "https://sipkl.smkn2ketapang.sch.id",
 ];
 

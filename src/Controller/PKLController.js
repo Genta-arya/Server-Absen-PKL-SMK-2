@@ -171,14 +171,16 @@ export const createPKLWithAbsensi = async (req, res) => {
     });
 
     // Masukkan absensi ke dalam database
-    const BATCH_SIZE = 1000;
+    const BATCH_SIZE = 100000;
     const batchPromises = [];
     for (let i = 0; i < absensiData.length; i += BATCH_SIZE) {
       const batch = absensiData.slice(i, i + BATCH_SIZE);
       batchPromises.push(prisma.absensi.createMany({ data: batch }));
     }
 
+    console.log(`Memulai insert ${absensiData.length} data absensi...`);
     await Promise.all(batchPromises);
+    console.log("Insert absensi selesai.");
 
     const absensiBaru = await prisma.absensi.findMany({
       where: {
@@ -194,9 +196,21 @@ export const createPKLWithAbsensi = async (req, res) => {
       );
     }
 
+    console.log(`Mengambil kembali data absensi dari database...`);
+
+    console.log("Jumlah data di database setelah insert:", absensiBaru.length);
+    console.log("Contoh data absensi:", absensiBaru.slice(0, 5)); // Lihat 5 data pertama
+
     console.log(
       `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
     );
+    const userAbsensiCounts = absensiBaru.reduce((acc, absensi) => {
+      acc[absensi.user_id] = (acc[absensi.user_id] || 0) + 1;
+      return acc;
+    }, {});
+
+    const firstUserAbsensiCount = Object.values(userAbsensiCounts)[0]; // Ambil nilai pertama
+    console.log(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
 
     const laporanData = absensiBaru.map((absensi) => ({
       tanggal: absensi.tanggal ?? new Date(),
@@ -212,30 +226,58 @@ export const createPKLWithAbsensi = async (req, res) => {
       laporanPromises.push(prisma.laporan.createMany({ data: batch }));
     }
     await Promise.all(laporanPromises);
-    const lengthAbsensi = absensiBaru.length;
+    const lengthAbsensi = firstUserAbsensiCount;
     const jumlahMinggu = Math.ceil(lengthAbsensi / 7); // Pembagian jumlah absensi per 7 hari = jumlah minggu
 
     // Membuat laporan mingguan sesuai dengan jumlah minggu
     const laporanMingguanPromises = [];
-    for (let i = 0; i < jumlahMinggu; i++) {
-      const startIndex = i * 7;
-      const endIndex = Math.min((i + 1) * 7, lengthAbsensi);
 
-      const mingguAbsensi = absensiBaru.slice(startIndex, endIndex);
+    // Mengelompokkan data berdasarkan user_id
+    const userAbsensiGrouped = absensiBaru.reduce((acc, absensi) => {
+      if (!acc[absensi.user_id]) {
+        acc[absensi.user_id] = [];
+      }
+      acc[absensi.user_id].push(absensi);
+      return acc;
+    }, {});
 
-      laporanMingguanPromises.push(
-        prisma.laporanMingguan.create({
-          data: {
-            pkl_id: newPkl.id,
-            absensi_id: absensiBaru[0]?.id ?? "unknown_absensi",
-            user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
-            pembimbingId: creatorId,
-            status_selesai: "Belum",
-            status: true,
-          },
-        })
-      );
+    for (let userId in userAbsensiGrouped) {
+      const absensiUser = userAbsensiGrouped[userId];
+      const jumlahMinggu = Math.ceil(absensiUser.length / 7); // Menghitung minggu per user
+      console.log(`User ${userId} memiliki ${jumlahMinggu} minggu`);
+
+      for (let i = 0; i < jumlahMinggu; i++) {
+        const startIndex = i * 7;
+        const endIndex = Math.min((i + 1) * 7, absensiUser.length);
+
+        const mingguAbsensi = absensiUser.slice(startIndex, endIndex);
+
+        laporanMingguanPromises.push(
+          prisma.laporanMingguan.create({
+            data: {
+              pkl_id: newPkl.id,
+              absensi_id: mingguAbsensi[0]?.id ?? "unknown_absensi", // Gunakan absensi pertama dalam minggu
+              user_id: mingguAbsensi[0]?.user_id ?? "unknown_user", // Sesuaikan user_id
+              pembimbingId: creatorId,
+              status_selesai: "Belum",
+              status: true,
+            },
+          })
+        );
+      }
     }
+
+    // Tunggu hingga semua laporan mingguan selesai dibuat
+    await Promise.all(laporanMingguanPromises);
+
+    console.log(
+      `User ${absensiBaru[0]?.user_id} memiliki ${lengthAbsensi} absensi.`
+    );
+    console.log(`Jumlah minggu yang dihitung: ${jumlahMinggu}`);
+
+    console.log(
+      `Membuat ${jumlahMinggu} laporan mingguan untuk user ${absensiBaru[0]?.user_id}`
+    );
 
     // Tunggu hingga semua laporan mingguan selesai dibuat
     await Promise.all(laporanMingguanPromises);
@@ -412,7 +454,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
         // Jika shift belum ada, buat shift baru
         if (existingShifts.length === 0) {
-          console.log("Shift belum ada, membuat shift baru");
+       
           const newShift = await prisma.shift.create({
             data: {
               name: shift.shift_name,
@@ -437,7 +479,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
           });
           id_shift = newShift.id;
         } else {
-          console.log("Shift sudah ada, menggunakan shift yang sudah ada");
+        
           id_shift = existingShifts[0].id;
         }
 
@@ -487,6 +529,14 @@ export const addSiswaToExistingPKL = async (req, res) => {
       `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
     );
 
+    const userAbsensiCounts = absensiBaru.reduce((acc, absensi) => {
+      acc[absensi.user_id] = (acc[absensi.user_id] || 0) + 1;
+      return acc;
+    }, {});
+
+    const firstUserAbsensiCount = Object.values(userAbsensiCounts)[0]; // Ambil nilai pertama
+    console.log(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
+
     const laporanData = absensiBaru.map((absensi) => ({
       tanggal: absensi.tanggal ?? new Date(),
       absensi_id: absensi.id,
@@ -502,29 +552,47 @@ export const addSiswaToExistingPKL = async (req, res) => {
     }
     await Promise.all(laporanPromises);
 
-    const lengthAbsensi = absensiBaru.length;
-    const jumlahMinggu = Math.ceil(lengthAbsensi / 7); // Pembagian jumlah absensi per 7 hari = jumlah minggu
 
-    // Membuat laporan mingguan sesuai dengan jumlah minggu
+   
+    const userAbsensiGrouped = absensiBaru.reduce((acc, absensi) => {
+      if (!acc[absensi.user_id]) {
+        acc[absensi.user_id] = [];
+      }
+      acc[absensi.user_id].push(absensi);
+      return acc;
+    }, {});
+
+    console.log("Jumlah absensi per user:", userAbsensiGrouped);
+
+    const lengthAbsensi = firstUserAbsensiCount;
+    // Pembagian jumlah absensi per 7 hari = jumlah minggu
+
     const laporanMingguanPromises = [];
-    for (let i = 0; i < jumlahMinggu; i++) {
-      const startIndex = i * 7;
-      const endIndex = Math.min((i + 1) * 7, lengthAbsensi);
 
-      const mingguAbsensi = absensiBaru.slice(startIndex, endIndex);
+ 
+    for (let userId in userAbsensiGrouped) {
+      const absensiUser = userAbsensiGrouped[userId];
+      const jumlahMinggu = Math.ceil(absensiUser.length / 7);
 
-      laporanMingguanPromises.push(
-        prisma.laporanMingguan.create({
-          data: {
-            pkl_id: pkl_id ?? "unknown_pkl",
-            absensi_id: absensiBaru[0]?.id ?? "unknown_absensi",
-            user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
-            pembimbingId: findCreator.creatorId ?? "default_pembimbing",
-            status_selesai: "Belum",
-            status: true,
-          },
-        })
-      );
+      for (let i = 0; i < jumlahMinggu; i++) {
+        const startIndex = i * 7;
+        const endIndex = Math.min((i + 1) * 7, absensiUser.length);
+  
+        const mingguAbsensi = absensiUser.slice(startIndex, endIndex);
+  
+        laporanMingguanPromises.push(
+          prisma.laporanMingguan.create({
+            data: {
+              pkl_id: pkl_id ?? "unknown_pkl",
+              absensi_id: absensiBaru[0]?.id ?? "unknown_absensi",
+              user_id: mingguAbsensi[0]?.user_id ?? "unknown_user",
+              pembimbingId: findCreator.creatorId ?? "default_pembimbing",
+              status_selesai: "Belum",
+              status: true,
+            },
+          })
+        );
+      }
     }
 
     // Tunggu hingga semua laporan mingguan selesai dibuat

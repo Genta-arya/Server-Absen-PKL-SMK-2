@@ -20,7 +20,7 @@ export const getLaporanByuser = async (req, res) => {
         pkl: {
           isDelete: false,
         },
-        OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
+        OR: [{ absensi: { hadir: "hadir" } }, {absensi: { hadir: "selesai" }} ,{ absensi: { hadir: null } }],
       },
       select: {
         id: true,
@@ -192,6 +192,7 @@ export const uploadLaporanHarian = async (req, res) => {
             foto_url: true,
           },
         },
+        absensi_id: true,
       },
     });
     if (!exitsLaporan) {
@@ -228,6 +229,28 @@ export const uploadLaporanHarian = async (req, res) => {
     // validasi max fotoArray hanya 3
     if (fotoArray.length > 3) {
       return sendResponse(res, 400, "Maksimal 3 foto");
+    }
+
+    // check sudah absen atau belum
+    const checkAbsenMasuk = await prisma.absensi.findUnique({
+      where: {
+        id: exitsLaporan.absensi_id,
+      },
+      select: {
+        datang: true,
+        pulang: true,
+      },
+    });
+    if (!checkAbsenMasuk) {
+      return sendResponse(res, 400, "Tidak bisa upload laporan , absensi anda tidak ditemukan");
+    }
+
+    if (!checkAbsenMasuk.datang) { 
+      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen masuk");
+    }
+
+    if (!checkAbsenMasuk.pulang) {
+      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen pulang");
     }
 
     const updatedLaporan = await prisma.laporan.update({

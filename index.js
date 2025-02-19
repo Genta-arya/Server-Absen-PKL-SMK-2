@@ -82,9 +82,7 @@ app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://siabsen.apiservices.my.id",
-  "https://sipkl.smkn2ketapang.sch.id",
-  "https://pkl.smkn2ketapang.sch.id",
+  "https://digital.smkn2ketapang.sch.id",
 ];
 
 app.use((req, res, next) => {
@@ -92,7 +90,7 @@ app.use((req, res, next) => {
   const userAgent = req.headers["user-agent"];
 
  
-  if (allowedOrigins.includes(origin) || userAgent.includes("VercelCron")) {
+  if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
     next();
   } else {
     res.status(403).json({
@@ -120,15 +118,15 @@ cron.schedule("0 0 1 1,9 *", () => {
 
 
 
-cron.schedule("*/30 * * * * *", async () => {
-  try {
-    console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
-    await updateStatusCron();
-    await updateStatusPKLCron();
-  } catch (error) {
-    console.error("Terjadi kesalahan saat menjalankan cron job:", error);
-  }
-});
+// cron.schedule("*/30 * * * * *", async () => {
+//   try {
+//     console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
+//     await updateStatusCron();
+//     await updateStatusPKLCron();
+//   } catch (error) {
+//     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+//   }
+// });
 
 app.get("/api/cron", async (req, res) => {
   try {

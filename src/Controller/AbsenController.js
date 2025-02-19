@@ -151,12 +151,26 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 400, "Anda sudah absen pulang");
   }
   try {
+
+    const checkAbsenMasuk = await prisma.absensi.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        datang: true,
+      },
+    })
+
+    if (!checkAbsenMasuk) {
+      return sendResponse(res, 400, "Tidak bisa absen pulang, Anda belum absen masuk");
+    }
     await prisma.absensi.update({
       where: {
         id,
       },
       data: {
         pulang: jam_pulang,
+        hadir: "selesai"
       },
     });
     return sendResponse(res, 200, "Berhasil absen", jam_pulang);
@@ -206,16 +220,21 @@ export const updateStatusCron = async (req, res) => {
       where: {
         OR: [{ isDelete: false }, { isDelete: null }],
         tanggal: {
-          lt: currentDate.toJSDate(),
+          lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
-        hadir: null,
-        OR: [{ pulang: null }, { datang: null }],
+
+        pulang: null, // Pulang juga kosong
       },
     });
+
+    console.log(currentDate);
+
+    console.log(data);
 
     console.log("Data absensi yang ditemukan:", data);
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+  
     if (data.length > 0) {
       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
 

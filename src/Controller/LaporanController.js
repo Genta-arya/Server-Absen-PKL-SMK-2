@@ -250,7 +250,7 @@ export const uploadLaporanHarian = async (req, res) => {
     }
 
     if (!checkAbsenMasuk.pulang) {
-      return sendResponse(res, 400, "Tidak bisa upload laporan , anda sudah absen pulang");
+      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen pulang");
     }
 
     const updatedLaporan = await prisma.laporan.update({

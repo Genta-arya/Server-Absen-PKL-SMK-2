@@ -241,8 +241,16 @@ export const uploadLaporanHarian = async (req, res) => {
         pulang: true,
       },
     });
-    if (!checkAbsenMasuk || !checkAbsenMasuk.datang || !checkAbsenMasuk.pulang) {
-      return sendResponse(res, 400, "Tidak bisa membuat laporan , anda belum absen");
+    if (!checkAbsenMasuk) {
+      return sendResponse(res, 400, "Tidak bisa upload laporan , absensi anda tidak ditemukan");
+    }
+
+    if (!checkAbsenMasuk.datang) { 
+      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen masuk");
+    }
+
+    if (checkAbsenMasuk.pulang) {
+      return sendResponse(res, 400, "Tidak bisa upload laporan , anda sudah absen pulang");
     }
 
     const updatedLaporan = await prisma.laporan.update({

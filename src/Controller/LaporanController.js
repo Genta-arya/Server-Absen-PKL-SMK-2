@@ -20,7 +20,7 @@ export const getLaporanByuser = async (req, res) => {
         pkl: {
           isDelete: false,
         },
-        OR: [{ hadir: "hadir" }, { hadir: "selesai" }, { hadir: null }],
+        OR: [{ absensi: { hadir: "hadir" } }, {absensi: { hadir: "selesai" }} ,{ absensi: { hadir: null } }],
       },
       select: {
         id: true,
@@ -241,16 +241,8 @@ export const uploadLaporanHarian = async (req, res) => {
         pulang: true,
       },
     });
-    if (
-      !checkAbsenMasuk ||
-      !checkAbsenMasuk.datang ||
-      !checkAbsenMasuk.pulang
-    ) {
-      return sendResponse(
-        res,
-        400,
-        "Tidak bisa membuat laporan , anda belum absen"
-      );
+    if (!checkAbsenMasuk || !checkAbsenMasuk.datang || !checkAbsenMasuk.pulang) {
+      return sendResponse(res, 400, "Tidak bisa membuat laporan , anda belum absen");
     }
 
     const updatedLaporan = await prisma.laporan.update({

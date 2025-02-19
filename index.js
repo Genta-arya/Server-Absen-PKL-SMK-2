@@ -76,24 +76,24 @@ const limiter = rateLimit({
   statusCode: 403,
 });
 
+
 app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://pkl.smkn2ketapang.sch.id",
+  "https://siabsen.apiservices.my.id",
   "https://digital.smkn2ketapang.sch.id",
   "https://sipkl.smkn2ketapang.sch.id",
+  "https://pkl.smkn2ketapang.sch.id",
 ];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const userAgent = req.headers["user-agent"];
 
-  if (
-    allowedOrigins.includes(origin) ||
-    userAgent.includes("vercel-cron/1.0")
-  ) {
+ 
+  if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
     next();
   } else {
     res.status(403).json({
@@ -102,6 +102,7 @@ app.use((req, res, next) => {
     });
   }
 });
+
 
 app.use(
   cors({
@@ -117,6 +118,8 @@ cron.schedule("0 0 1 1,9 *", () => {
   deleteAllPkl();
   console.log("Cron job dijalankan setiap 8 bulan sekali");
 });
+
+
 
 // cron.schedule("*/30 * * * * *", async () => {
 //   try {

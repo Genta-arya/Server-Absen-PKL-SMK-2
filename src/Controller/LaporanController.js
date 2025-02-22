@@ -11,7 +11,7 @@ export const getLaporanByuser = async (req, res) => {
 
     const data = await prisma.laporan.findMany({
       where: {
-        id: id,
+        user_id: id,
         pkl: {
           isDelete: false,
         },

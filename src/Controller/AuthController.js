@@ -136,7 +136,7 @@ export const handleLogin = async (req, res) => {
 };
 
 export const checkLogin = async (req, res) => {
-  const token = req.cookies.token;
+  const token = req.body.token;
 
   if (!token || typeof token !== "string" || token.trim() === "") {
     return sendResponse(res, 400, "Silahkan Login terlebih dahulu");

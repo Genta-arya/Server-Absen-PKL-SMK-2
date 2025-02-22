@@ -25,7 +25,7 @@ export const AuthRoutes = express.Router();
 // authentikasi
 AuthRoutes.post("/register", handleRegister);
 AuthRoutes.post("/login", handleLogin);
-AuthRoutes.get("/session",middleware,checkLogin);
+AuthRoutes.post("/session",middleware,checkLogin);
 AuthRoutes.post("/logout/:id",middleware, handleLogout);
 
 // update profil

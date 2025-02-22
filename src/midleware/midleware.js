@@ -4,28 +4,29 @@ import { sendResponse } from "../Utils/Response.js";
 import { prisma } from "../Config/Prisma.js";
 
 export const middleware = async (req, res, next) => {
- 
-  const token = req.cookies.token; 
+  // Ambil token dari cookie atau header Authorization
+  const authHeader = req.headers.authorization;
+  let token = req.cookies.token || (authHeader && authHeader.split(" ")[1]);
 
-  console.log(token);
-
+  console.log("Token:", token);
 
   if (!token) {
     return sendResponse(res, 403, "Silahkan login terlebih dahulu");
   }
 
   try {
- 
+    // Verifikasi JWT
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; 
-    next(); 
+    req.user = decoded; // Simpan data user di request
+    next(); // Lanjut ke request berikutnya
   } catch (err) {
     if (err instanceof jwt.JsonWebTokenError) {
-   
+      // Cari user dengan token ini
       const find = await prisma.user.findFirst({
         where: { token },
       });
 
+      // Jika ditemukan, hapus token dari database
       if (find) {
         await prisma.user.update({
           where: { id: find.id },
@@ -33,9 +34,9 @@ export const middleware = async (req, res, next) => {
         });
       }
 
-      return sendResponse(res, 403, "Sesi login telah habis");
+      return sendResponse(res, 403, "Sesi login telah habis, silahkan login kembali.");
     }
-    
+
     return sendResponse(res, 500, "Terjadi kesalahan pada server");
   }
 };

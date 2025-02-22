@@ -43,16 +43,11 @@ export const getSingleLaporan = async (req, res) => {
   if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
-  const exitsUser = await prisma.user.findUnique({
-    where: { id },
-  });
-  if (!exitsUser) {
-    return sendResponse(res, 404, "User tidak ditemukan");
-  }
+ 
   try {
     const exitsLaporan = await prisma.laporan.findUnique({
       where: {
-        user_id: exitsUser.id,
+        id,
       },
       select: {
         id: true,

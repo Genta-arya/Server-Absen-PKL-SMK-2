@@ -20,7 +20,11 @@ export const getLaporanByuser = async (req, res) => {
         pkl: {
           isDelete: false,
         },
-        OR: [{ absensi: { hadir: "hadir" } }, {absensi: { hadir: "selesai" }} ,{ absensi: { hadir: null } }],
+        OR: [
+          { absensi: { hadir: "hadir" } },
+          { absensi: { hadir: "selesai" } },
+          { absensi: { hadir: null } },
+        ],
       },
       select: {
         id: true,
@@ -44,9 +48,21 @@ export const getSingleLaporan = async (req, res) => {
   if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
+  const exitsUser = await prisma.user.findUnique({
+    where: { id },
+  });
+  if (!exitsUser) {
+    return sendResponse(res, 404, "User tidak ditemukan");
+  }
   try {
     const exitsLaporan = await prisma.laporan.findUnique({
-      where: { id },
+      where: {
+        user_id: exitsUser.id,
+        pkl: {
+          isDelete: false,
+        },
+        OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
+      },
       select: {
         id: true,
         pembimbingId: true,
@@ -108,7 +124,6 @@ export const getLaporanMingguanByuser = async (req, res) => {
         pkl: {
           isDelete: false,
         },
-        OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
       },
       select: {
         id: true,
@@ -242,15 +257,27 @@ export const uploadLaporanHarian = async (req, res) => {
       },
     });
     if (!checkAbsenMasuk) {
-      return sendResponse(res, 400, "Tidak bisa upload laporan , absensi anda tidak ditemukan");
+      return sendResponse(
+        res,
+        400,
+        "Tidak bisa upload laporan , absensi anda tidak ditemukan"
+      );
     }
 
-    if (!checkAbsenMasuk.datang) { 
-      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen masuk");
+    if (!checkAbsenMasuk.datang) {
+      return sendResponse(
+        res,
+        400,
+        "Tidak bisa upload laporan , anda belum absen masuk"
+      );
     }
 
     if (!checkAbsenMasuk.pulang) {
-      return sendResponse(res, 400, "Tidak bisa upload laporan , anda belum absen pulang");
+      return sendResponse(
+        res,
+        400,
+        "Tidak bisa upload laporan , anda belum absen pulang"
+      );
     }
 
     const updatedLaporan = await prisma.laporan.update({

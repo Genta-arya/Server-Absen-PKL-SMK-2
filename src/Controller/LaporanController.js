@@ -58,10 +58,6 @@ export const getSingleLaporan = async (req, res) => {
     const exitsLaporan = await prisma.laporan.findUnique({
       where: {
         user_id: exitsUser.id,
-        pkl: {
-          isDelete: false,
-        },
-        OR: [{ absensi: { hadir: "hadir" } }, { absensi: { hadir: null } }],
       },
       select: {
         id: true,

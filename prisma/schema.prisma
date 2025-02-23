@@ -113,7 +113,7 @@ model LaporanMingguan {
  
   nama_instruktur      String?
   nama_pekerjaan String?
-  catatan String?
+  catatan String? @db.Text
   status    Boolean?
   status_selesai String @default("Belum")
   createdAt DateTime  @default(now())

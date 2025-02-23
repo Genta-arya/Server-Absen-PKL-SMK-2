@@ -7,8 +7,6 @@ export const getLaporanByuser = async (req, res) => {
     return sendResponse(res, 400, "Invalid request");
   }
   try {
-    
-
     const data = await prisma.laporan.findMany({
       where: {
         user_id: id,
@@ -43,7 +41,7 @@ export const getSingleLaporan = async (req, res) => {
   if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
- 
+
   try {
     const exitsLaporan = await prisma.laporan.findUnique({
       where: {
@@ -160,6 +158,55 @@ export const getSingleLaporanMingguan = async (req, res) => {
     const pembimbing = await prisma.user.findUnique({
       where: {
         id: exitsLaporan.pembimbingId,
+      },
+      select: {
+        name: true,
+      },
+    });
+    const laporanWithPembimbing = {
+      ...exitsLaporan,
+      nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
+    };
+    return sendResponse(res, 200, "Data ditemukan", laporanWithPembimbing);
+  } catch (error) {
+    console.log(error);
+    sendError(res, error);
+  }
+};
+
+export const getLaporanMingguan = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  if (!id) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+  try {
+    const exitsLaporan = await prisma.laporanMingguan.findMany({
+      where: {
+        user_id: id,
+        pkl: {
+          isDelete: false,
+        },
+      },
+      select: {
+        id: true,
+        pembimbingId: true,
+        nama_instruktur: true,
+
+        catatan: true,
+        nama_pekerjaan: true,
+
+        status_selesai: true,
+      },
+    });
+
+    console.log(exitsLaporan);
+    if (!exitsLaporan) {
+      return sendResponse(res, 404, "Laporan tidak ditemukan");
+    }
+    const pembimbing = await prisma.user.findUnique({
+      where: {
+        id: exitsLaporan[0].pembimbingId,
       },
       select: {
         name: true,

@@ -45,7 +45,9 @@ export const updateAbsensi = async (req, res) => {
   console.log("Jam Masuk Shift:", jamMasuk);
 
   // Ambil jam dari jamMasuk untuk dibandingkan
-  const batasMasuk = jamMasuk.getHours() + 2; // Waktu batas masuk (jamMasuk + 2 jam)
+  const batasMasuk = new Date(jamMasuk); // Buat salinan objek Date
+  batasMasuk.setMinutes(batasMasuk.getMinutes() + 15); // Tambahkan 15 menit
+  // Waktu batas masuk (jamMasuk + 15 menit)
 
   // Ambil jam dari currentDate untuk perbandingan
   const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
@@ -151,7 +153,6 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 400, "Anda sudah absen pulang");
   }
   try {
-
     const checkAbsenMasuk = await prisma.absensi.findUnique({
       where: {
         id,
@@ -159,10 +160,14 @@ export const absenPulang = async (req, res) => {
       select: {
         datang: true,
       },
-    })
+    });
 
     if (!checkAbsenMasuk) {
-      return sendResponse(res, 400, "Tidak bisa absen pulang, Anda belum absen masuk");
+      return sendResponse(
+        res,
+        400,
+        "Tidak bisa absen pulang, Anda belum absen masuk"
+      );
     }
     await prisma.absensi.update({
       where: {
@@ -170,7 +175,7 @@ export const absenPulang = async (req, res) => {
       },
       data: {
         pulang: jam_pulang,
-        hadir: "selesai"
+        hadir: "selesai",
       },
     });
     return sendResponse(res, 200, "Berhasil absen", jam_pulang);
@@ -234,7 +239,7 @@ export const updateStatusCron = async (req, res) => {
     console.log("Data absensi yang ditemukan:", data);
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
-  
+
     if (data.length > 0) {
       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
 

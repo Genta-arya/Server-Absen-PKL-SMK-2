@@ -3,6 +3,7 @@ import express from "express";
 import {
     deleteSingleImage,
   getLaporanByuser,
+  getLaporanMingguan,
   getLaporanMingguanByuser,
   getSingleLaporan,
   getSingleLaporanMingguan,
@@ -24,6 +25,11 @@ LaporanRoutes.get(
   "/data/laporan/mingguan/:id",
   middleware,
   getSingleLaporanMingguan
+);
+LaporanRoutes.get(
+  "/data/laporan/all/mingguan/:id",
+  middleware,
+  getLaporanMingguan
 );
 LaporanRoutes.post("/laporan/harian/:id", middleware, uploadLaporanHarian);
 LaporanRoutes.post("/laporan/mingguan/:id", middleware, uploadLaporanHarianMingguan);

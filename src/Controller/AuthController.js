@@ -139,11 +139,11 @@ export const checkLogin = async (req, res) => {
   const token = req.body.token;
 
   if (!token || typeof token !== "string" || token.trim() === "") {
-    return sendResponse(res, 400, "Silahkan Login terlebih dahulu");
+    return sendResponse(res, 409, "Silahkan Login terlebih dahulu");
   }
 
   if (token.split(".").length !== 3) {
-    return sendResponse(res, 400, "Silahkan Login terlebih dahulu");
+    return sendResponse(res, 409, "Silahkan Login terlebih dahulu");
   }
 
   try {

@@ -297,21 +297,21 @@ export const uploadLaporanHarian = async (req, res) => {
       );
     }
 
-    if (!checkAbsenMasuk.datang) {
-      return sendResponse(
-        res,
-        400,
-        "Tidak bisa upload laporan , anda belum absen masuk"
-      );
-    }
+    // if (!checkAbsenMasuk.datang) {
+    //   return sendResponse(
+    //     res,
+    //     400,
+    //     "Tidak bisa upload laporan , anda belum absen masuk"
+    //   );
+    // }
 
-    if (!checkAbsenMasuk.pulang) {
-      return sendResponse(
-        res,
-        400,
-        "Tidak bisa upload laporan , anda belum absen pulang"
-      );
-    }
+    // if (!checkAbsenMasuk.pulang) {
+    //   return sendResponse(
+    //     res,
+    //     400,
+    //     "Tidak bisa upload laporan , anda belum absen pulang"
+    //   );
+    // }
 
     const updatedLaporan = await prisma.laporan.update({
       where: { id },

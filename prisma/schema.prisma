@@ -90,7 +90,7 @@ model Laporan {
   nama_instruktur      String?
   pembimbingId         String?
   nama_pekerjaan       String?
-  perencanaan_kegiatan String?
+  perencanaan_kegiatan String? @db.Text
   pelaksanaan_kegiatan String?        @db.Text
   catatan_instruktur   String?        @db.Text
   status_selesai       String?        @default("Belum")

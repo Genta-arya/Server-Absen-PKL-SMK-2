@@ -145,3 +145,14 @@ model Absensi {
   status   Boolean?
   Laporan  Laporan[]
 }
+
+
+model LOG {
+  id Int @id @default(autoincrement())
+  error String? @db.Text
+  code Int?
+  date DateTime @default(now())
+
+
+}
+

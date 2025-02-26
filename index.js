@@ -119,15 +119,15 @@ cron.schedule("0 0 1 1,9 *", () => {
 
 
 
-// cron.schedule("*/30 * * * * *", async () => {
-//   try {
-//     console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
-//     await updateStatusCron();
-//     await updateStatusPKLCron();
-//   } catch (error) {
-//     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
-//   }
-// });
+cron.schedule("*/30 * * * * *", async () => {
+  try {
+    console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
+    await updateStatusCron();
+    await updateStatusPKLCron();
+  } catch (error) {
+    console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+  }
+});
 
 app.get("/api/cron", async (req, res) => {
   try {

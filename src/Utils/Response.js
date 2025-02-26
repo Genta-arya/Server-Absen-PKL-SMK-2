@@ -9,15 +9,7 @@ export const sendResponse = async (res, statusCode, message, data = null) => {
   if (data) {
     responsePayload.data = data;
   }
-  // simpan ke database
-  await prisma.lOG.create({
-    data: {
-      error: message,
-      code: statusCode,
-      date: new Date(),
-    },
-  });
-
+ 
   return res.status(statusCode).json(responsePayload);
 };
 

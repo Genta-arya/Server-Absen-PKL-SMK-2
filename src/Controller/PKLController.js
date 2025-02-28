@@ -454,7 +454,6 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
         // Jika shift belum ada, buat shift baru
         if (existingShifts.length === 0) {
-       
           const newShift = await prisma.shift.create({
             data: {
               name: shift.shift_name,
@@ -479,7 +478,6 @@ export const addSiswaToExistingPKL = async (req, res) => {
           });
           id_shift = newShift.id;
         } else {
-        
           id_shift = existingShifts[0].id;
         }
 
@@ -552,8 +550,6 @@ export const addSiswaToExistingPKL = async (req, res) => {
     }
     await Promise.all(laporanPromises);
 
-
-   
     const userAbsensiGrouped = absensiBaru.reduce((acc, absensi) => {
       if (!acc[absensi.user_id]) {
         acc[absensi.user_id] = [];
@@ -569,7 +565,6 @@ export const addSiswaToExistingPKL = async (req, res) => {
 
     const laporanMingguanPromises = [];
 
- 
     for (let userId in userAbsensiGrouped) {
       const absensiUser = userAbsensiGrouped[userId];
       const jumlahMinggu = Math.ceil(absensiUser.length / 7);
@@ -577,9 +572,9 @@ export const addSiswaToExistingPKL = async (req, res) => {
       for (let i = 0; i < jumlahMinggu; i++) {
         const startIndex = i * 7;
         const endIndex = Math.min((i + 1) * 7, absensiUser.length);
-  
+
         const mingguAbsensi = absensiUser.slice(startIndex, endIndex);
-  
+
         laporanMingguanPromises.push(
           prisma.laporanMingguan.create({
             data: {
@@ -1038,5 +1033,44 @@ export const updateStatusPKLCron = async (req, res) => {
     }
   } catch (error) {
     console.error("Terjadi kesalahan saat memperbarui status pkl:", error);
+  }
+};
+
+export const getAllPkl = async (req, res) => {
+  const { role } = req.body;
+
+  if (!role) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  if (role !== "admin") {
+    return sendResponse(res, 400, "Akses ditolak");
+  }
+  try {
+    const data = await prisma.pkl.findMany({
+      where: {
+        isDelete: false,
+      },
+      include: {
+        creator: {
+          select: {
+            avatar: true,
+            name: true,
+            noHp: true,
+          },
+        },
+        users: {
+          select: {
+            id: true,
+            avatar: true,
+            name: true,
+            noHp: true,
+          },
+        },
+      },
+    });
+    return sendResponse(res, 200, "Data PKL", data);
+  } catch (error) {
+    sendError(res, error);
   }
 };

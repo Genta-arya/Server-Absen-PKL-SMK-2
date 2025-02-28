@@ -80,30 +80,30 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "https://digital.smkn2ketapang.sch.id",
-// ];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://digital.smkn2ketapang.sch.id",
+];
 
-// app.use((req, res, next) => {
-//   const origin = req.headers.origin;
-//   const userAgent = req.headers["user-agent"];
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const userAgent = req.headers["user-agent"];
 
  
-//   if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
-//     next();
-//   } else {
-//     res.status(403).json({
-//       message: "Tidak diizinkan untuk mengakses API ini",
-//       status: 403,
-//     });
-//   }
-// });
+  if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
+    next();
+  } else {
+    res.status(403).json({
+      message: "Tidak diizinkan untuk mengakses API ini",
+      status: 403,
+    });
+  }
+});
 
 
 app.use(
   cors({
-    origin: "*",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", " X-CSRF-Token"],
     credentials: true,

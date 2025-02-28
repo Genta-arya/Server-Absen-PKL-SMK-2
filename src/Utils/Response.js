@@ -9,7 +9,7 @@ export const sendResponse = async (res, statusCode, message, data = null) => {
   if (data) {
     responsePayload.data = data;
   }
- 
+
   return res.status(statusCode).json(responsePayload);
 };
 
@@ -23,7 +23,6 @@ export const sendError = async (
     data: {
       error: error,
       code: 500,
-      date: new Date(),
     },
   });
 

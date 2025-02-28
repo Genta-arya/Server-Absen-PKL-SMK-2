@@ -1069,20 +1069,31 @@ export const getAllPkl = async (req, res) => {
             id: true,
             avatar: true,
             name: true,
-            noHp: true,
-            shifts: {
-              where: {
-                isDelete: false,
-              },
-
-              take: 2, // Ambil hanya satu shift pertama
+            Kelas: {
               select: {
                 id: true,
-                name: true,
-                jamMasuk: true,
-                jamPulang: true,
+                nama: true,
               },
             },
+            noHp: true,
+            Absensi: {
+              take: 1,
+              select: {
+                pkl: {
+                  select: {
+                    shifts:{
+                      select: {
+                        id: true,
+                        name: true,
+                        jamMasuk: true,
+                        jamPulang: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+           
           },
         },
       },

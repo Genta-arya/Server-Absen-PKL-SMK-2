@@ -123,7 +123,9 @@ export const createPKLWithAbsensi = async (req, res) => {
           jamMasuk: new Date(jamMasuk),
           jamPulang: new Date(jamPulang),
           pklId: newPkl.id,
-          // Pastikan untuk menghubungkan pengguna yang sesuai
+          users: {
+            connect: users.map((userId) => ({ id: userId })),
+          },
         },
       });
 
@@ -875,6 +877,8 @@ export const removeSiswaFromPkl = async (req, res) => {
         },
       },
     });
+  
+
     if (isDelete) {
       await prisma.shift.deleteMany({
         where: { pklId: id },
@@ -1046,6 +1050,7 @@ export const getAllPkl = async (req, res) => {
   if (role !== "admin") {
     return sendResponse(res, 400, "Akses ditolak");
   }
+
   try {
     const data = await prisma.pkl.findMany({
       where: {
@@ -1065,10 +1070,24 @@ export const getAllPkl = async (req, res) => {
             avatar: true,
             name: true,
             noHp: true,
+            shifts: {
+              where: {
+                isDelete: false,
+              },
+
+              take: 2, // Ambil hanya satu shift pertama
+              select: {
+                id: true,
+                name: true,
+                jamMasuk: true,
+                jamPulang: true,
+              },
+            },
           },
         },
       },
     });
+
     return sendResponse(res, 200, "Data PKL", data);
   } catch (error) {
     sendError(res, error);

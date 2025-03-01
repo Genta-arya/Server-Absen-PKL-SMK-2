@@ -663,20 +663,16 @@ export const getSinglePkl = async (req, res) => {
             avatar: true,
             Absensi: {
               take: 1,
-              select:{
+              select: {
                 shift: {
-                  where: {
-                    isDelete: false
-                  },
                   select: {
-                    id: true,
                     name: true,
                     jamMasuk: true,
                     jamPulang: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
         },
         shifts: {
@@ -966,7 +962,7 @@ export const getAnggotaPkl = async (req, res) => {
       where: {
         id,
       },
-      select: {
+      include: {
         users: {
           select: {
             id: true,

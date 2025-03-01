@@ -71,7 +71,7 @@ app.set("trust proxy", 1);
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 150,
+  max: 500,
   message: "Terlalu banyak permintaan, coba lagi nanti",
   statusCode: 403,
 });

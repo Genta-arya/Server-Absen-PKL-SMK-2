@@ -661,6 +661,22 @@ export const getSinglePkl = async (req, res) => {
             role: true,
             nim: true,
             avatar: true,
+            Absensi: {
+              take: 1,
+              select:{
+                shift: {
+                  where: {
+                    isDelete: false
+                  },
+                  select: {
+                    id: true,
+                    name: true,
+                    jamMasuk: true,
+                    jamPulang: true,
+                  }
+                }
+              }
+            }
           },
         },
         shifts: {
@@ -877,7 +893,6 @@ export const removeSiswaFromPkl = async (req, res) => {
         },
       },
     });
-  
 
     if (isDelete) {
       await prisma.shift.deleteMany({
@@ -967,12 +982,16 @@ export const getAnggotaPkl = async (req, res) => {
                 nama: true,
               },
             },
-            shifts: {
+            Absensi: {
+              take: 1,
               select: {
-                id: true,
-                name: true,
-                jamMasuk: true,
-                jamPulang: true,
+                shift: {
+                  select: {
+                    name: true,
+                    jamMasuk: true,
+                    jamPulang: true,
+                  },
+                },
               },
             },
           },
@@ -1081,19 +1100,18 @@ export const getAllPkl = async (req, res) => {
               select: {
                 pkl: {
                   select: {
-                    shifts:{
+                    shifts: {
                       select: {
                         id: true,
                         name: true,
                         jamMasuk: true,
-                        jamPulang: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-           
+                        jamPulang: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },

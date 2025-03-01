@@ -6,35 +6,36 @@ datasource db {
   provider          = "mysql"
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
   // provider = "postgresql"
-  url      = env("DATABASE_URL")
- 
+  url               = env("DATABASE_URL")
+
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Kelas {
-  id    String @id @default(uuid())
-  nama  String
-  users User[] @relation("UserKelas")
+  id        String   @id @default(uuid())
+  nama      String
+  users     User[]   @relation("UserKelas")
+  createdAt DateTime @default(now())
 }
 
 model User {
-  id           String    @id @default(uuid())
-  nim          String    @unique
-  name         String?
-  email        String?   @unique
-  password     String
-  status_login Boolean   @default(false)
-  avatar       String?
-  role         String    @default("user")
-  token        String?
-  noHp         String?
-  createdAt    DateTime  @default(now())
-  Pkl          Pkl[]     @relation("UserPkl")
-  CreatedPkl   Pkl[]     @relation("PklCreator")
-  Kelas        Kelas[]   @relation("UserKelas")
-  Absensi      Absensi[]
-  shifts       Shift[]   @relation("UserShift")
-  laporan      Laporan[] @relation("UserLaporan")
+  id               String            @id @default(uuid())
+  nim              String            @unique
+  name             String?
+  email            String?           @unique
+  password         String
+  status_login     Boolean           @default(false)
+  avatar           String?
+  role             String            @default("user")
+  token            String?
+  noHp             String?
+  createdAt        DateTime          @default(now())
+  Pkl              Pkl[]             @relation("UserPkl")
+  CreatedPkl       Pkl[]             @relation("PklCreator")
+  Kelas            Kelas[]           @relation("UserKelas")
+  Absensi          Absensi[]
+  shifts           Shift[]           @relation("UserShift")
+  laporan          Laporan[]         @relation("UserLaporan")
   laporan_mingguan LaporanMingguan[] @relation("UserLaporanMingguan")
 }
 
@@ -45,38 +46,39 @@ model Shift {
   name      String
   jamMasuk  DateTime
   jamPulang DateTime
-  isDelete Boolean @default(false)
+  isDelete  Boolean   @default(false)
   absensi   Absensi[]
   users     User[]    @relation("UserShift")
   createdAt DateTime  @default(now())
 }
 
 model Foto_laporan {
-  id         String   @id @default(uuid())
-  laporan_id String?
+  id                  String           @id @default(uuid())
+  laporan_id          String?
   laporan_mingguan_id String?
-  laporan    Laporan? @relation("LaporanFoto", fields: [laporan_id], references: [id], onDelete: Cascade)
-  laporan_mingguan LaporanMingguan? @relation("LaporanMingguanFoto", fields: [laporan_mingguan_id], references: [id], onDelete: Cascade)
-  foto_url   String
+  laporan             Laporan?         @relation("LaporanFoto", fields: [laporan_id], references: [id], onDelete: Cascade)
+  laporan_mingguan    LaporanMingguan? @relation("LaporanMingguanFoto", fields: [laporan_mingguan_id], references: [id], onDelete: Cascade)
+  foto_url            String
+  createdAt           DateTime         @default(now())
 }
 
 model Pkl {
-  id              String    @id @default(uuid())
-  name            String
-  alamat          String
-  creatorId       String
-  creator         User      @relation("PklCreator", fields: [creatorId], references: [id])
-  users           User[]    @relation("UserPkl")
-  absensi         Absensi[] @relation("PklAbsensi")
-  shifts          Shift[]   @relation("PklShift")
-  laporan         Laporan[] @relation("PklLaporan")
+  id               String            @id @default(uuid())
+  name             String
+  alamat           String
+  creatorId        String
+  creator          User              @relation("PklCreator", fields: [creatorId], references: [id])
+  users            User[]            @relation("UserPkl")
+  absensi          Absensi[]         @relation("PklAbsensi")
+  shifts           Shift[]           @relation("PklShift")
+  laporan          Laporan[]         @relation("PklLaporan")
   laporan_mingguan LaporanMingguan[] @relation("PklLaporanMingguan")
-  isDelete        Boolean?  @default(false)
-  link_grup       String?
-  tanggal_mulai   DateTime?
-  tanggal_selesai DateTime
-  status          Boolean   @default(true)
-  createdAt       DateTime  @default(now())
+  isDelete         Boolean?          @default(false)
+  link_grup        String?
+  tanggal_mulai    DateTime?
+  tanggal_selesai  DateTime
+  status           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
 }
 
 model Laporan {
@@ -91,71 +93,59 @@ model Laporan {
   nama_instruktur      String?
   pembimbingId         String?
   nama_pekerjaan       String?
-  perencanaan_kegiatan String? @db.Text
+  perencanaan_kegiatan String?        @db.Text
   pelaksanaan_kegiatan String?        @db.Text
   catatan_instruktur   String?        @db.Text
   status_selesai       String?        @default("Belum")
   fotos                Foto_laporan[] @relation("LaporanFoto")
-
-  status Boolean?
+  createdAt            DateTime       @default(now())
+  status               Boolean?
 }
-
 
 model LaporanMingguan {
-  id        String   @id @default(uuid())
-  pkl_id    String
-  pkl       Pkl?     @relation("PklLaporanMingguan", fields: [pkl_id], references: [id], onDelete: Cascade)
-  user_id   String
+  id           String         @id @default(uuid())
+  pkl_id       String
+  pkl          Pkl?           @relation("PklLaporanMingguan", fields: [pkl_id], references: [id], onDelete: Cascade)
+  user_id      String
   pembimbingId String?
-  user      User?    @relation("UserLaporanMingguan", fields: [user_id], references: [id], onDelete: Cascade)
-  absensi   Absensi? @relation(fields: [absensi_id], references: [id])
-  absensi_id String?
-  fotos     Foto_laporan[] @relation("LaporanMingguanFoto")
- 
-  nama_instruktur      String?
-  nama_pekerjaan String?
-  catatan String? @db.Text
-  status    Boolean?
-  status_selesai String @default("Belum")
-  createdAt DateTime  @default(now())
+  user         User?          @relation("UserLaporanMingguan", fields: [user_id], references: [id], onDelete: Cascade)
+  absensi      Absensi?       @relation(fields: [absensi_id], references: [id])
+  absensi_id   String?
+  fotos        Foto_laporan[] @relation("LaporanMingguanFoto")
+
+  nama_instruktur String?
+  nama_pekerjaan  String?
+  catatan         String?  @db.Text
+  status          Boolean?
+  status_selesai  String   @default("Belum")
+  createdAt       DateTime @default(now())
 }
-
-
-
-
-
-
 
 model Absensi {
-  id       String  @id @default(uuid())
-  pkl_id   String
-  pkl      Pkl?    @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
-  shift_id String?
-  shift    Shift?  @relation(fields: [shift_id], references: [id])
+  id               String            @id @default(uuid())
+  pkl_id           String
+  pkl              Pkl?              @relation("PklAbsensi", fields: [pkl_id], references: [id], onDelete: Cascade)
+  shift_id         String?
+  shift            Shift?            @relation(fields: [shift_id], references: [id])
   laporan_mingguan LaporanMingguan[]
-  isDelete Boolean?
-  user_id  String
-  user     User?     @relation(fields: [user_id], references: [id])
-  tanggal  DateTime
-  hadir    String?
-  foto     String?
-  gps      String?
-  posisi   String?
-  pulang   DateTime?
-  datang   DateTime?
-  status   Boolean?
-  Laporan  Laporan[]
-
-
+  isDelete         Boolean?
+  user_id          String
+  user             User?             @relation(fields: [user_id], references: [id])
+  tanggal          DateTime
+  hadir            String?
+  foto             String?
+  gps              String?
+  posisi           String?
+  pulang           DateTime?
+  datang           DateTime?
+  status           Boolean?
+  Laporan          Laporan[]
+  createdAt        DateTime?         @default(now())
 }
-
 
 model LOG {
-  id Int @id @default(autoincrement())
-  error String? @db.Text
-  code Int?
-  date DateTime @default(now())
-
-
+  id    Int      @id @default(autoincrement())
+  error String?  @db.Text
+  code  Int?
+  date  DateTime @default(now())
 }
-

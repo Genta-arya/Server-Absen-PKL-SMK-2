@@ -797,12 +797,14 @@ export const deleteAllPkl = async (req, res) => {
     }
 
     // Hapus Absensi & Shift terkait dengan PKL yang akan dihapus
-    await prisma.absensi.deleteMany({
-      where: { pkl_id: { in: pklIds } },
+    await prisma.absensi.updateMany({
+      where: { pkl_id: { in: pklIds }  },
+      data: { isDelete: true },
     });
 
-    await prisma.shift.deleteMany({
+    await prisma.shift.updateMany({
       where: { pklId: { in: pklIds } },
+      data: { isDelete: true },
     });
 
     // Hapus PKL

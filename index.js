@@ -112,10 +112,10 @@ app.use(
 
 
 // Cron Job 8 bulan sekali
-cron.schedule("0 0 1 1,9 *", () => {
-  deleteAllPkl();
-  console.log("Cron job dijalankan setiap 8 bulan sekali");
-});
+// cron.schedule("0 0 1 1,9 *", () => {
+//   deleteAllPkl();
+//   console.log("Cron job dijalankan setiap 8 bulan sekali");
+// });
 
 
 

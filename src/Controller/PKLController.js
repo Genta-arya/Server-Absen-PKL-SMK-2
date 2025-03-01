@@ -662,6 +662,9 @@ export const getSinglePkl = async (req, res) => {
             nim: true,
             avatar: true,
             Absensi: {
+              where: {
+                OR: [{ isDelete: false }, { isDelete: null }],
+              },
               take: 1,
               select: {
                 shift: {
@@ -979,6 +982,9 @@ export const getAnggotaPkl = async (req, res) => {
               },
             },
             Absensi: {
+              where: {
+                OR: [{ isDelete: false }, { isDelete: null }],
+              },
               take: 1,
               select: {
                 shift: {
@@ -1092,11 +1098,22 @@ export const getAllPkl = async (req, res) => {
             },
             noHp: true,
             Absensi: {
+              where: {
+                OR: [{ isDelete: false }, { isDelete: null }],
+              },
               take: 1,
+
               select: {
                 pkl: {
+                  where: {
+                    isDelete: false,
+                  },
+
                   select: {
                     shifts: {
+                      where: {
+                        isDelete: false,
+                      },
                       select: {
                         id: true,
                         name: true,

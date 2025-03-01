@@ -145,6 +145,8 @@ model Absensi {
   datang   DateTime?
   status   Boolean?
   Laporan  Laporan[]
+
+
 }
 
 

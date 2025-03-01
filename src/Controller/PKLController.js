@@ -783,16 +783,41 @@ export const deletePkl = async (req, res) => {
 
 export const deleteAllPkl = async (req, res) => {
   try {
-    const deletePkl = await prisma.pkl.deleteMany({
-      where: {
-        isDelete: true,
-      },
+    // Ambil semua PKL yang akan dihapus
+    const pklToDelete = await prisma.pkl.findMany({
+      where: { isDelete: true },
+      select: { id: true }
     });
-    console.log(" Data PKL berhasil dihapus", deletePkl);
+
+    // Ambil ID PKL yang akan dihapus
+    const pklIds = pklToDelete.map(p => p.id);
+
+    if (pklIds.length === 0) {
+      return res.status(400).json({ message: "Tidak ada PKL untuk dihapus" });
+    }
+
+    // Hapus Absensi & Shift terkait dengan PKL yang akan dihapus
+    await prisma.absensi.deleteMany({
+      where: { pkl_id: { in: pklIds } },
+    });
+
+    await prisma.shift.deleteMany({
+      where: { pklId: { in: pklIds } },
+    });
+
+    // Hapus PKL
+    const deletePkl = await prisma.pkl.deleteMany({
+      where: { id: { in: pklIds } },
+    });
+
+    console.log("Data PKL berhasil dihapus", deletePkl);
+    res.json({ message: "PKL dan data terkait berhasil dihapus" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
+
 
 export const updateStatusPkl = async (req, res) => {
   const { id } = req.params;

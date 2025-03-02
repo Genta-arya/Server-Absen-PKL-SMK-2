@@ -108,6 +108,7 @@ export const absenPulang = async (req, res) => {
           jamMasuk: true,
         },
       },
+      datang: true,
       pulang: true,
     },
   });
@@ -151,6 +152,10 @@ export const absenPulang = async (req, res) => {
 
   if (exits.pulang !== null) {
     return sendResponse(res, 400, "Anda sudah absen pulang");
+  }
+
+  if (exits.datang === null) {
+    return sendResponse(res, 400, "Anda belum absen masuk");
   }
   try {
     const checkAbsenMasuk = await prisma.absensi.findUnique({

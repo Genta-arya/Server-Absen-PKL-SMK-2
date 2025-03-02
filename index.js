@@ -129,6 +129,8 @@ cron.schedule("*/30 * * * * *", async () => {
   }
 });
 
+
+
 app.get("/api/cron", async (req, res) => {
   try {
     console.log("Menjalankan cron job di Vercel...");

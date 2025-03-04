@@ -379,3 +379,113 @@ export const rekapDaftarAbsensi = async (req, res) => {
     sendError(res, error);
   }
 };
+
+export const UpdateStatusAbsen = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const dataEnum = ["selesai", "tidak_hadir", "izin", "libur"];
+
+  if (!id || !status) {
+    return sendResponse(res, 400, "Invalid request");
+  }
+
+  if (!dataEnum.includes(status)) {
+    return sendResponse(res, 400, "Invalid Status");
+  }
+  try {
+    const findData = await prisma.absensi.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!findData) {
+      return sendResponse(res, 404, "Absensi tidak ditemukan");
+    }
+
+    let update;
+
+    if (status === "selesai") {
+      console.log(status);
+      if (findData.gps === null) {
+        return sendResponse(
+          res,
+          400,
+          "Tidak bisa update absensi , karena absensi ini memang tidak hadir"
+        );
+      }
+      if (findData.datang === null || findData.pulang === null) {
+        update = await prisma.absensi.update({
+          where: { id },
+          data: {
+            hadir: "selesai",
+            pulang: DateTime.now().setZone("Asia/Jakarta").toJSDate(),
+            datang: DateTime.now().setZone("Asia/Jakarta").toJSDate(),
+          },
+        });
+      } else {
+        update = await prisma.absensi.update({
+          where: { id },
+          data: {
+            hadir: "selesai",
+          },
+        });
+      }
+    } else if (status === "tidak_hadir") {
+      if (findData.datang !== null || findData.pulang !== null) {
+        update = await prisma.absensi.update({
+          where: { id },
+          data: {
+            hadir: "tidak_hadir",
+          },
+        });
+      } else {
+        update = await prisma.absensi.update({
+          where: { id },
+          data: {
+            hadir: "tidak_hadir",
+            pulang: null,
+            datang: null,
+          },
+        });
+      }
+    }
+    if (status === "izin") {
+      const countIzin = await prisma.absensi.count({
+        where: {
+          user_id: findData.user_id,
+          hadir: "izin",
+        },
+      });
+
+      if (countIzin >= 3) {
+        return res
+          .status(400)
+          .json({ message: "Batas maksimal izin telah tercapai (3 kali)." });
+      }
+
+      update = await prisma.absensi.update({
+        where: {
+          id,
+        },
+        data: {
+          hadir: status,
+        },
+      });
+    } else {
+      update = await prisma.absensi.update({
+        where: {
+          id,
+        },
+        data: {
+          hadir: status,
+        },
+      });
+    }
+    const refreshedData = await prisma.absensi.findUnique({ where: { id } });
+    console.log(refreshedData);
+    return sendResponse(res, 200, "Status berhasil diupdate", update);
+  } catch (error) {
+    sendError(res, error);
+  }
+};

@@ -1129,28 +1129,17 @@ export const getAllPkl = async (req, res) => {
                 OR: [{ isDelete: false }, { isDelete: null }],
               },
               take: 1,
-
-              select: {
-                pkl: {
-                  where: {
-                    isDelete: false,
-                  },
-
+              select:{
+                shift: {
                   select: {
-                    shifts: {
-                      where: {
-                        isDelete: false,
-                      },
-                      select: {
-                        id: true,
-                        name: true,
-                        jamMasuk: true,
-                        jamPulang: true,
-                      },
-                    },
+                    name: true,
+                    jamMasuk: true,
+                    jamPulang: true,
                   },
-                },
-              },
+                }
+              }
+
+             
             },
           },
         },

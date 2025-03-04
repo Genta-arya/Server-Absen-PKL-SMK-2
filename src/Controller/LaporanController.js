@@ -17,6 +17,7 @@ export const getLaporanByuser = async (req, res) => {
           { absensi: { hadir: "hadir" } },
           { absensi: { hadir: "selesai" } },
           { absensi: { hadir: null } },
+       
         ],
       },
       select: {

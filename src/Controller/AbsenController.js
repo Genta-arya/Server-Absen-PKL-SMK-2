@@ -489,3 +489,40 @@ export const UpdateStatusAbsen = async (req, res) => {
     sendError(res, error);
   }
 };
+
+export const updateSundayPray = async () => {
+  try {
+    console.log("Menjalankan cron job update Sunday Pray...");
+
+    // Query langsung ke database untuk mengambil ID yang perlu diperbarui
+    const sundayIds = await prisma.$queryRaw`
+    SELECT id FROM Absensi 
+    WHERE (isDelete = FALSE OR isDelete IS NULL) 
+    AND DAYOFWEEK(tanggal) = 1
+  `;
+
+    if (!sundayIds || sundayIds.length === 0) {
+      console.log("Tidak ada data absensi yang perlu diperbarui.");
+      return;
+    }
+
+    // Ambil hanya ID dari hasil query
+    const idsToUpdate = sundayIds.map((item) => item.id);
+
+    // Update hanya data yang memenuhi kriteria
+    await prisma.absensi.updateMany({
+      where: {
+        id: { in: idsToUpdate },
+      },
+      data: {
+        hadir: "libur",
+      },
+    });
+
+    console.log(
+      `Berhasil memperbarui ${idsToUpdate.length} data absensi hari Minggu.`
+    );
+  } catch (error) {
+    console.error("Error dalam update Sunday Pray:", error);
+  }
+};

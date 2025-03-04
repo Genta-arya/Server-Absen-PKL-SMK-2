@@ -21,7 +21,7 @@ import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
-import { updateStatusCron } from "./src/Controller/AbsenController.js";
+import { updateStatusCron, updateSundayPray } from "./src/Controller/AbsenController.js";
 import { LaporanRoutes } from "./src/Routes/LaporanRoutes.js";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
@@ -29,6 +29,7 @@ import helmet from "helmet";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 import { csrfProtection } from "./src/Config/Cookie.js";
+import { BeritaRoutes } from "./src/Routes/BeritaRoutes.js";
 
 dotenv.config();
 
@@ -124,10 +125,20 @@ cron.schedule("*/30 * * * * *", async () => {
     console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
     await updateStatusCron();
     await updateStatusPKLCron();
+    // await updateSundayPray();
   } catch (error) {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }
 });
+
+cron.schedule("0 0 * * 0", async () => {
+  await updateSundayPray();
+}, {
+  scheduled: true,
+  timezone: "Asia/Jakarta"
+});
+// await updateSundayPray();
+
 
 
 
@@ -148,6 +159,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/pkl", PKLRoutes);
 app.use("/api/absensi", AbsensRoutes);
 app.use("/api/report", LaporanRoutes);
+app.use("/api/berita", BeritaRoutes);
 app.use("/image", express.static("Public/Images/Profile"));
 app.get("/api/get-token", (req, res) => {
   const token = req.cookies.token;

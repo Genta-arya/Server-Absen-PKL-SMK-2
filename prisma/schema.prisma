@@ -146,6 +146,15 @@ model Absensi {
 model LOG {
   id    Int      @id @default(autoincrement())
   error String?  @db.Text
-  code  Int?
+  code  String?
   date  DateTime @default(now())
+}
+
+model Berita {
+  id        String   @id @default(uuid())
+  title     String
+  content   String @db.Text
+  status    Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

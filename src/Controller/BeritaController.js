@@ -18,15 +18,25 @@ export const createBerita = async (req, res) => {
 };
 
 export const getBerita = async (req, res) => {
+  const { role } = req.params;
   try {
-    const exitsBerita = await prisma.berita.findMany({
-      where: {
-        status: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    let exitsBerita;
+    if (role === "admin") {
+      exitsBerita = await prisma.berita.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    } else {
+      exitsBerita = await prisma.berita.findMany({
+        where: {
+          status: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }
 
     return sendResponse(res, 200, "Berita ditemukan", exitsBerita);
   } catch (error) {
@@ -64,12 +74,11 @@ export const EditBerita = async (req, res) => {
 export const updateStatusBerita = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  if (!id || !status) {
+
+  if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
 
-  //   convert string to boolean
-  const statusBool = status === "true" ? true : false;
   const checkData = await prisma.berita.findUnique({
     where: { id },
   });
@@ -79,7 +88,7 @@ export const updateStatusBerita = async (req, res) => {
   try {
     const updated = await prisma.berita.update({
       where: { id },
-      data: { status: statusBool },
+      data: { status },
     });
     return sendResponse(res, 200, "Berita berhasil diupdate", updated);
   } catch (error) {

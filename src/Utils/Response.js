@@ -21,12 +21,12 @@ export const sendError = async (
   // simpan ke database
   await prisma.lOG.create({
     data: {
-      error: error,
+      error: error || "-",
       code: 500,
     },
   });
 
-  console.log("LOG: " + error + "," + customMessage);
+ 
 
   return res.status(500).json({ message: customMessage, Detail: error });
 };

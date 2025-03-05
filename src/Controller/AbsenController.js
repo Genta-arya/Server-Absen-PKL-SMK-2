@@ -232,6 +232,7 @@ export const updateStatusCron = async (req, res) => {
         tanggal: {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
+        hadir: { not: "tidak_hadir" },
 
         pulang: null, // Pulang juga kosong
       },

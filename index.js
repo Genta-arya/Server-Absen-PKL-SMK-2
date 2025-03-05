@@ -121,12 +121,11 @@ app.use(
 //   console.log("Cron job dijalankan setiap 8 bulan sekali");
 // });
 
-cron.schedule("*/30 * * * * *", async () => {
+cron.schedule("*/1 * * * *", async () => {
   try {
-    console.log("Menjalankan cron job updateStatusCron setiap 30 detik...");
+    console.log("Menjalankan cron job updateStatusCron setiap 60 detik...");
     await updateStatusCron();
     await updateStatusPKLCron();
-    // await updateSundayPray();
   } catch (error) {
     console.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }

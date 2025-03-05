@@ -16,6 +16,79 @@ date = date.setZone("Asia/Jakarta");
 export let formattedHour;
 export let newDateIndonesia;
 
+export const getTimeInJakarta = async () => {
+  let jakartaTime = null;
+
+  // 1️⃣ Coba TimeAPI.io
+  try {
+    const response = await axios.get(
+      "https://timeapi.io/api/Time/current/zone",
+      {
+        params: { timeZone: "Asia/Jakarta" },
+      }
+    );
+    jakartaTime = response.data.dateTime;
+  } catch (error) {
+    console.error("❌ Error with TimeAPI.io:", error.message);
+  }
+
+  // 2️⃣ Coba TimeZoneDB jika TimeAPI.io gagal
+  const timeZoneDBKeys = ["9DYFOGZS7MVB", "SGHKJRN8UKM4"];
+  for (const apiKey of timeZoneDBKeys) {
+    if (jakartaTime) break; // Jika sudah dapat, hentikan pencarian
+    try {
+      const response = await axios.get(
+        "http://api.timezonedb.com/v2.1/get-time-zone",
+        {
+          params: {
+            key: apiKey,
+            format: "json",
+            by: "zone",
+            zone: "Asia/Jakarta",
+          },
+        }
+      );
+      jakartaTime = response.data.formatted;
+    } catch (error) {
+      console.error(
+        `❌ Error with TimeZoneDB (API Key: ${apiKey}):`,
+        error.message
+      );
+    }
+  }
+
+  // 3️⃣ Jika masih gagal, coba WorldTimeAPI
+  if (!jakartaTime) {
+    try {
+      const response = await axios.get(
+        "http://worldtimeapi.org/api/timezone/Asia/Jakarta"
+      );
+      jakartaTime = response.data.datetime;
+    } catch (error) {
+      console.error("❌ Error with WorldTimeAPI:", error.message);
+    }
+  }
+
+  // Jika semua API gagal, hentikan eksekusi
+  if (!jakartaTime) {
+    console.error("❌ Gagal mendapatkan waktu Jakarta dari semua sumber.");
+    return null;
+  }
+
+  // Konversi waktu ke Luxon
+  const time = moment.tz(jakartaTime, "Asia/Jakarta");
+  const isoString = time.format();
+
+  let date = DateTime.fromISO(isoString).setZone("Asia/Jakarta");
+
+  formattedHour = date.toJSDate();
+  newDateIndonesia = date;
+
+  console.log("✅ Waktu di Jakarta:", newDateIndonesia.toISO());
+
+  return newDateIndonesia;
+};
+
 // export const getTimeInJakarta = async () => {
 //     try {
 //       const apiKey = "9DYFOGZS7MVB"; // Kunci API pertama
@@ -30,23 +103,23 @@ export let newDateIndonesia;
 //           },
 //         }
 //       );
-  
+
 //       const jakartaTime = response.data.formatted;
-  
+
 //       const time = moment.tz(jakartaTime, "Asia/Jakarta");
 //       const isoString = time.format();
-  
+
 //       let date = DateTime.fromISO(isoString);
 //       date = date.setZone("Asia/Jakarta");
-  
+
 //       formattedHour = date.toJSDate();
-  
+
 //       newDateIndonesia = date;
-  
+
 //       console.log(newDateIndonesia);
 //     } catch (error) {
 //       console.error("Error with the first API key:", error);
-      
+
 //       // Coba API key kedua jika yang pertama gagal
 //       try {
 //         const apiKey = "SGHKJRN8UKM4"; // Ganti dengan kunci API yang berbeda
@@ -61,82 +134,81 @@ export let newDateIndonesia;
 //             },
 //           }
 //         );
-  
+
 //         const jakartaTime = response.data.formatted;
-  
+
 //         const time = moment.tz(jakartaTime, "Asia/Jakarta");
 //         const isoString = time.format();
-  
+
 //         let date = DateTime.fromISO(isoString);
 //         date = date.setZone("Asia/Jakarta");
-  
+
 //         formattedHour = date.toJSDate();
-  
+
 //         newDateIndonesia = date;
-  
+
 //         console.log(newDateIndonesia);
 //       } catch (secondError) {
 //         console.error("Error with the second API key:", secondError);
 //       }
 //     }
 //   };
-  
 
-export const getTimeInJakarta = async () => {
-  // Coba API dari TimeAPI.io terlebih dahulu
-  let jakartaTime = null;
-  try {
-    const response = await axios.get("https://timeapi.io/api/Time/current/zone", {
-      params: { timeZone: "Asia/Jakarta" },
-    });
-    jakartaTime = response.data.dateTime;
-  } catch (error) {
-    console.error("Error with TimeAPI.io:", error.message);
-  }
+// export const getTimeInJakarta = async () => {
+//   // Coba API dari TimeAPI.io terlebih dahulu
+//   let jakartaTime = null;
+//   try {
+//     const response = await axios.get("https://timeapi.io/api/Time/current/zone", {
+//       params: { timeZone: "Asia/Jakarta" },
+//     });
+//     jakartaTime = response.data.dateTime;
+//   } catch (error) {
+//     console.error("Error with TimeAPI.io:", error.message);
+//   }
 
-  // Jika gagal, coba TimeZoneDB API (API pertama)
-  const fetchTimeZoneDB = async (apiKey) => {
-    try {
-      const response = await axios.get("http://api.timezonedb.com/v2.1/get-time-zone", {
-        params: {
-          key: apiKey,
-          format: "json",
-          by: "zone",
-          zone: "Asia/Jakarta",
-        },
-      });
-      return response.data.formatted;
-    } catch (error) {
-      console.error(`Error with API key (${apiKey}):`, error.message);
-      return null;
-    }
-  };
+//   // Jika gagal, coba TimeZoneDB API (API pertama)
+//   const fetchTimeZoneDB = async (apiKey) => {
+//     try {
+//       const response = await axios.get("http://api.timezonedb.com/v2.1/get-time-zone", {
+//         params: {
+//           key: apiKey,
+//           format: "json",
+//           by: "zone",
+//           zone: "Asia/Jakarta",
+//         },
+//       });
+//       return response.data.formatted;
+//     } catch (error) {
+//       console.error(`Error with API key (${apiKey}):`, error.message);
+//       return null;
+//     }
+//   };
 
-  if (!jakartaTime) {
-    jakartaTime = await fetchTimeZoneDB("9DYFOGZS7MVB");
-  }
+//   if (!jakartaTime) {
+//     jakartaTime = await fetchTimeZoneDB("9DYFOGZS7MVB");
+//   }
 
-  // Jika gagal, coba API kedua
-  if (!jakartaTime) {
-    jakartaTime = await fetchTimeZoneDB("SGHKJRN8UKM4");
-  }
+//   // Jika gagal, coba API kedua
+//   if (!jakartaTime) {
+//     jakartaTime = await fetchTimeZoneDB("SGHKJRN8UKM4");
+//   }
 
-  // Jika semua API gagal, hentikan eksekusi
-  if (!jakartaTime) {
-    console.error("Gagal mendapatkan waktu Jakarta dari semua sumber.");
-    return null;
-  }
+//   // Jika semua API gagal, hentikan eksekusi
+//   if (!jakartaTime) {
+//     console.error("Gagal mendapatkan waktu Jakarta dari semua sumber.");
+//     return null;
+//   }
 
-  // Konversi waktu
-  const time = moment.tz(jakartaTime, "Asia/Jakarta");
-  const isoString = time.format();
+//   // Konversi waktu
+//   const time = moment.tz(jakartaTime, "Asia/Jakarta");
+//   const isoString = time.format();
 
-  let date = DateTime.fromISO(isoString).setZone("Asia/Jakarta");
+//   let date = DateTime.fromISO(isoString).setZone("Asia/Jakarta");
 
-  formattedHour = date.toJSDate();
-  newDateIndonesia = date;
+//   formattedHour = date.toJSDate();
+//   newDateIndonesia = date;
 
-  console.log("Waktu di Jakarta:", newDateIndonesia.toISO());
+//   console.log("Waktu di Jakarta:", newDateIndonesia.toISO());
 
-  return newDateIndonesia;
-};
+//   return newDateIndonesia;
+// };

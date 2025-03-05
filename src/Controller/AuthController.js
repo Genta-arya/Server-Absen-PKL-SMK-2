@@ -96,7 +96,7 @@ export const handleLogin = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return sendResponse(res, 401, "NIM atau password salah");
+      return sendResponse(res, 400, "NIM atau password salah");
     }
 
     const token = createToken({ nim: user.nim, role: user.role });

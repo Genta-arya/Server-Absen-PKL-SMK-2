@@ -21,7 +21,10 @@ import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "./src/Config/Prisma.js";
-import { updateStatusCron, updateSundayPray } from "./src/Controller/AbsenController.js";
+import {
+  updateStatusCron,
+  updateSundayPray,
+} from "./src/Controller/AbsenController.js";
 import { LaporanRoutes } from "./src/Routes/LaporanRoutes.js";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
@@ -77,21 +80,23 @@ const limiter = rateLimit({
   statusCode: 403,
 });
 
-
 app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://digital.smkn2ketapang.sch.id",
+  "https://digital-tester.smkn2ketapang.sch.id",
 ];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const userAgent = req.headers["user-agent"];
 
- 
-  if (allowedOrigins.includes(origin) || userAgent.includes("vercel-cron/1.0")) {
+  if (
+    allowedOrigins.includes(origin) ||
+    userAgent.includes("vercel-cron/1.0")
+  ) {
     next();
   } else {
     res.status(403).json({
@@ -100,7 +105,6 @@ app.use((req, res, next) => {
     });
   }
 });
-
 
 app.use(
   cors({
@@ -111,14 +115,11 @@ app.use(
   })
 );
 
-
 // Cron Job 8 bulan sekali
 // cron.schedule("0 0 1 1,9 *", () => {
 //   deleteAllPkl();
 //   console.log("Cron job dijalankan setiap 8 bulan sekali");
 // });
-
-
 
 cron.schedule("*/30 * * * * *", async () => {
   try {
@@ -131,20 +132,18 @@ cron.schedule("*/30 * * * * *", async () => {
   }
 });
 
-cron.schedule("0 0 * * *", async () => {
-  await updateSundayPray();
-}, {
-  scheduled: true,
-  timezone: "Asia/Jakarta"
-});
-
-
-
+cron.schedule(
+  "0 0 * * *",
+  async () => {
+    await updateSundayPray();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Jakarta",
+  }
+);
 
 // await updateSundayPray();
-
-
-
 
 app.get("/api/cron", async (req, res) => {
   try {

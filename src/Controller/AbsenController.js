@@ -232,8 +232,6 @@ export const updateStatusCron = async (req, res) => {
         tanggal: {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
-        
-        
 
         pulang: null, // Pulang juga kosong
       },
@@ -241,11 +239,10 @@ export const updateStatusCron = async (req, res) => {
 
     console.log(currentDate);
 
-    console.log(data);
-
-    console.log("Data absensi yang ditemukan:", data);
-
-    // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
+    if (data.every((item) => item.hadir === "tidak_hadir")) {
+      console.log(`selesai`);
+      return;
+    }
 
     if (data.length > 0) {
       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
@@ -260,11 +257,6 @@ export const updateStatusCron = async (req, res) => {
           hadir: "tidak_hadir",
         },
       });
-
-      console.log(
-        "Status hadir berhasil diupdate menjadi 'tidak_hadir' untuk absensi dengan ID:",
-        data.map((item) => item.id)
-      );
     } else {
       console.log("Tidak ada absensi yang perlu diperbarui.");
     }
@@ -492,6 +484,42 @@ export const UpdateStatusAbsen = async (req, res) => {
   }
 };
 
+// export const updateSundayPray = async () => {
+//   try {
+//     console.log("Menjalankan cron job update Sunday Pray...");
+
+//     // Query langsung ke database untuk mengambil ID yang perlu diperbarui
+//     const sundayIds = await prisma.$queryRaw`
+//     SELECT id FROM Absensi 
+//     WHERE (isDelete = FALSE OR isDelete IS NULL) 
+//     AND DAYOFWEEK(tanggal) = 1
+//   `;
+
+//     if (!sundayIds || sundayIds.length === 0) {
+//       console.log("Tidak ada data absensi yang perlu diperbarui.");
+//       return;
+//     }
+
+//     // Ambil hanya ID dari hasil query
+//     const idsToUpdate = sundayIds.map((item) => item.id);
+
+//     // Update hanya data yang memenuhi kriteria
+//     await prisma.absensi.updateMany({
+//       where: {
+//         id: { in: idsToUpdate },
+//       },
+//       data: {
+//         hadir: "libur",
+//       },
+//     });
+
+//     console.log(
+//       `Berhasil memperbarui ${idsToUpdate.length} data absensi hari Minggu.`
+//     );
+//   } catch (error) {
+//     console.error("Error dalam update Sunday Pray:", error);
+//   }
+// };
 export const updateSundayPray = async () => {
   try {
     console.log("Menjalankan cron job update Sunday Pray...");
@@ -501,6 +529,7 @@ export const updateSundayPray = async () => {
     SELECT id FROM Absensi 
     WHERE (isDelete = FALSE OR isDelete IS NULL) 
     AND DAYOFWEEK(tanggal) = 1
+    AND (hadir IS NULL OR hadir <> 'libur')
   `;
 
     if (!sundayIds || sundayIds.length === 0) {

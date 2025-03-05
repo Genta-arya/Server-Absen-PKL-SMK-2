@@ -19,53 +19,36 @@ export let newDateIndonesia;
 export const getTimeInJakarta = async () => {
   let jakartaTime = null;
 
-  // 1️⃣ Coba TimeAPI.io
-  try {
-    const response = await axios.get(
-      "https://timeapi.io/api/Time/current/zone",
-      {
-        params: { timeZone: "Asia/Jakarta" },
-      }
-    );
-    jakartaTime = response.data.dateTime;
-  } catch (error) {
-    console.error("❌ Error with TimeAPI.io:", error.message);
-  }
-
-  // 2️⃣ Coba TimeZoneDB jika TimeAPI.io gagal
+  // 1️⃣ Prioritaskan TimeZoneDB (dengan API keys)
   const timeZoneDBKeys = ["9DYFOGZS7MVB", "SGHKJRN8UKM4"];
   for (const apiKey of timeZoneDBKeys) {
-    if (jakartaTime) break; // Jika sudah dapat, hentikan pencarian
     try {
-      const response = await axios.get(
-        "http://api.timezonedb.com/v2.1/get-time-zone",
-        {
-          params: {
-            key: apiKey,
-            format: "json",
-            by: "zone",
-            zone: "Asia/Jakarta",
-          },
-        }
-      );
+      const response = await axios.get("http://api.timezonedb.com/v2.1/get-time-zone", {
+        params: {
+          key: apiKey,
+          format: "json",
+          by: "zone",
+          zone: "Asia/Jakarta",
+        },
+      });
       jakartaTime = response.data.formatted;
+      console.log(`✅ TimeZoneDB berhasil digunakan dengan API Key: ${apiKey}`);
+      break; // Jika sukses, hentikan loop
     } catch (error) {
-      console.error(
-        `❌ Error with TimeZoneDB (API Key: ${apiKey}):`,
-        error.message
-      );
+      console.error(`❌ Error dengan TimeZoneDB (API Key: ${apiKey}):`, error.message);
     }
   }
 
-  // 3️⃣ Jika masih gagal, coba WorldTimeAPI
+  // 2️⃣ Jika semua API TimeZoneDB gagal, coba TimeAPI.io
   if (!jakartaTime) {
     try {
-      const response = await axios.get(
-        "http://worldtimeapi.org/api/timezone/Asia/Jakarta"
-      );
-      jakartaTime = response.data.datetime;
+      const response = await axios.get("https://timeapi.io/api/Time/current/zone", {
+        params: { timeZone: "Asia/Jakarta" },
+      });
+      jakartaTime = response.data.dateTime;
+      console.log("✅ Menggunakan TimeAPI.io sebagai fallback");
     } catch (error) {
-      console.error("❌ Error with WorldTimeAPI:", error.message);
+      console.error("❌ Error dengan TimeAPI.io:", error.message);
     }
   }
 

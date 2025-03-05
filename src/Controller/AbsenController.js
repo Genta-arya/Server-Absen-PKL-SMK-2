@@ -232,9 +232,7 @@ export const updateStatusCron = async (req, res) => {
         tanggal: {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
-        hadir: {
-      in: [null, 'izin', 'hadir', 'selesai'], // Filter yang hadir memiliki nilai null, 'izin', 'hadir', atau 'selesai'
-    },
+        
         
 
         pulang: null, // Pulang juga kosong

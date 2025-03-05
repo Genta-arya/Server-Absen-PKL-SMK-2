@@ -90,7 +90,7 @@ export const handleLogin = async (req, res) => {
     });
 
     if (!user) {
-      return sendResponse(res, 404, "NIM tidak ditemukan");
+      return sendResponse(res, 400, "NIM tidak ditemukan");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);

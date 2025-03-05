@@ -16,12 +16,8 @@ date = date.setZone("Asia/Jakarta");
 export let formattedHour;
 export let newDateIndonesia;
 
-export const getTimeInJakarta = async () => {
-  let jakartaTime = null;
-
-  // 1️⃣ Prioritaskan TimeZoneDB (dengan API keys)
-  const timeZoneDBKeys = ["9DYFOGZS7MVB", "SGHKJRN8UKM4"];
-  for (const apiKey of timeZoneDBKeys) {
+const fetchTimeZoneDB = async (apiKey, retries = 2) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await axios.get("http://api.timezonedb.com/v2.1/get-time-zone", {
         params: {
@@ -31,15 +27,26 @@ export const getTimeInJakarta = async () => {
           zone: "Asia/Jakarta",
         },
       });
-      jakartaTime = response.data.formatted;
-      console.log(`✅ TimeZoneDB berhasil digunakan dengan API Key: ${apiKey}`);
-      break; // Jika sukses, hentikan loop
+      console.log(`✅ TimeZoneDB berhasil digunakan (API Key: ${apiKey}, Attempt: ${attempt})`);
+      return response.data.formatted;
     } catch (error) {
-      console.error(`❌ Error dengan TimeZoneDB (API Key: ${apiKey}):`, error.message);
+      console.error(`❌ Error dengan TimeZoneDB (API Key: ${apiKey}, Attempt: ${attempt}):`, error.message);
+      if (attempt === retries) return null; // Jika semua percobaan gagal, kembalikan null
     }
   }
+};
 
-  // 2️⃣ Jika semua API TimeZoneDB gagal, coba TimeAPI.io
+export const getTimeInJakarta = async () => {
+  let jakartaTime = null;
+
+  // 1️⃣ Coba API TimeZoneDB dengan mekanisme retry
+  const timeZoneDBKeys = ["9DYFOGZS7MVB", "SGHKJRN8UKM4"];
+  for (const apiKey of timeZoneDBKeys) {
+    jakartaTime = await fetchTimeZoneDB(apiKey, 2); // Coba maksimal 2 kali per API Key
+    if (jakartaTime) break; // Jika berhasil, hentikan loop
+  }
+
+  // 2️⃣ Jika semua API TimeZoneDB gagal, coba TimeAPI.io sebagai cadangan
   if (!jakartaTime) {
     try {
       const response = await axios.get("https://timeapi.io/api/Time/current/zone", {

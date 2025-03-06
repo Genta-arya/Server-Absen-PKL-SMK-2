@@ -1033,7 +1033,7 @@ export const getAnggotaPkl = async (req, res) => {
     if (!checkPkl) {
       return sendResponse(res, 404, "Data PKL tidak ditemukan");
     }
-    return sendResponse(res, 200, "Data anggota PKL", checkPkl);
+    return sendResponse(res, 200, "Data anggota PKL", null, checkPkl);
   } catch (error) {
     sendError(res, error);
   }

@@ -24,24 +24,25 @@ const logger = winston.createLogger({
 // Transport custom untuk mengirim log ke Socket.IO
 class SocketIoTransport extends winston.Transport {
   log(info, callback) {
-    if (io && ["info", "error", "warn"].includes(info.level)) {
-      const formattedTime = DateTime.now().setZone("Asia/Jakarta").toFormat("EEEE, dd MMMM yyyy HH:mm:ss");
+    setImmediate(() => callback());
 
-      // Jika level "warn", ubah jadi "info" saat dikirim ke Socket.io
-      const logLevel = info.level === "warn" ? "query" : info.level;
+    if (!io) return; // Cegah error jika io belum di-set
 
-      io.emit("log", { 
-        timestamp: formattedTime, 
-        level: logLevel, 
-        message: info.message 
-      });
-    }
-    callback();
+    const formattedTime = DateTime.now().setZone("Asia/Jakarta").toFormat("EEEE, dd MMMM yyyy HH:mm:ss");
+
+    io.emit("log", { 
+      timestamp: formattedTime, 
+      level: info.level, 
+      message: info.message 
+    });
   }
 }
 
-logger.add(new SocketIoTransport());
+// Tambahkan transport custom hanya jika logger sudah ada
+const socketIoTransport = new SocketIoTransport();
+logger.add(socketIoTransport);
 
+// Fungsi untuk set instance Socket.IO
 export const setSocketIo = (socketIoInstance) => {
   io = socketIoInstance;
 };

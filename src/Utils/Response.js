@@ -21,21 +21,7 @@ export const sendError = async (
 ) => {
 
   logger.error("LOG: " + error);
-  // simpan ke database
-
-  await prisma.lOG.create({
-    data: {
-      error: error || "Error tidak diketahui",
-      code: 500,
-    },
-  })
-  // await prisma.lOG.create({
-  //   data: {
-  //     error: error || "-",
-  //     code: 500,
-  //   },
-  // });
-
+ 
  
 
   return res.status(500).json({ message: customMessage, Detail: error });

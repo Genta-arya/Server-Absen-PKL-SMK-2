@@ -43,9 +43,7 @@ const allowedOrigins = [
 app.use(cookieParser());
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
   },
 });
 
@@ -61,36 +59,36 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
-      },
-    },
-    referrerPolicy: { policy: "no-referrer" },
-  })
-);
-app.use(
-  hpp({
-    checkBody: true,
-    checkQuery: true,
-    checkBodyOnlyForContentTypes: [
-      "application/json",
-      "application/x-www-form-urlencoded",
-    ],
-    whitelist: ["Content-Type", "Authorization"],
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: ["'self'", "'unsafe-inline'"],
+//         objectSrc: ["'none'"],
+//         upgradeInsecureRequests: [],
+//       },
+//     },
+//     referrerPolicy: { policy: "no-referrer" },
+//   })
+// );
+// app.use(
+//   hpp({
+//     checkBody: true,
+//     checkQuery: true,
+//     checkBodyOnlyForContentTypes: [
+//       "application/json",
+//       "application/x-www-form-urlencoded",
+//     ],
+//     whitelist: ["Content-Type", "Authorization"],
+//   })
+// );
 app.use(
   mongoSanitize({
     replaceWith: "_",
   })
 );
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 // const limiter = rateLimit({
 //   windowMs: 10 * 60 * 1000,

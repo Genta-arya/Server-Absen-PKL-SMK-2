@@ -362,10 +362,10 @@ export const getUserByRole = async (req, res) => {
         },
       },
     });
-    if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
-    }
-    return sendResponse(res, 200, "User ditemukan", exitsUser);
+    // if (!exitsUser) {
+    //   return sendResponse(res, 404, "User tidak ditemukan");
+    // }
+    return sendResponse(res, 200, "User profil berhasil ditemukan", exitsUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -572,11 +572,11 @@ export const getSingleUser = async (req, res) => {
       },
     });
 
-    if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
-    }
+    // if (!exitsUser) {
+    //   return sendResponse(res, 404, "User tidak ditemukan");
+    // }
 
-    return sendResponse(res, 200, "User ditemukansss", exitsUser);
+    return sendResponse(res, 200, "User ditemukan", exitsUser);
   } catch (error) {
     sendError(res, error);
   }

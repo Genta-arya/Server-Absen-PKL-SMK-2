@@ -30,7 +30,7 @@ export const getLaporanByuser = async (req, res) => {
       return sendResponse(res, 404, "Data tidak ditemukan");
     }
 
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data laporan harian ditemukan", data);
   } catch (error) {
     console.log(error);
     sendError(res, error);
@@ -83,7 +83,7 @@ export const getSingleLaporan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan harian ditemukan", laporanWithPembimbing);
   } catch (error) {
     console.log(error);
     sendError(res, error);
@@ -120,7 +120,7 @@ export const getLaporanMingguanByuser = async (req, res) => {
       return sendResponse(res, 404, "Data tidak ditemukan");
     }
 
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", data);
   } catch (error) {
     console.log(error);
     sendError(res, error);
@@ -168,7 +168,7 @@ export const getSingleLaporanMingguan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
   } catch (error) {
     console.log(error);
     sendError(res, error);
@@ -217,7 +217,7 @@ export const getLaporanMingguan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
   } catch (error) {
     console.log(error);
     sendError(res, error);
@@ -365,7 +365,7 @@ export const uploadLaporanHarian = async (req, res) => {
     return sendResponse(
       res,
       200,
-      "Data laporan berhasil disubmit",
+      "Data laporan harian berhasil disubmit",
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
@@ -472,7 +472,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
     return sendResponse(
       res,
       200,
-      "Data laporan berhasil disubmit",
+      "Data laporan mingguan berhasil disubmit",
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
@@ -496,7 +496,7 @@ export const deleteSingleImage = async (req, res) => {
     const deletedImage = await prisma.foto_laporan.delete({
       where: { id },
     });
-    return sendResponse(res, 200, "Data berhasil dihapus", deletedImage);
+    return sendResponse(res, 200, "Data gambar laporan berhasil dihapus", deletedImage);
   } catch (error) {
     console.log(error);
     sendError(res, error);

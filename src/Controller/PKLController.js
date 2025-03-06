@@ -333,12 +333,12 @@ export const createPKLWithAbsensi = async (req, res) => {
       const tanggalSelesai = formatTanggal(pklData.tanggal_selesai);
 
       // Kirim email
-      sendNotificationEmail(emails, {
-        pklname,
-        creatorName,
-        tanggalMulai,
-        tanggalSelesai,
-      });
+      // sendNotificationEmail(emails, {
+      //   pklname,
+      //   creatorName,
+      //   tanggalMulai,
+      //   tanggalSelesai,
+      // });
     }
 
     return sendResponse(

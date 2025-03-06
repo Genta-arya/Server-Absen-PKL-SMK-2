@@ -102,7 +102,7 @@ export const updateAbsensi = async (req, res) => {
         hadir: "hadir",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen", jam_masuk);
+    return sendResponse(res, 200, "Berhasil absen masuk", jam_masuk);
   } catch (error) {
     sendError(res, error);
   }
@@ -236,7 +236,7 @@ if (currentHour > batasPulangHour || (currentHour === batasPulangHour && current
         hadir: "selesai",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen", jam_pulang);
+    return sendResponse(res, 200, "Berhasil absen pulang", jam_pulang);
   } catch (error) {
     sendError(res, error);
   }
@@ -421,7 +421,7 @@ export const rekapDaftarAbsensi = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data rekap absen ditemukan ", data);
   } catch (error) {
     sendError(res, error);
   }
@@ -531,7 +531,7 @@ export const UpdateStatusAbsen = async (req, res) => {
     }
     const refreshedData = await prisma.absensi.findUnique({ where: { id } });
     console.log(refreshedData);
-    return sendResponse(res, 200, "Status berhasil diupdate", update);
+    return sendResponse(res, 200, "Status absensi berhasil diupdate", update);
   } catch (error) {
     sendError(res, error);
   }

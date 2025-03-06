@@ -132,7 +132,7 @@ cron.schedule("*/1 * * * *", async () => {
 });
 
 cron.schedule(
-  "0 0 * * *",
+  "0 0,5,17 * * *",
   async () => {
     await updateSundayPray();
   },
@@ -141,6 +141,7 @@ cron.schedule(
     timezone: "Asia/Jakarta",
   }
 );
+
 
 // await updateSundayPray();
 

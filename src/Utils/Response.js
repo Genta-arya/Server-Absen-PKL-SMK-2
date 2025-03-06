@@ -5,7 +5,7 @@ export const sendResponse = async (
   res,
   statusCode,
   message,
-  uid,
+  uid = null,
   data = null
 ) => {
   const responsePayload = {

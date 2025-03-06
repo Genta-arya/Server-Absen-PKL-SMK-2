@@ -522,3 +522,51 @@ Thursday, 06 March 2025 13:27:01 [WARN]: [SQL] SELECT `id`, `name`, `alamat`, `c
 Thursday, 06 March 2025 13:27:01 [WARN]: [DB] Thursday, 06 Mar 2025 13:27:01 - Pkl.findMany took 123 ms
 Thursday, 06 March 2025 13:27:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
 Thursday, 06 March 2025 13:27:25 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 14:26:13 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 14:27:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 14:27:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 133 ms)
+Thursday, 06 March 2025 14:27:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:27:00 - Absensi.findMany took 581 ms
+Thursday, 06 March 2025 14:27:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 14:27:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 14:27:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 108 ms)
+Thursday, 06 March 2025 14:27:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:27:00 - Pkl.findMany took 111 ms
+Thursday, 06 March 2025 14:27:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 14:28:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 14:28:00 [WARN]: [SQL] SELECT 1 (took 0 ms)
+Thursday, 06 March 2025 14:28:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 136 ms)
+Thursday, 06 March 2025 14:28:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:28:00 - Absensi.findMany took 356 ms
+Thursday, 06 March 2025 14:28:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 14:28:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 14:28:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 103 ms)
+Thursday, 06 March 2025 14:28:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:28:00 - Pkl.findMany took 106 ms
+Thursday, 06 March 2025 14:28:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 14:29:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 14:29:00 [WARN]: [SQL] SELECT 1 (took 0 ms)
+Thursday, 06 March 2025 14:29:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 142 ms)
+Thursday, 06 March 2025 14:29:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:29:00 - Absensi.findMany took 364 ms
+Thursday, 06 March 2025 14:29:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 14:29:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 14:29:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 106 ms)
+Thursday, 06 March 2025 14:29:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:29:00 - Pkl.findMany took 108 ms
+Thursday, 06 March 2025 14:29:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 14:30:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 14:30:00 [WARN]: [SQL] SELECT 1 (took 0 ms)
+Thursday, 06 March 2025 14:30:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 125 ms)
+Thursday, 06 March 2025 14:30:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:30:00 - Absensi.findMany took 342 ms
+Thursday, 06 March 2025 14:30:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 14:30:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 14:30:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 105 ms)
+Thursday, 06 March 2025 14:30:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:30:00 - Pkl.findMany took 107 ms
+Thursday, 06 March 2025 14:30:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 14:30:43 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 14:31:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 14:31:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 139 ms)
+Thursday, 06 March 2025 14:31:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:31:00 - Absensi.findMany took 378 ms
+Thursday, 06 March 2025 14:31:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 14:31:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 14:31:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 121 ms)
+Thursday, 06 March 2025 14:31:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 14:31:00 - Pkl.findMany took 124 ms
+Thursday, 06 March 2025 14:31:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 14:31:12 [INFO]: Client connected: eLJR4iAg2QQ_rCjxAAAC
+Thursday, 06 March 2025 14:31:13 [INFO]: Client disconnected: eLJR4iAg2QQ_rCjxAAAC
+Thursday, 06 March 2025 14:31:13 [INFO]: Client connected: NQpu3thv_ko4rAzMAAAE

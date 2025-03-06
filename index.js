@@ -43,7 +43,7 @@ const allowedOrigins = [
 app.use(cookieParser());
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins,
+    origin: "*",
 
     methods: ["GET", "POST"],
   },

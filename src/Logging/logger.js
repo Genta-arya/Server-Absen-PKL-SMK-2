@@ -24,11 +24,15 @@ const logger = winston.createLogger({
 // Transport custom untuk mengirim log ke Socket.IO
 class SocketIoTransport extends winston.Transport {
   log(info, callback) {
-    if (io && ["info", "error"].includes(info.level)) {
+    if (io && ["info", "error", "warn"].includes(info.level)) {
       const formattedTime = DateTime.now().setZone("Asia/Jakarta").toFormat("EEEE, dd MMMM yyyy HH:mm:ss");
+
+      // Jika level "warn", ubah jadi "info" saat dikirim ke Socket.io
+      const logLevel = info.level === "warn" ? "query" : info.level;
+
       io.emit("log", { 
         timestamp: formattedTime, 
-        level: info.level, 
+        level: logLevel, 
         message: info.message 
       });
     }

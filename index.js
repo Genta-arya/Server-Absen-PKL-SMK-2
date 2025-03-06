@@ -24,7 +24,7 @@ import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
 
 import { BeritaRoutes } from "./src/Routes/BeritaRoutes.js";
-import logger, {setSocketIo} from "./src/Logging/logger.js";
+import logger, { setSocketIo } from "./src/Logging/logger.js";
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ const httpServer = createServer(app);
 app.use(cookieParser());
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: "[http://localhost:5173 , https://monitoring.smkn2ketapang.sch.id]",
     methods: ["GET", "POST"],
   },
 });
@@ -95,6 +95,7 @@ app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://monitoring.smkn2ketapang.sch.id",
   "https://digital.smkn2ketapang.sch.id",
   "https://digital-tester.smkn2ketapang.sch.id",
 ];

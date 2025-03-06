@@ -1060,7 +1060,7 @@ export const updateStatusPKLCron = async (req, res) => {
       },
     });
 
-    logger.info("Data pkl yang ditemukan:", data);
+   
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
     if (data.length > 0) {

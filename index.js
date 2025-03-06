@@ -45,7 +45,7 @@ const io = new Server(httpServer, {
   cors: {
     origin: allowedOrigins,
   },
-  transports: ["websocket"],
+  
   
 });
 

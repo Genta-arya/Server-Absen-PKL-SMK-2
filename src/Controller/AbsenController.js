@@ -122,9 +122,9 @@ export const updateAbsensi = async (req, res) => {
 
 export const absenPulang = async (req, res) => {
   const { id } = req.params;
-  const { jam_pulang } = req.body;
+  const { jam_pulang, gps_pulang } = req.body;
 
-  if (!id || !jam_pulang) {
+  if (!id || !jam_pulang || !gps_pulang) {
     return sendResponse(res, 400, "Invalid request");
   }
 
@@ -248,10 +248,17 @@ export const absenPulang = async (req, res) => {
       },
       data: {
         pulang: jam_pulang,
+        gps_pulang: gps_pulang,
         hadir: "selesai",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen pulang",exits.user_id, jam_pulang);
+    return sendResponse(
+      res,
+      200,
+      "Berhasil absen pulang",
+      exits.user_id,
+      jam_pulang
+    );
   } catch (error) {
     sendError(res, error);
   }
@@ -451,11 +458,11 @@ export const UpdateStatusAbsen = async (req, res) => {
   const dataEnum = ["selesai", "tidak_hadir", "izin", "libur"];
 
   if (!id || !status) {
-    return sendResponse(res, 400, "Invalid request" , id);
+    return sendResponse(res, 400, "Invalid request", id);
   }
 
   if (!dataEnum.includes(status)) {
-    return sendResponse(res, 400, "Invalid Status" ,id);
+    return sendResponse(res, 400, "Invalid Status", id);
   }
   try {
     const findData = await prisma.absensi.findUnique({
@@ -465,7 +472,7 @@ export const UpdateStatusAbsen = async (req, res) => {
     });
 
     if (!findData) {
-      return sendResponse(res, 404, "Absensi tidak ditemukan" , id);
+      return sendResponse(res, 404, "Absensi tidak ditemukan", id);
     }
 
     let update;
@@ -476,8 +483,8 @@ export const UpdateStatusAbsen = async (req, res) => {
         return sendResponse(
           res,
           400,
-          "Tidak bisa update absensi , karena absensi ini memang tidak hadir"
-          ,id
+          "Tidak bisa update absensi , karena absensi ini memang tidak hadir",
+          id
         );
       }
       if (findData.datang === null || findData.pulang === null) {
@@ -550,7 +557,13 @@ export const UpdateStatusAbsen = async (req, res) => {
     }
     const refreshedData = await prisma.absensi.findUnique({ where: { id } });
     logger.info(refreshedData);
-    return sendResponse(res, 200, "Status absensi berhasil diupdate", id, update);
+    return sendResponse(
+      res,
+      200,
+      "Status absensi berhasil diupdate",
+      id,
+      update
+    );
   } catch (error) {
     sendError(res, error);
   }

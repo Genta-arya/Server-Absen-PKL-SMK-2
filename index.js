@@ -35,7 +35,7 @@ const httpServer = createServer(app);
 app.use(cookieParser());
 const io = new Server(httpServer, {
   cors: {
-    origin: "[http://localhost:5173 , https://monitoring.smkn2ketapang.sch.id]",
+    origin: "[http://localhost:5174 ,http://localhost:5173 , https://monitoring.smkn2ketapang.sch.id]",
     methods: ["GET", "POST"],
   },
 });

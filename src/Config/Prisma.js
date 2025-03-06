@@ -17,6 +17,10 @@ prisma.$use(async (params, next) => {
 
     if (duration > slowQueryThreshold) {
         logger.warn(
+            `[DB SLOW] ${timestamp} - ${params.model}.${params.action} took ${duration} ms`
+        );
+    } else {
+        logger.info(
             `[DB] ${timestamp} - ${params.model}.${params.action} took ${duration} ms`
         );
     }

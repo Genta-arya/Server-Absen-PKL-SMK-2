@@ -702,7 +702,7 @@ export const getKelas = async (req, res) => {
     if (!exitsKelas) {
       return sendResponse(res, 404, "Kelas tidak ditemukan");
     }
-    return sendResponse(res, 200, "Kelas ditemukan", exitsKelas);
+    return sendResponse(res, 200, "Kelas ditemukan", null, exitsKelas);
   } catch (error) {
     sendError(res, error);
   }

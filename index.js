@@ -45,6 +45,8 @@ const io = new Server(httpServer, {
   cors: {
     origin: allowedOrigins,
   },
+  transports: ["websocket"],
+  
 });
 
 // Hubungkan instance Socket.IO ke logger.js

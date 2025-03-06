@@ -29,7 +29,8 @@ export const createPKLWithAbsensi = async (req, res) => {
       return sendResponse(
         res,
         400,
-        "Tanggal mulai harus sebelum tanggal selesai."
+        "Tanggal mulai harus sebelum tanggal selesai." , 
+        start_date
       );
     }
 
@@ -39,7 +40,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       const { jamMasuk, jamPulang, users } = shift;
 
       if (!jamMasuk || !jamPulang || !Array.isArray(users)) {
-        return sendResponse(res, 400, "Data shift tidak valid.");
+        return sendResponse(res, 400, "Data shift tidak valid." , shift);
       }
 
       // Validasi jam masuk dan jam pulang
@@ -90,7 +91,8 @@ export const createPKLWithAbsensi = async (req, res) => {
       return sendResponse(
         res,
         400,
-        " Siswa yang sudah ada di pkl tidak boleh ditambahkan lagi"
+        " Siswa yang sudah ada di pkl tidak boleh ditambahkan lagi" , 
+      
       );
     }
 

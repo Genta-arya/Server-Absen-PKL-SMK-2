@@ -38,7 +38,7 @@ export const getBerita = async (req, res) => {
       });
     }
 
-    return sendResponse(res, 200, "Berita ditemukan", exitsBerita);
+    return sendResponse(res, 200, "Berita ditemukan", role, exitsBerita);
   } catch (error) {
     sendError(res, error);
   }
@@ -48,24 +48,24 @@ export const EditBerita = async (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   if (!title || !content) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , id);
   }
 
   const checkData = await prisma.berita.findUnique({
     where: { id },
   });
   if (!checkData) {
-    return sendResponse(res, 404, "Berita tidak ditemukan");
+    return sendResponse(res, 404, "Berita tidak ditemukan" , id);
   }
   try {
     const updated = await prisma.berita.update({
       where: { id },
       data: { title, content },
     });
-    return sendResponse(res, 200, "Berita berhasil diupdate", updated);
+    return sendResponse(res, 200, "Berita berhasil diupdate", id, updated);
   } catch (error) {
     sendError(res, error);
   }
@@ -76,21 +76,21 @@ export const updateStatusBerita = async (req, res) => {
   const { status } = req.body;
 
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   const checkData = await prisma.berita.findUnique({
     where: { id },
   });
   if (!checkData) {
-    return sendResponse(res, 404, "Berita tidak ditemukan");
+    return sendResponse(res, 404, "Berita tidak ditemukan" , id);
   }
   try {
     const updated = await prisma.berita.update({
       where: { id },
       data: { status },
     });
-    return sendResponse(res, 200, "Berita berhasil diupdate", updated);
+    return sendResponse(res, 200, "Berita berhasil diupdate", id ,updated);
   } catch (error) {
     sendError(res, error);
   }
@@ -99,13 +99,13 @@ export const updateStatusBerita = async (req, res) => {
 export const deleteBerita = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   try {
     const deleted = await prisma.berita.delete({
       where: { id },
     });
-    return sendResponse(res, 200, "Berita berhasil dihapus", deleted);
+    return sendResponse(res, 200, "Berita berhasil dihapus", id, deleted);
   } catch (error) {
     sendError(res, error);
   }

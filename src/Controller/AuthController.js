@@ -11,30 +11,37 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { CreateCookie } from "../Config/Cookie.js";
+import logger from "../Logging/logger.js";
 
 export const handleRegister = async (req, res) => {
   const { nim, password, role, name } = req.body;
   if (!nim) {
-    return sendResponse(res, 400, "Mohon lengkapi nim");
+    return sendResponse(res, 400, "Mohon lengkapi nim", nim);
   }
 
   if (!name) {
-    return sendResponse(res, 400, "Mohon lengkapi nama");
+    return sendResponse(res, 400, "Mohon lengkapi nama", nim);
   }
 
   if (nim.length >= 20) {
-    return sendResponse(res, 400, "NIM tidak boleh lebih dari 20 karakter");
+    return sendResponse(
+      res,
+      400,
+      "NIM tidak boleh lebih dari 20 karakter",
+      nim
+    );
   }
 
   if (!password) {
-    return sendResponse(res, 400, "Mohon lengkapi password");
+    return sendResponse(res, 400, "Mohon lengkapi password", nim);
   }
 
   if (!role) {
     return sendResponse(
       res,
       400,
-      "Role tidak valid. Pilih antara pembimbing , user dan admin."
+      "Role tidak valid. Pilih antara pembimbing , user dan admin.",
+      nim
     );
   }
 
@@ -43,14 +50,15 @@ export const handleRegister = async (req, res) => {
   });
 
   if (user) {
-    return sendResponse(res, 409, "NIM sudah terdaftar");
+    return sendResponse(res, 409, "NIM sudah terdaftar", nim);
   }
 
   if (!isValidRole(role)) {
     return sendResponse(
       res,
       400,
-      "Role tidak valid. Pilih antara MHS atau DOSEN."
+      "Role tidak valid. Pilih antara MHS atau DOSEN.",
+      nim
     );
   }
 
@@ -67,7 +75,7 @@ export const handleRegister = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 201, "Pendaftaran berhasil");
+    return sendResponse(res, 201, "Pendaftaran berhasil", nim);
   } catch (error) {
     sendError(res, error);
   }
@@ -77,11 +85,11 @@ export const handleLogin = async (req, res) => {
   const { nim, password } = req.body;
 
   if (!nim) {
-    return sendResponse(res, 400, "Mohon lengkapi nim");
+    return sendResponse(res, 400, "Mohon lengkapi nim", nim);
   }
 
   if (!password) {
-    return sendResponse(res, 400, "Mohon lengkapi password");
+    return sendResponse(res, 400, "Mohon lengkapi password", nim);
   }
 
   try {
@@ -90,13 +98,13 @@ export const handleLogin = async (req, res) => {
     });
 
     if (!user) {
-      return sendResponse(res, 400, "NIM tidak ditemukan");
+      return sendResponse(res, 400, "NIM tidak ditemukan", nim);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return sendResponse(res, 400, "NIM atau password salah");
+      return sendResponse(res, 400, "NIM atau password salah", nim);
     }
 
     const token = createToken({ nim: user.nim, role: user.role });
@@ -129,7 +137,7 @@ export const handleLogin = async (req, res) => {
 
     CreateCookie(res, getUser.token);
 
-    return sendResponse(res, 200, "Login berhasil", getUser);
+    return sendResponse(res, 200, "Login berhasil", getUser.id, getUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -137,7 +145,6 @@ export const handleLogin = async (req, res) => {
 
 // export const checkLogin = async (req, res) => {
 // };
-
 
 export const checkLogin = async (req, res) => {
   const token = req.body.token;
@@ -153,6 +160,7 @@ export const checkLogin = async (req, res) => {
   try {
     const getID_PKL = await prisma.user.findFirst({
       where: { token },
+
       select: {
         Pkl: {
           select: {
@@ -221,22 +229,23 @@ export const checkLogin = async (req, res) => {
     const result = await getTimeInJakarta();
 
     if (!result) {
-      console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
-      return;
-    }
-    
-    const { formattedHour, newDateIndonesia } = result;
-    
-    // Coba parse menggunakan Date biasa
-    const dateIndonesia = new Date(newDateIndonesia);
-    
-    // Validasi apakah Date berhasil dibuat
-    if (isNaN(dateIndonesia.getTime())) {
-      console.error("❌ Invalid Date setelah konversi dari newDateIndonesia:", newDateIndonesia);
+      logger.error("❌ Tidak bisa mendapatkan waktu Jakarta." , getID_PKL.id);
       return;
     }
 
- 
+    const { formattedHour, newDateIndonesia } = result;
+
+    // Coba parse menggunakan Date biasa
+    const dateIndonesia = new Date(newDateIndonesia);
+
+    // Validasi apakah Date berhasil dibuat
+    if (isNaN(dateIndonesia.getTime())) {
+      logger.error(
+        "❌ Invalid Date setelah konversi dari newDateIndonesia:",
+        newDateIndonesia , getID_PKL.id
+      );
+      return;
+    }
 
     const jakartaOffset = 7 * 60 * 60 * 1000;
     const adjustedDate = new Date(dateIndonesia.getTime() + jakartaOffset);
@@ -247,12 +256,12 @@ export const checkLogin = async (req, res) => {
     findUser.tanggal = isoDateIndonesia;
 
     if (!findUser) {
-      return sendResponse(res, 409, "Silahkan login terlebih dahulu");
+      return sendResponse(res, 409, "Silahkan login terlebih dahulu" , getID_PKL.id);
     }
 
     CreateCookie(res, token);
 
-    return sendResponse(res, 200, "User ditemukan", findUser);
+    return sendResponse(res, 200, "User ditemukan", findUser.id, findUser);
   } catch (error) {
     const findUsers = await prisma.user.findFirst({
       where: { token },
@@ -261,7 +270,7 @@ export const checkLogin = async (req, res) => {
       },
     });
     if (!findUsers) {
-      return sendResponse(res, 409, "Silahkan login terlebih dahulu");
+      return sendResponse(res, 409, "Silahkan login terlebih dahulu" );
     }
     if (error instanceof jwt.TokenExpiredError) {
       await prisma.user.update({
@@ -284,13 +293,13 @@ export const checkLogin = async (req, res) => {
 export const handleLogout = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return sendResponse(res, 400, "ID user tidak ditemukan");
+    return sendResponse(res, 400, "ID user tidak ditemukan" , id);
   }
   const checkUser = await prisma.user.findUnique({
     where: { id },
   });
   if (!checkUser) {
-    return sendResponse(res, 404, "User tidak ditemukan");
+    return sendResponse(res, 404, "User tidak ditemukan" ,id);
   }
   try {
     const resposen = await prisma.user.update({
@@ -303,7 +312,7 @@ export const handleLogout = async (req, res) => {
       sameSite: "strict",
       secure: true,
     });
-    return sendResponse(res, 200, "Logout berhasil", resposen);
+    return sendResponse(res, 200, "Logout berhasil", id, resposen);
   } catch (error) {
     sendError(res, error);
   }
@@ -313,7 +322,7 @@ export const updatePassword = async (req, res) => {
   const { id } = req.params;
   const { password } = req.body;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" ,id);
   }
 
   try {
@@ -321,14 +330,14 @@ export const updatePassword = async (req, res) => {
       where: { id },
     });
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
+      return sendResponse(res, 404, "User tidak ditemukan" , id);
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const resposen = await prisma.user.update({
       where: { id },
       data: { password: hashedPassword },
     });
-    return sendResponse(res, 200, "Password berhasil diubah", resposen);
+    return sendResponse(res, 200, "Password berhasil diubah", id, resposen);
   } catch (error) {
     sendError(res, error);
   }
@@ -337,7 +346,7 @@ export const updatePassword = async (req, res) => {
 export const getUserByRole = async (req, res) => {
   const { role } = req.params;
   if (!role) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , role);
   }
   try {
     const exitsUser = await prisma.user.findMany({
@@ -365,7 +374,7 @@ export const getUserByRole = async (req, res) => {
     // if (!exitsUser) {
     //   return sendResponse(res, 404, "User tidak ditemukan");
     // }
-    return sendResponse(res, 200, "User profil berhasil ditemukan", exitsUser);
+    return sendResponse(res, 200, "User profil berhasil ditemukan", role, exitsUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -376,7 +385,7 @@ export const updatePasswordUser = async (req, res) => {
   const { password, new_password } = req.body;
 
   if (!id || !password || !new_password) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   try {
@@ -384,19 +393,20 @@ export const updatePasswordUser = async (req, res) => {
       where: { id },
     });
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
+      return sendResponse(res, 404, "User tidak ditemukan" , id);
     }
 
     const isMatch = await bcrypt.compare(password, exitsUser.password);
     if (!isMatch) {
-      return sendResponse(res, 400, "Password lama salah , mohon cek kembali");
+      return sendResponse(res, 400, "Password lama salah , mohon cek kembali" , id);
     }
 
     if (password === new_password) {
       return sendResponse(
         res,
         400,
-        "Password baru tidak boleh sama dengan password lama"
+        "Password baru tidak boleh sama dengan password lama",
+        id
       );
     }
 
@@ -405,7 +415,7 @@ export const updatePasswordUser = async (req, res) => {
       where: { id },
       data: { password: hashedPassword },
     });
-    return sendResponse(res, 200, "Password berhasil diubah");
+    return sendResponse(res, 200, "Password berhasil diubah" , id);
   } catch (error) {
     sendError(res, error);
   }
@@ -480,11 +490,12 @@ export const updateFotoProfile = async (req, res) => {
     return sendResponse(
       res,
       400,
-      "URL gambar tidak ditemukan dalam permintaan."
+      "URL gambar tidak ditemukan dalam permintaan.",
+      id
     );
   }
   if (!id) {
-    return sendResponse(res, 400, "ID pengguna tidak valid.");
+    return sendResponse(res, 400, "ID pengguna tidak valid." , id);
   }
 
   try {
@@ -493,7 +504,7 @@ export const updateFotoProfile = async (req, res) => {
     });
 
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan.");
+      return sendResponse(res, 404, "User tidak ditemukan." , id);
     }
 
     const response = await prisma.user.update({
@@ -501,7 +512,7 @@ export const updateFotoProfile = async (req, res) => {
       data: { avatar: image_url },
     });
 
-    return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar);
+    return sendResponse(res, 200, "Foto berhasil diubah.", response.avatar , id);
   } catch (error) {
     sendError(res, error);
   }
@@ -512,7 +523,7 @@ export const getSingleUser = async (req, res) => {
 
   // Validasi ID
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   try {
@@ -576,7 +587,7 @@ export const getSingleUser = async (req, res) => {
     //   return sendResponse(res, 404, "User tidak ditemukan");
     // }
 
-    return sendResponse(res, 200, "User ditemukan", exitsUser);
+    return sendResponse(res, 200, "User ditemukan", id, exitsUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -587,7 +598,7 @@ export const updateDataUserAdmin = async (req, res) => {
   const { nim, name } = req.body;
 
   if (!nim || !name) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , id);
   }
 
   try {
@@ -595,21 +606,21 @@ export const updateDataUserAdmin = async (req, res) => {
       where: { id },
     });
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
+      return sendResponse(res, 404, "User tidak ditemukan" , id);
     }
     // uniq nim
     const checkNim = await prisma.user.findUnique({
       where: { nim: nim },
     });
     if (checkNim && checkNim.id !== id) {
-      return sendResponse(res, 400, "NIM sudah terdaftar");
+      return sendResponse(res, 400, "NIM sudah terdaftar" , id);
     }
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: { nim, name },
     });
-    return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
+    return sendResponse(res, 200, "User berhasil diupdate", id, updatedUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -620,13 +631,13 @@ export const updateDataUser = async (req, res) => {
   const { nim, name, email, kelas } = req.body;
 
   if ((!nim || !name || !email, !kelas)) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong"  , id);
   }
   const checkKelas = await prisma.kelas.findUnique({
     where: { id: kelas },
   });
   if (!checkKelas) {
-    return sendResponse(res, 404, "Kelas tidak ditemukan");
+    return sendResponse(res, 404, "Kelas tidak ditemukan" , id);
   }
 
   try {
@@ -634,28 +645,28 @@ export const updateDataUser = async (req, res) => {
       where: { id },
     });
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
+      return sendResponse(res, 404, "User tidak ditemukan" , id);
     }
     // uniq nim
     const checkNim = await prisma.user.findUnique({
       where: { nim: nim },
     });
     if (checkNim && checkNim.id !== id) {
-      return sendResponse(res, 400, "NIM sudah terdaftar");
+      return sendResponse(res, 400, "NIM sudah terdaftar" , id);
     }
     // uniq email
     const checkEmail = await prisma.user.findUnique({
       where: { email },
     });
     if (checkEmail && checkEmail.id !== id) {
-      return sendResponse(res, 400, "Email sudah terdaftar");
+      return sendResponse(res, 400, "Email sudah terdaftar" , id);
     }
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: { nim: nim, name, email, Kelas: { connect: { id: kelas } } },
     });
-    return sendResponse(res, 200, "User berhasil diupdate", updatedUser);
+    return sendResponse(res, 200, "User berhasil diupdate", id, updatedUser);
   } catch (error) {
     sendError(res, error);
   }
@@ -665,21 +676,21 @@ export const createKelas = async (req, res) => {
   const { nama } = req.body;
 
   if (!nama) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , nama);
   }
 
   const checkKelas = await prisma.kelas.findFirst({
     where: { nama },
   });
   if (checkKelas) {
-    return sendResponse(res, 400, "Kelas sudah terdaftar");
+    return sendResponse(res, 400, "Kelas sudah terdaftar" , nama);
   }
 
   try {
     const createdKelas = await prisma.kelas.create({
       data: { nama },
     });
-    return sendResponse(res, 201, "Kelas berhasil dibuat", createdKelas);
+    return sendResponse(res, 201, "Kelas berhasil dibuat", nama, createdKelas);
   } catch (error) {
     sendError(res, error);
   }
@@ -702,7 +713,7 @@ export const updateKelas = async (req, res) => {
   const { nama } = req.body;
 
   if (!id || !nama) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , id);
   }
 
   const checkKelas = await prisma.kelas.findUnique({
@@ -710,7 +721,7 @@ export const updateKelas = async (req, res) => {
   });
 
   if (!checkKelas) {
-    return sendResponse(res, 404, "Kelas tidak ditemukan");
+    return sendResponse(res, 404, "Kelas tidak ditemukan" , id);
   }
 
   // nama tidka boleh sama keculai id nya
@@ -719,7 +730,7 @@ export const updateKelas = async (req, res) => {
   });
 
   if (checkKelasSame) {
-    return sendResponse(res, 400, "Kelas sudah terdaftar");
+    return sendResponse(res, 400, "Kelas sudah terdaftar" , id);
   }
   try {
     const updatedKelas = await prisma.kelas.update({
@@ -727,7 +738,7 @@ export const updateKelas = async (req, res) => {
       data: { nama },
     });
 
-    return sendResponse(res, 200, "Kelas berhasil diupdate", updatedKelas);
+    return sendResponse(res, 200, "Kelas berhasil diupdate", id, updatedKelas);
   } catch (error) {
     sendError(res, error);
   }
@@ -737,7 +748,7 @@ export const deleteKelas = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , id);
   }
 
   const checkKelas = await prisma.kelas.findUnique({
@@ -745,14 +756,14 @@ export const deleteKelas = async (req, res) => {
   });
 
   if (!checkKelas) {
-    return sendResponse(res, 404, "Kelas tidak ditemukan");
+    return sendResponse(res, 404, "Kelas tidak ditemukan" , id);
   }
   try {
     const deletedKelas = await prisma.kelas.delete({
       where: { id },
     });
 
-    return sendResponse(res, 200, "Kelas berhasil dihapus", deletedKelas);
+    return sendResponse(res, 200, "Kelas berhasil dihapus", id, deletedKelas);
   } catch (error) {
     sendError(res, error);
   }
@@ -763,11 +774,11 @@ export const updateSingleProfile = async (req, res) => {
 
   const { email, noHp } = req.body;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   if (!email || !noHp) {
-    return sendResponse(res, 400, "Field tidak boleh kosong");
+    return sendResponse(res, 400, "Field tidak boleh kosong" , id);
   }
   try {
     const updateProfile = await prisma.user.update({
@@ -777,7 +788,7 @@ export const updateSingleProfile = async (req, res) => {
         noHp,
       },
     });
-    return sendResponse(res, 200, "Profile berhasil diupdate", updateProfile);
+    return sendResponse(res, 200, "Profile berhasil diupdate", id, updateProfile);
   } catch (error) {
     sendError(res, error);
   }

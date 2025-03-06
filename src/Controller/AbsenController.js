@@ -29,19 +29,19 @@ export const updateAbsensi = async (req, res) => {
           jamMasuk: true,
         },
       },
+
+      user_id: true,
     },
   });
 
   if (!exits) {
-    return sendResponse(res, 404, "Data absen tidak ditemukan");
+    return sendResponse(res, 404, "Data absen tidak ditemukan", exits.user_id);
   }
-
-
 
   const result = await getTimeInJakarta();
 
   if (!result) {
-    logger.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    logger.error("❌ Tidak bisa mendapatkan waktu Jakarta.", exits.user_id);
     return;
   }
 
@@ -54,7 +54,8 @@ export const updateAbsensi = async (req, res) => {
   if (isNaN(dateIndonesia.getTime())) {
     logger.error(
       "❌ Invalid Date setelah konversi dari newDateIndonesia:",
-      newDateIndonesia
+      newDateIndonesia,
+      exits.user_id
     );
     return;
   }
@@ -64,7 +65,7 @@ export const updateAbsensi = async (req, res) => {
   const jamMasukShift = new Date(exits.shift.jamMasuk);
   jamMasuk.setHours(jamMasukShift.getHours(), jamMasukShift.getMinutes(), 0, 0);
 
-  logger.info("Jam Masuk Shift:", jamMasuk);
+  logger.info("Jam Masuk Shift:", jamMasuk, exits.user_id);
 
   // Ambil jam dari jamMasuk untuk dibandingkan
   const batasMasuk = new Date(jamMasuk); // Buat salinan objek Date
@@ -73,21 +74,18 @@ export const updateAbsensi = async (req, res) => {
   const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
   const batasMasukHour = batasMasuk.getHours();
   const batasMasukMinute = batasMasuk.getMinutes();
-  logger.info("Jam Masuk Shift (Batas Akhir):", batasMasuk);
-  logger.info("Jam Sekarang:", currentHour);
-
+  logger.info("Jam Masuk Shift (Batas Akhir):", batasMasuk, exits.user_id);
+  logger.info("Jam Sekarang:", currentHour, exits.user_id);
 
   if (
     currentHour > batasMasukHour ||
     (currentHour === batasMasukHour && currentMinute > batasMasukMinute)
   ) {
-    return sendResponse(res, 400, "Jam absen masuk telah lewat");
+    return sendResponse(res, 400, "Jam absen masuk telah lewat", exits.user_id);
   }
 
-  
-
   if (exits.hadir === "hadir") {
-    return sendResponse(res, 400, "Anda sudah absen masuk");
+    return sendResponse(res, 400, "Anda sudah absen masuk", exits.user_id);
   }
 
   try {
@@ -103,7 +101,14 @@ export const updateAbsensi = async (req, res) => {
         hadir: "hadir",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen masuk", jam_masuk);
+
+    return sendResponse(
+      res,
+      200,
+      "Berhasil absen masuk",
+      exits.user_id,
+      jam_masuk
+    );
   } catch (error) {
     sendError(res, error);
   }
@@ -137,6 +142,7 @@ export const absenPulang = async (req, res) => {
           jamMasuk: true,
         },
       },
+      user_id: true,
       datang: true,
       pulang: true,
     },
@@ -145,15 +151,17 @@ export const absenPulang = async (req, res) => {
   // select
 
   if (!exits) {
-    return sendResponse(res, 404, "Data absen tidak ditemukan");
+    return sendResponse(res, 404, "Data absen tidak ditemukan", exits.user_id);
   }
-
-
 
   const result = await getTimeInJakarta();
 
   if (!result) {
-    logger.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    logger.error(
+      "❌ Tidak bisa mendapatkan waktu Jakarta.",
+      exits.user_id,
+      result
+    );
     return;
   }
 
@@ -166,12 +174,13 @@ export const absenPulang = async (req, res) => {
   if (isNaN(dateIndonesia.getTime())) {
     logger.error(
       "❌ Invalid Date setelah konversi dari newDateIndonesia:",
-      newDateIndonesia
+      newDateIndonesia,
+      exits.user_id
     );
     return;
   }
 
-  logger.info("Waktu Indonesia saat ini:", newDateIndonesia);
+  logger.info("Waktu Indonesia saat ini:", newDateIndonesia, exits.user_id);
 
   // Ambil jamPulang dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamPulang = new Date(newDateIndonesia);
@@ -183,33 +192,37 @@ export const absenPulang = async (req, res) => {
     0
   );
 
-  logger.info("Jam Pulang Shift:", jamPulang);
+  logger.info("Jam Pulang Shift:", jamPulang, exits.user_id);
 
   // Ambil jam dari jamPulang untuk dibandingkan
   const tenAM = jamPulang.getHours() + 2; // Waktu batas pulang (jamPulang + 1 jam)
   const batasPulangHour = jamPulang.getHours() + 2;
-const batasPulangMinute = jamPulang.getMinutes();
-
+  const batasPulangMinute = jamPulang.getMinutes();
 
   // Ambil jam dari currentDate untuk perbandingan
   // const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
   const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
-  logger.info("Jam Pulang Shift:", tenAM);
-  logger.info("Jam Sekarang:", currentHour);
+  logger.info("Jam Pulang Shift:", tenAM, exits.user_id);
+  logger.info("Jam Sekarang:", currentHour, exits.user_id);
 
-  
-  
-if (currentHour > batasPulangHour || (currentHour === batasPulangHour && currentMinute > batasPulangMinute)) {
-  return sendResponse(res, 400, "Jam absen Pulang telah lewat");
-}
-
+  if (
+    currentHour > batasPulangHour ||
+    (currentHour === batasPulangHour && currentMinute > batasPulangMinute)
+  ) {
+    return sendResponse(
+      res,
+      400,
+      "Jam absen Pulang telah lewat",
+      exits.user_id
+    );
+  }
 
   if (exits.pulang !== null) {
-    return sendResponse(res, 400, "Anda sudah absen pulang");
+    return sendResponse(res, 400, "Anda sudah absen pulang", exits.user_id);
   }
 
   if (exits.datang === null) {
-    return sendResponse(res, 400, "Anda belum absen masuk");
+    return sendResponse(res, 400, "Anda belum absen masuk", exits.user_id);
   }
   try {
     const checkAbsenMasuk = await prisma.absensi.findUnique({
@@ -225,7 +238,8 @@ if (currentHour > batasPulangHour || (currentHour === batasPulangHour && current
       return sendResponse(
         res,
         400,
-        "Tidak bisa absen pulang, Anda belum absen masuk"
+        "Tidak bisa absen pulang, Anda belum absen masuk",
+        exits.user_id
       );
     }
     await prisma.absensi.update({
@@ -237,7 +251,7 @@ if (currentHour > batasPulangHour || (currentHour === batasPulangHour && current
         hadir: "selesai",
       },
     });
-    return sendResponse(res, 200, "Berhasil absen pulang", jam_pulang);
+    return sendResponse(res, 200, "Berhasil absen pulang",exits.user_id, jam_pulang);
   } catch (error) {
     sendError(res, error);
   }
@@ -262,6 +276,7 @@ export const getDataAbsen = async (req, res) => {
         },
         user: {
           select: {
+            id: true,
             name: true,
             avatar: true,
             nim: true,
@@ -270,7 +285,7 @@ export const getDataAbsen = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data ditemukan", data.user.id, data);
   } catch (error) {
     sendError(res, error);
   }
@@ -294,7 +309,9 @@ export const updateStatusCron = async (req, res) => {
     logger.info(currentDate);
 
     if (data.every((item) => item.hadir === "tidak_hadir")) {
-      logger.info(`Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"`);
+      logger.info(
+        `Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"`
+      );
       return;
     }
 
@@ -422,7 +439,7 @@ export const rekapDaftarAbsensi = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 200, "Data rekap absen ditemukan ", data);
+    return sendResponse(res, 200, "Data rekap absen ditemukan ", id, data);
   } catch (error) {
     sendError(res, error);
   }
@@ -434,11 +451,11 @@ export const UpdateStatusAbsen = async (req, res) => {
   const dataEnum = ["selesai", "tidak_hadir", "izin", "libur"];
 
   if (!id || !status) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   if (!dataEnum.includes(status)) {
-    return sendResponse(res, 400, "Invalid Status");
+    return sendResponse(res, 400, "Invalid Status" ,id);
   }
   try {
     const findData = await prisma.absensi.findUnique({
@@ -448,7 +465,7 @@ export const UpdateStatusAbsen = async (req, res) => {
     });
 
     if (!findData) {
-      return sendResponse(res, 404, "Absensi tidak ditemukan");
+      return sendResponse(res, 404, "Absensi tidak ditemukan" , id);
     }
 
     let update;
@@ -460,6 +477,7 @@ export const UpdateStatusAbsen = async (req, res) => {
           res,
           400,
           "Tidak bisa update absensi , karena absensi ini memang tidak hadir"
+          ,id
         );
       }
       if (findData.datang === null || findData.pulang === null) {
@@ -532,7 +550,7 @@ export const UpdateStatusAbsen = async (req, res) => {
     }
     const refreshedData = await prisma.absensi.findUnique({ where: { id } });
     logger.info(refreshedData);
-    return sendResponse(res, 200, "Status absensi berhasil diupdate", update);
+    return sendResponse(res, 200, "Status absensi berhasil diupdate", id, update);
   } catch (error) {
     sendError(res, error);
   }

@@ -1,11 +1,17 @@
 import { prisma } from "../Config/Prisma.js";
 import logger from "../Logging/logger.js";
 
-export const sendResponse = async (res, statusCode, message, data = null) => {
+export const sendResponse = async (
+  res,
+  statusCode,
+  message,
+  uid,
+  data = null
+) => {
   const responsePayload = {
     message,
   };
-  logger.info("LOG: " + message + "," + statusCode);
+  logger.info("LOG: " + message + `${uid || "-"}` + "," + statusCode);
 
   if (data) {
     responsePayload.data = data;
@@ -19,10 +25,7 @@ export const sendError = async (
   error,
   customMessage = "Terjadi kesalahan pada server"
 ) => {
-
   logger.error("LOG: " + error);
- 
- 
 
   return res.status(500).json({ message: customMessage, Detail: error });
 };

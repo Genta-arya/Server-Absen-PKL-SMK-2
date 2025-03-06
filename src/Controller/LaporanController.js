@@ -28,10 +28,10 @@ export const getLaporanByuser = async (req, res) => {
       },
     });
     if (!data) {
-      return sendResponse(res, 404, "Data tidak ditemukan");
+      return sendResponse(res, 404, "Data tidak ditemukan" , id);
     }
 
-    return sendResponse(res, 200, "Data laporan harian ditemukan", data);
+    return sendResponse(res, 200, "Data laporan harian ditemukan", id, data);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -41,7 +41,7 @@ export const getLaporanByuser = async (req, res) => {
 export const getSingleLaporan = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   try {
@@ -70,13 +70,14 @@ export const getSingleLaporan = async (req, res) => {
       },
     });
     if (!exitsLaporan) {
-      return sendResponse(res, 404, "Laporan tidak ditemukan");
+      return sendResponse(res, 404, "Laporan tidak ditemukan" , id);
     }
     const pembimbing = await prisma.user.findUnique({
       where: {
         id: exitsLaporan.pembimbingId,
       },
       select: {
+
         name: true,
       },
     });
@@ -84,7 +85,7 @@ export const getSingleLaporan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data laporan harian ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan harian ditemukan", id, laporanWithPembimbing);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -94,14 +95,15 @@ export const getSingleLaporan = async (req, res) => {
 export const getLaporanMingguanByuser = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   try {
     const exitsUser = await prisma.user.findUnique({
       where: { id },
+     
     });
     if (!exitsUser) {
-      return sendResponse(res, 404, "User tidak ditemukan");
+      return sendResponse(res, 404, "User tidak ditemukan" , exitsUser.id);
     }
 
     const data = await prisma.laporanMingguan.findMany({
@@ -118,10 +120,10 @@ export const getLaporanMingguanByuser = async (req, res) => {
       },
     });
     if (!data) {
-      return sendResponse(res, 404, "Data tidak ditemukan");
+      return sendResponse(res, 404, "Data tidak ditemukan" , exitsUser.id);
     }
 
-    return sendResponse(res, 200, "Data laporan mingguan ditemukan", data);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", exitsUser.id, data);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -132,7 +134,7 @@ export const getSingleLaporanMingguan = async (req, res) => {
   const { id } = req.params;
   logger.info(id);
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   try {
     const exitsLaporan = await prisma.laporanMingguan.findUnique({
@@ -155,7 +157,7 @@ export const getSingleLaporanMingguan = async (req, res) => {
       },
     });
     if (!exitsLaporan) {
-      return sendResponse(res, 404, "Laporan tidak ditemukan");
+      return sendResponse(res, 404, "Laporan tidak ditemukan" , id);
     }
     const pembimbing = await prisma.user.findUnique({
       where: {
@@ -169,7 +171,7 @@ export const getSingleLaporanMingguan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", id, laporanWithPembimbing);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -180,7 +182,7 @@ export const getLaporanMingguan = async (req, res) => {
   const { id } = req.params;
   logger.info(id);
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   try {
     const exitsLaporan = await prisma.laporanMingguan.findMany({
@@ -204,7 +206,7 @@ export const getLaporanMingguan = async (req, res) => {
 
     logger.info(exitsLaporan);
     if (!exitsLaporan) {
-      return sendResponse(res, 404, "Laporan tidak ditemukan");
+      return sendResponse(res, 404, "Laporan tidak ditemukan" , id);
     }
     const pembimbing = await prisma.user.findUnique({
       where: {
@@ -218,7 +220,7 @@ export const getLaporanMingguan = async (req, res) => {
       ...exitsLaporan,
       nama_pembimbing: pembimbing?.name || "Nama pembimbing tidak ditemukan", // Menambahkan nama pembimbing
     };
-    return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
+    return sendResponse(res, 200, "Data laporan mingguan ditemukan", id, laporanWithPembimbing);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -229,7 +231,7 @@ export const uploadLaporanHarian = async (req, res) => {
   const { id } = req.params;
   const { data } = req.body;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   try {
@@ -246,7 +248,7 @@ export const uploadLaporanHarian = async (req, res) => {
       },
     });
     if (!exitsLaporan) {
-      return sendResponse(res, 404, "Laporan tidak ditemukan");
+      return sendResponse(res, 404, "Laporan tidak ditemukan" , id);
     }
     const {
       pembimbingId,
@@ -271,7 +273,7 @@ export const uploadLaporanHarian = async (req, res) => {
       !tanggal ||
       !fotos
     ) {
-      return sendResponse(res, 400, "Invalid request");
+      return sendResponse(res, 400, "Invalid request" , id);
     }
 
     const fotoArray = Array.isArray(fotos) ? fotos : [];
@@ -295,7 +297,8 @@ export const uploadLaporanHarian = async (req, res) => {
       return sendResponse(
         res,
         400,
-        "Tidak bisa upload laporan , absensi anda tidak ditemukan"
+        "Tidak bisa upload laporan , absensi anda tidak ditemukan",
+        id,
       );
     }
 
@@ -303,7 +306,7 @@ export const uploadLaporanHarian = async (req, res) => {
       return sendResponse(
         res,
         400,
-        "Tidak bisa upload laporan , anda belum absen masuk"
+        "Tidak bisa upload laporan , anda belum absen masuk" , id
       );
     }
 
@@ -311,7 +314,7 @@ export const uploadLaporanHarian = async (req, res) => {
       return sendResponse(
         res,
         400,
-        "Tidak bisa upload laporan , anda belum absen pulang"
+        "Tidak bisa upload laporan , anda belum absen pulang" , id
       );
     }
 
@@ -355,7 +358,7 @@ export const uploadLaporanHarian = async (req, res) => {
       });
     } else {
       logger.info(
-        "Semua foto sudah ada di database, tidak ada yang ditambahkan."
+        "Semua foto sudah ada di database, tidak ada yang ditambahkan." , id
       );
     }
     const updatedFotos = await prisma.foto_laporan.findMany({
@@ -366,7 +369,7 @@ export const uploadLaporanHarian = async (req, res) => {
     return sendResponse(
       res,
       200,
-      "Data laporan harian berhasil disubmit",
+      "Data laporan harian berhasil disubmit", id,
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
@@ -379,7 +382,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
   const { id } = req.params;
   const { data } = req.body;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
 
   try {
@@ -395,7 +398,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
       },
     });
     if (!exitsLaporan) {
-      return sendResponse(res, 404, "Laporan tidak ditemukan");
+      return sendResponse(res, 404, "Laporan tidak ditemukan" , id);
     }
     const {
       pembimbingId,
@@ -414,14 +417,14 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
       !nama_pekerjaan ||
       !fotos
     ) {
-      return sendResponse(res, 400, "Invalid request");
+      return sendResponse(res, 400, "Invalid request" , id);
     }
 
     const fotoArray = Array.isArray(fotos) ? fotos : [];
 
     // validasi max fotoArray hanya 3
     if (fotoArray.length > 3) {
-      return sendResponse(res, 400, "Maksimal 3 foto");
+      return sendResponse(res, 400, "Maksimal 3 foto" , id);
     }
 
     const updatedLaporan = await prisma.laporanMingguan.update({
@@ -462,7 +465,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
       });
     } else {
       logger.info(
-        "Semua foto sudah ada di database, tidak ada yang ditambahkan."
+        "Semua foto sudah ada di database, tidak ada yang ditambahkan." , id
       );
     }
     const updatedFotos = await prisma.foto_laporan.findMany({
@@ -473,7 +476,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
     return sendResponse(
       res,
       200,
-      "Data laporan mingguan berhasil disubmit",
+      "Data laporan mingguan berhasil disubmit", id,
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
@@ -485,19 +488,19 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
 export const deleteSingleImage = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-    return sendResponse(res, 400, "Invalid request");
+    return sendResponse(res, 400, "Invalid request" , id);
   }
   try {
     const exitsImage = await prisma.foto_laporan.findUnique({
       where: { id },
     });
     if (!exitsImage) {
-      return sendResponse(res, 404, "Image tidak ditemukan");
+      return sendResponse(res, 404, "Image tidak ditemukan" , id);
     }
     const deletedImage = await prisma.foto_laporan.delete({
       where: { id },
     });
-    return sendResponse(res, 200, "Data gambar laporan berhasil dihapus", deletedImage);
+    return sendResponse(res, 200, "Data gambar laporan berhasil dihapus", id, deletedImage);
   } catch (error) {
     logger.info(error);
     sendError(res, error);

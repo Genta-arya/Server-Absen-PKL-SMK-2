@@ -83,14 +83,14 @@ app.use(
 );
 app.set("trust proxy", 1);
 
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 500,
-  message: "Terlalu banyak permintaan, coba lagi nanti",
-  statusCode: 403,
-});
+// const limiter = rateLimit({
+//   windowMs: 10 * 60 * 1000,
+//   max: 500,
+//   message: "Terlalu banyak permintaan, coba lagi nanti",
+//   statusCode: 403,
+// });
 
-app.use(limiter);
+// app.use(limiter);
 app.use(express.json({ limit: "150mb" }));
 
 const allowedOrigins = [

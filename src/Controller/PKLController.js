@@ -29,7 +29,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       return sendResponse(
         res,
         400,
-        "Tanggal mulai harus sebelum tanggal selesai." , 
+        "Tanggal mulai harus sebelum tanggal selesai.",
         start_date
       );
     }
@@ -40,7 +40,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       const { jamMasuk, jamPulang, users } = shift;
 
       if (!jamMasuk || !jamPulang || !Array.isArray(users)) {
-        return sendResponse(res, 400, "Data shift tidak valid." , shift);
+        return sendResponse(res, 400, "Data shift tidak valid.", shift);
       }
 
       // Validasi jam masuk dan jam pulang
@@ -91,8 +91,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       return sendResponse(
         res,
         400,
-        " Siswa yang sudah ada di pkl tidak boleh ditambahkan lagi" , 
-      
+        " Siswa yang sudah ada di pkl tidak boleh ditambahkan lagi"
       );
     }
 
@@ -638,7 +637,7 @@ export const getDataPklCreator = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data ditemukan", "-", data);
   } catch (error) {
     sendError(res, error);
   }
@@ -699,7 +698,7 @@ export const getSinglePkl = async (req, res) => {
     if (!data) {
       return sendResponse(res, 404, "Data tidak ditemukan", data);
     }
-    return sendResponse(res, 200, "Data ditemukan", data);
+    return sendResponse(res, 200, "Data ditemukan", id, data);
   } catch (error) {
     sendError(res, error);
   }
@@ -732,7 +731,7 @@ export const EditPkl = async (req, res) => {
         link_grup: grupUrl,
       },
     });
-    return sendResponse(res, 200, "Data berhasil diupdate", update);
+    return sendResponse(res, 200, "Data berhasil diupdate", id, update);
   } catch (error) {
     sendError(res, error);
   }
@@ -778,7 +777,7 @@ export const deletePkl = async (req, res) => {
         isDelete: true,
       },
     });
-    return sendResponse(res, 200, "Data berhasil dihapus", deletePkl);
+    return sendResponse(res, 200, "Data berhasil dihapus", id, deletePkl);
   } catch (error) {
     sendError(res, error);
   }
@@ -789,11 +788,11 @@ export const deleteAllPkl = async (req, res) => {
     // Ambil semua PKL yang akan dihapus
     const pklToDelete = await prisma.pkl.findMany({
       where: { isDelete: true },
-      select: { id: true }
+      select: { id: true },
     });
 
     // Ambil ID PKL yang akan dihapus
-    const pklIds = pklToDelete.map(p => p.id);
+    const pklIds = pklToDelete.map((p) => p.id);
 
     if (pklIds.length === 0) {
       return res.status(400).json({ message: "Tidak ada PKL untuk dihapus" });
@@ -801,7 +800,7 @@ export const deleteAllPkl = async (req, res) => {
 
     // Hapus Absensi & Shift terkait dengan PKL yang akan dihapus
     await prisma.absensi.updateMany({
-      where: { pkl_id: { in: pklIds }  },
+      where: { pkl_id: { in: pklIds } },
       data: { isDelete: true },
     });
 
@@ -822,7 +821,6 @@ export const deleteAllPkl = async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
-
 
 export const updateStatusPkl = async (req, res) => {
   const { id } = req.params;
@@ -884,7 +882,7 @@ export const updateStatusPkl = async (req, res) => {
         status: !checkPkl.status,
       },
     });
-    return sendResponse(res, 200, "Data PKL berhasil diupdate", update);
+    return sendResponse(res, 200, "Data PKL berhasil diupdate", id, update);
   } catch (error) {
     logger.info(error);
     sendError(res, error);
@@ -977,6 +975,7 @@ export const removeSiswaFromPkl = async (req, res) => {
       res,
       200,
       "Siswa berhasil dihapus dari PKL dan data absensi dihapus",
+      id,
       updatedPkl
     );
   } catch (error) {
@@ -1062,8 +1061,6 @@ export const updateStatusPKLCron = async (req, res) => {
       },
     });
 
-   
-
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
     if (data.length > 0) {
       logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
@@ -1132,24 +1129,22 @@ export const getAllPkl = async (req, res) => {
                 OR: [{ isDelete: false }, { isDelete: null }],
               },
               take: 1,
-              select:{
+              select: {
                 shift: {
                   select: {
                     name: true,
                     jamMasuk: true,
                     jamPulang: true,
                   },
-                }
-              }
-
-             
+                },
+              },
             },
           },
         },
       },
     });
 
-    return sendResponse(res, 200, "Data PKL" , "-", data);
+    return sendResponse(res, 200, "Data PKL", "-", data);
   } catch (error) {
     sendError(res, error);
   }

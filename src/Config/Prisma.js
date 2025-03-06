@@ -19,10 +19,6 @@ prisma.$use(async (params, next) => {
         logger.warn(
             `[DB SLOW] ${timestamp} - ${params.model}.${params.action} took ${duration} ms`
         );
-    } else {
-        logger.info(
-            `[DB] ${timestamp} - ${params.model}.${params.action} took ${duration} ms`
-        );
     }
 
     return result;
@@ -34,6 +30,8 @@ prisma.$on("query", (e) => {
     const sanitizedQuery = e.query.replace(/`[^`]+`\./g, ""); // Hapus nama database
 
     if (duration > 100) {
+        logger.warn(`[SQL Slowly] ${sanitizedQuery} (took ${duration} ms)`);
+    } else { 
         logger.warn(`[SQL] ${sanitizedQuery} (took ${duration} ms)`);
     }
 });

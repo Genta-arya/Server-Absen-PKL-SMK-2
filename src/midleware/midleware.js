@@ -9,7 +9,6 @@ export const middleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   let token = req.cookies.token || (authHeader && authHeader.split(" ")[1]);
 
-  logger.info("Token:", token);
 
   if (!token) {
     return sendResponse(res, 403, "Silahkan login terlebih dahulu");
@@ -35,7 +34,11 @@ export const middleware = async (req, res, next) => {
         });
       }
 
-      return sendResponse(res, 403, "Sesi login telah habis, silahkan login kembali.");
+      return sendResponse(
+        res,
+        403,
+        "Sesi login telah habis, silahkan login kembali."
+      );
     }
 
     return sendResponse(res, 500, "Terjadi kesalahan pada server");

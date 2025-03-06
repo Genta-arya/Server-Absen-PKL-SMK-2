@@ -165,3 +165,75 @@ Thursday, 06 March 2025 12:11:00 [INFO]: selesai
 Thursday, 06 March 2025 12:11:01 [INFO]: Data pkl yang ditemukan:
 Thursday, 06 March 2025 12:11:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
 Thursday, 06 March 2025 12:11:02 [INFO]: Client connected: Wnmo6R0yFTbZL9oyAAAJ
+Thursday, 06 March 2025 12:17:13 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 12:18:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:18:01 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:18:01 [INFO]: selesai
+Thursday, 06 March 2025 12:18:01 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:18:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:18:29 [INFO]: Token:
+Thursday, 06 March 2025 12:18:29 [INFO]: LOG: Silahkan login terlebih dahulu,409
+Thursday, 06 March 2025 12:18:37 [INFO]: LOG: Login berhasil,200
+Thursday, 06 March 2025 12:18:37 [INFO]: Token:
+Thursday, 06 March 2025 12:18:37 [INFO]: Token:
+Thursday, 06 March 2025 12:18:37 [INFO]: Token:
+Thursday, 06 March 2025 12:18:37 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:18:37 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:18:38 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:18:38 [INFO]: Token:
+Thursday, 06 March 2025 12:18:38 [INFO]: Token:
+Thursday, 06 March 2025 12:18:39 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:18:39 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:10 [INFO]: Token:
+Thursday, 06 March 2025 12:19:10 [INFO]: Token:
+Thursday, 06 March 2025 12:19:10 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:19:10 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:12 [INFO]: Token:
+Thursday, 06 March 2025 12:19:14 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:19:14 [INFO]: Token:
+Thursday, 06 March 2025 12:19:14 [INFO]: Token:
+Thursday, 06 March 2025 12:19:14 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:14 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:19:31 [INFO]: Token:
+Thursday, 06 March 2025 12:19:31 [INFO]: Token:
+Thursday, 06 March 2025 12:19:31 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:31 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:19:35 [INFO]: Token:
+Thursday, 06 March 2025 12:19:35 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:19:35 [INFO]: Token:
+Thursday, 06 March 2025 12:19:35 [INFO]: Token:
+Thursday, 06 March 2025 12:19:35 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:35 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:19:53 [INFO]: Token:
+Thursday, 06 March 2025 12:19:53 [INFO]: Token:
+Thursday, 06 March 2025 12:19:53 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:19:53 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:55 [INFO]: Token:
+Thursday, 06 March 2025 12:19:55 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:19:56 [INFO]: Token:
+Thursday, 06 March 2025 12:19:56 [INFO]: Token:
+Thursday, 06 March 2025 12:19:56 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:19:56 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:20:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:20:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:20:00 [INFO]: selesai
+Thursday, 06 March 2025 12:20:00 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:20:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:20:15 [INFO]: Token:
+Thursday, 06 March 2025 12:20:16 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:20:17 [INFO]: Token:
+Thursday, 06 March 2025 12:20:17 [INFO]: Token:
+Thursday, 06 March 2025 12:20:17 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:20:17 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:20:32 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 12:20:32 [INFO]: Token:
+Thursday, 06 March 2025 12:20:34 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:20:34 [INFO]: Token:
+Thursday, 06 March 2025 12:20:34 [INFO]: Token:
+Thursday, 06 March 2025 12:20:34 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:20:34 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:21:00 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 12:21:02 [INFO]: LOG: User ditemukan,200
+Thursday, 06 March 2025 12:21:02 [INFO]: LOG: Berita ditemukan,200
+Thursday, 06 March 2025 12:21:02 [INFO]: LOG: Kelas ditemukan,200
+Thursday, 06 March 2025 12:21:08 [INFO]: Server berjalan di http://localhost:8081

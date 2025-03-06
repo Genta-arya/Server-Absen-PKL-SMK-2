@@ -11,7 +11,7 @@ export const sendResponse = async (
   const responsePayload = {
     message,
   };
-  logger.info("LOG: " + message + `${uid || "-"}` + "," + statusCode);
+  logger.info("LOG: " + message + ", " + `ID:${uid || "-"}` + "," + " Status:" + statusCode);
 
   if (data) {
     responsePayload.data = data;

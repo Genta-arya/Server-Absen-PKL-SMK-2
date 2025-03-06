@@ -570,3 +570,93 @@ Thursday, 06 March 2025 14:31:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
 Thursday, 06 March 2025 14:31:12 [INFO]: Client connected: eLJR4iAg2QQ_rCjxAAAC
 Thursday, 06 March 2025 14:31:13 [INFO]: Client disconnected: eLJR4iAg2QQ_rCjxAAAC
 Thursday, 06 March 2025 14:31:13 [INFO]: Client connected: NQpu3thv_ko4rAzMAAAE
+Thursday, 06 March 2025 15:23:17 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:24:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 15:24:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 121 ms)
+Thursday, 06 March 2025 15:24:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:24:00 - Absensi.findMany took 346 ms
+Thursday, 06 March 2025 15:24:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 15:24:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 15:24:01 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 106 ms)
+Thursday, 06 March 2025 15:24:01 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:24:01 - Pkl.findMany took 120 ms
+Thursday, 06 March 2025 15:24:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 15:24:02 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 107 ms)
+Thursday, 06 March 2025 15:24:02 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:24:02 - User.findUnique took 112 ms
+Thursday, 06 March 2025 15:24:02 [INFO]: LOG: NIM atau password salah115,400
+Thursday, 06 March 2025 15:24:18 [WARN]: [SQL] SELECT 1 (took 82 ms)
+Thursday, 06 March 2025 15:24:18 [WARN]: [SQL] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 52 ms)
+Thursday, 06 March 2025 15:24:18 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:24:18 - User.findUnique took 139 ms
+Thursday, 06 March 2025 15:24:18 [INFO]: LOG: NIM atau password salah115,400
+Thursday, 06 March 2025 15:24:44 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:24:51 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:24:52 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 105 ms)
+Thursday, 06 March 2025 15:24:52 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:24:52 - User.findUnique took 322 ms
+Thursday, 06 March 2025 15:24:52 [INFO]: LOG: NIM atau password salah,115,400
+Thursday, 06 March 2025 15:25:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 15:25:01 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 129 ms)
+Thursday, 06 March 2025 15:25:01 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:01 - Absensi.findMany took 133 ms
+Thursday, 06 March 2025 15:25:01 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 15:25:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 15:25:01 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 104 ms)
+Thursday, 06 March 2025 15:25:01 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:01 - Pkl.findMany took 108 ms
+Thursday, 06 March 2025 15:25:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 15:25:03 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:25:05 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 107 ms)
+Thursday, 06 March 2025 15:25:05 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:05 - User.findUnique took 324 ms
+Thursday, 06 March 2025 15:25:05 [INFO]: LOG: NIM atau password salah,UID : 115,400
+Thursday, 06 March 2025 15:25:26 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:25:28 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 105 ms)
+Thursday, 06 March 2025 15:25:28 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:28 - User.findUnique took 324 ms
+Thursday, 06 March 2025 15:25:29 [INFO]: LOG: NIM atau password salah, ID:115,400
+Thursday, 06 March 2025 15:25:42 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:25:43 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 106 ms)
+Thursday, 06 March 2025 15:25:43 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:43 - User.findUnique took 344 ms
+Thursday, 06 March 2025 15:25:44 [INFO]: LOG: NIM atau password salah, ID:115,Status:400
+Thursday, 06 March 2025 15:25:53 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:25:54 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 110 ms)
+Thursday, 06 March 2025 15:25:54 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:25:54 - User.findUnique took 333 ms
+Thursday, 06 March 2025 15:25:54 [INFO]: LOG: NIM atau password salah, ID:115, Status:400
+Thursday, 06 March 2025 15:26:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 15:26:00 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal` < ? AND `pulang` IS NULL) (took 129 ms)
+Thursday, 06 March 2025 15:26:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:00 - Absensi.findMany took 132 ms
+Thursday, 06 March 2025 15:26:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 15:26:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Thursday, 06 March 2025 15:26:00 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 106 ms)
+Thursday, 06 March 2025 15:26:00 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:00 - Pkl.findMany took 109 ms
+Thursday, 06 March 2025 15:26:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 15:26:02 [WARN]: [SQL] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 54 ms)
+Thursday, 06 March 2025 15:26:02 [INFO]: LOG: NIM atau password salah, ID:115, Status:400
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE (`nim` = ? AND 1=1) LIMIT ? OFFSET ? (took 57 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL] BEGIN (took 52 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL Slowly] SELECT `id` FROM `User` WHERE (`id` = ? AND 1=1) (took 103 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL Slowly] UPDATE `User` SET `token` = ?, `status_login` = ? WHERE (`id` IN (?) AND (`id` = ? AND 1=1)) (took 104 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `password`, `status_login`, `avatar`, `role`, `token`, `noHp`, `createdAt` FROM `User` WHERE `id` = ? LIMIT ? OFFSET ? (took 103 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [SQL] COMMIT (took 51 ms)
+Thursday, 06 March 2025 15:26:06 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:06 - User.update took 428 ms
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `status_login`, `token`, `avatar`, `role` FROM `User` WHERE (`id` = ? AND 1=1) LIMIT ? OFFSET ? (took 105 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:07 - User.findUnique took 108 ms
+Thursday, 06 March 2025 15:26:07 [INFO]: LOG: Login berhasil, ID:e94ecd0d-9291-4270-b204-5e310ab9826d, Status:200
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id` FROM `User` WHERE `token` = ? LIMIT ? OFFSET ? (took 104 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `B`, `A` FROM `_UserPkl` WHERE `B` IN (?) (took 105 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:07 - User.findFirst took 215 ms
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `nim`, `name`, `email`, `noHp`, `status_login`, `token`, `avatar`, `role` FROM `User` WHERE `token` = ? LIMIT ? OFFSET ? (took 105 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `nama`, `createdAt` FROM `Kelas` WHERE 1=1 (took 106 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `title`, `content`, `status`, `createdAt`, `updatedAt` FROM `Berita` WHERE `status` = ? ORDER BY `createdAt` DESC (took 107 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:07 - Kelas.findMany took 323 ms
+Thursday, 06 March 2025 15:26:07 [INFO]: LOG: Kelas ditemukan, ID:[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object], Status:200
+Thursday, 06 March 2025 15:26:07 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:07 - Berita.findMany took 327 ms
+Thursday, 06 March 2025 15:26:07 [INFO]: LOG: Berita ditemukan, ID:user, Status:200
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `B`, `A` FROM `_UserKelas` WHERE `B` IN (?) (took 104 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `nama` FROM `Kelas` WHERE `id` IN (?) (took 103 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL] SELECT `B`, `A` FROM `_UserPkl` WHERE `B` IN (?) (took 51 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE (`isDelete` = ? AND `id` IN (?)) (took 104 ms)
+Thursday, 06 March 2025 15:26:07 [WARN]: [SQL Slowly] SELECT `id`, `pkl_id`, `shift_id`, `isDelete`, `user_id`, `tanggal`, `hadir`, `foto`, `gps`, `posisi`, `pulang`, `datang`, `status`, `createdAt` FROM `Absensi` WHERE (`user_id` = ? AND `pkl_id` IN (?)) ORDER BY `tanggal` ASC (took 105 ms)
+Thursday, 06 March 2025 15:26:08 [WARN]: [SQL Slowly] SELECT `id`, `name`, `jamMasuk`, `jamPulang` FROM `Shift` WHERE `id` IN (?) (took 103 ms)
+Thursday, 06 March 2025 15:26:08 [WARN]: [SQL Slowly] SELECT `id`, `name`, `avatar` FROM `User` WHERE `id` IN (?) (took 103 ms)
+Thursday, 06 March 2025 15:26:08 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:08 - User.findFirst took 783 ms
+Thursday, 06 March 2025 15:26:08 [INFO]: LOG: User ditemukan, ID:e94ecd0d-9291-4270-b204-5e310ab9826d, Status:200
+Thursday, 06 March 2025 15:26:08 [WARN]: [SQL Slowly] SELECT `id`, `title`, `content`, `status`, `createdAt`, `updatedAt` FROM `Berita` WHERE `status` = ? ORDER BY `createdAt` DESC (took 104 ms)
+Thursday, 06 March 2025 15:26:08 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:08 - Berita.findMany took 106 ms
+Thursday, 06 March 2025 15:26:08 [INFO]: LOG: Berita ditemukan, ID:user, Status:200
+Thursday, 06 March 2025 15:26:08 [WARN]: [SQL Slowly] SELECT `id`, `nama`, `createdAt` FROM `Kelas` WHERE 1=1 (took 106 ms)
+Thursday, 06 March 2025 15:26:08 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:26:08 - Kelas.findMany took 109 ms
+Thursday, 06 March 2025 15:26:08 [INFO]: LOG: Kelas ditemukan, ID:[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object], Status:200

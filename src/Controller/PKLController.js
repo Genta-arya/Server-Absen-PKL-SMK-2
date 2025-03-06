@@ -1149,7 +1149,7 @@ export const getAllPkl = async (req, res) => {
       },
     });
 
-    return sendResponse(res, 200, "Data PKL", "test", data);
+    return sendResponse(res, 200, "Data PKL", data);
   } catch (error) {
     sendError(res, error);
   }

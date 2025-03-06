@@ -732,3 +732,5 @@ Thursday, 06 March 2025 15:34:00 [INFO]: Semua absensi tanggal sebelum hari ini 
 Thursday, 06 March 2025 15:34:01 [WARN]: [SQL Slowly] SELECT `id`, `name`, `alamat`, `creatorId`, `isDelete`, `link_grup`, `tanggal_mulai`, `tanggal_selesai`, `status`, `createdAt` FROM `Pkl` WHERE ((`isDelete` = ? OR `isDelete` IS NULL) AND `tanggal_selesai` < ? AND `status` = ?) (took 113 ms)
 Thursday, 06 March 2025 15:34:01 [WARN]: [DB SLOW] Thursday, 06 Mar 2025 15:34:01 - Pkl.findMany took 116 ms
 Thursday, 06 March 2025 15:34:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 15:34:13 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 15:34:40 [INFO]: Server berjalan di http://localhost:8081

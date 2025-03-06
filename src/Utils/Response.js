@@ -18,13 +18,15 @@ export const sendError = async (
   error,
   customMessage = "Terjadi kesalahan pada server"
 ) => {
+
+  console.log("LOG: " + error);
   // simpan ke database
-  await prisma.lOG.create({
-    data: {
-      error: error || "-",
-      code: 500,
-    },
-  });
+  // await prisma.lOG.create({
+  //   data: {
+  //     error: error || "-",
+  //     code: 500,
+  //   },
+  // });
 
  
 

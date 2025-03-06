@@ -35,7 +35,28 @@ export const updateAbsensi = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  await getTimeInJakarta();
+
+
+  const result = await getTimeInJakarta();
+
+  if (!result) {
+    console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    return;
+  }
+
+  const { formattedHour, newDateIndonesia } = result;
+
+  // Coba parse menggunakan Date biasa
+  const dateIndonesia = new Date(newDateIndonesia);
+
+  // Validasi apakah Date berhasil dibuat
+  if (isNaN(dateIndonesia.getTime())) {
+    console.error(
+      "❌ Invalid Date setelah konversi dari newDateIndonesia:",
+      newDateIndonesia
+    );
+    return;
+  }
 
   // Ambil jamMasuk dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamMasuk = new Date(newDateIndonesia);
@@ -47,21 +68,22 @@ export const updateAbsensi = async (req, res) => {
   // Ambil jam dari jamMasuk untuk dibandingkan
   const batasMasuk = new Date(jamMasuk); // Buat salinan objek Date
   batasMasuk.setMinutes(batasMasuk.getMinutes() + 15); // Tambahkan 15 menit
-  // Waktu batas masuk (jamMasuk + 15 menit)
 
-  // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
+  const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
+  const batasMasukHour = batasMasuk.getHours();
+  const batasMasukMinute = batasMasuk.getMinutes();
   console.log("Jam Masuk Shift (Batas Akhir):", batasMasuk);
   console.log("Jam Sekarang:", currentHour);
 
-  // Cek apakah jam absen masuk telah lewat
-  if (currentHour > batasMasuk) {
-    return sendResponse(res, 400, "Jam absen Masuk telah lewat");
+
+  if (
+    currentHour > batasMasukHour ||
+    (currentHour === batasMasukHour && currentMinute > batasMasukMinute)
+  ) {
+    return sendResponse(res, 400, "Jam absen masuk telah lewat");
   }
 
-  // if (currentHour > tenAM) {
-  //   return sendResponse(res, 400, "Jam absen Masuk telah lewat");
-  // }
+  
 
   if (exits.hadir === "hadir") {
     return sendResponse(res, 400, "Anda sudah absen masuk");
@@ -85,6 +107,12 @@ export const updateAbsensi = async (req, res) => {
     sendError(res, error);
   }
 };
+
+// export const updateAbsensi = async (req, res) => {
+// };
+
+// export const absenPulang = async (req, res) => {
+// };
 
 export const absenPulang = async (req, res) => {
   const { id } = req.params;
@@ -119,7 +147,28 @@ export const absenPulang = async (req, res) => {
     return sendResponse(res, 404, "Data absen tidak ditemukan");
   }
 
-  await getTimeInJakarta();
+
+
+  const result = await getTimeInJakarta();
+
+  if (!result) {
+    console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    return;
+  }
+
+  const { formattedHour, newDateIndonesia } = result;
+
+  // Coba parse menggunakan Date biasa
+  const dateIndonesia = new Date(newDateIndonesia);
+
+  // Validasi apakah Date berhasil dibuat
+  if (isNaN(dateIndonesia.getTime())) {
+    console.error(
+      "❌ Invalid Date setelah konversi dari newDateIndonesia:",
+      newDateIndonesia
+    );
+    return;
+  }
 
   console.log("Waktu Indonesia saat ini:", newDateIndonesia);
 
@@ -137,18 +186,22 @@ export const absenPulang = async (req, res) => {
 
   // Ambil jam dari jamPulang untuk dibandingkan
   const tenAM = jamPulang.getHours() + 2; // Waktu batas pulang (jamPulang + 1 jam)
+  const batasPulangHour = jamPulang.getHours() + 2;
+const batasPulangMinute = jamPulang.getMinutes();
+
 
   // Ambil jam dari currentDate untuk perbandingan
-  const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
+  // const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
+  const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
   console.log("Jam Pulang Shift:", tenAM);
   console.log("Jam Sekarang:", currentHour);
 
-  // Cek apakah jam absen pulang telah lewat
-  if (currentHour > tenAM) {
-    console.log("Jam Pulang Shift:", tenAM);
-    console.log("Jam Sekarang:", currentHour);
-    return sendResponse(res, 400, "Jam absen Pulang telah lewat");
-  }
+  
+  
+if (currentHour > batasPulangHour || (currentHour === batasPulangHour && currentMinute > batasPulangMinute)) {
+  return sendResponse(res, 400, "Jam absen Pulang telah lewat");
+}
+
 
   if (exits.pulang !== null) {
     return sendResponse(res, 400, "Anda sudah absen pulang");
@@ -490,8 +543,8 @@ export const UpdateStatusAbsen = async (req, res) => {
 
 //     // Query langsung ke database untuk mengambil ID yang perlu diperbarui
 //     const sundayIds = await prisma.$queryRaw`
-//     SELECT id FROM Absensi 
-//     WHERE (isDelete = FALSE OR isDelete IS NULL) 
+//     SELECT id FROM Absensi
+//     WHERE (isDelete = FALSE OR isDelete IS NULL)
 //     AND DAYOFWEEK(tanggal) = 1
 //   `;
 

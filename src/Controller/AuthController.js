@@ -135,6 +135,10 @@ export const handleLogin = async (req, res) => {
   }
 };
 
+// export const checkLogin = async (req, res) => {
+// };
+
+
 export const checkLogin = async (req, res) => {
   const token = req.body.token;
 
@@ -213,9 +217,26 @@ export const checkLogin = async (req, res) => {
       },
     });
     jwt.verify(token, JWT_SECRET);
-    await getTimeInJakarta();
+    // await getTimeInJakarta()
+    const result = await getTimeInJakarta();
 
+    if (!result) {
+      console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+      return;
+    }
+    
+    const { formattedHour, newDateIndonesia } = result;
+    
+    // Coba parse menggunakan Date biasa
     const dateIndonesia = new Date(newDateIndonesia);
+    
+    // Validasi apakah Date berhasil dibuat
+    if (isNaN(dateIndonesia.getTime())) {
+      console.error("❌ Invalid Date setelah konversi dari newDateIndonesia:", newDateIndonesia);
+      return;
+    }
+
+ 
 
     const jakartaOffset = 7 * 60 * 60 * 1000;
     const adjustedDate = new Date(dateIndonesia.getTime() + jakartaOffset);

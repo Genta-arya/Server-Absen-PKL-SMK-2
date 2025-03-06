@@ -315,7 +315,7 @@ export const updateStatusCron = async (req, res) => {
 
     logger.info(currentDate);
 
-    if (data.every((item) => item.hadir === "tidak_hadir")) {
+    if (data.every((item) => item.hadir === "tidak_hadir" || item.hadir === "libur")) {
       logger.info(
         `Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"`
       );

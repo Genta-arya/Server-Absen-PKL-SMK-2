@@ -2,13 +2,14 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../Library/CreateToken.js";
 import { sendResponse } from "../Utils/Response.js";
 import { prisma } from "../Config/Prisma.js";
+import logger from "../Logging/logger.js";
 
 export const middleware = async (req, res, next) => {
   // Ambil token dari cookie atau header Authorization
   const authHeader = req.headers.authorization;
   let token = req.cookies.token || (authHeader && authHeader.split(" ")[1]);
 
-  console.log("Token:", token);
+  logger.info("Token:", token);
 
   if (!token) {
     return sendResponse(res, 403, "Silahkan login terlebih dahulu");

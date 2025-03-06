@@ -4,6 +4,7 @@ import {
   getTimeInJakarta,
 } from "../Config/Constans.js";
 import { prisma } from "../Config/Prisma.js";
+import logger from "../Logging/logger.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { DateTime } from "luxon";
 export const updateAbsensi = async (req, res) => {
@@ -40,7 +41,7 @@ export const updateAbsensi = async (req, res) => {
   const result = await getTimeInJakarta();
 
   if (!result) {
-    console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    logger.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
     return;
   }
 
@@ -51,7 +52,7 @@ export const updateAbsensi = async (req, res) => {
 
   // Validasi apakah Date berhasil dibuat
   if (isNaN(dateIndonesia.getTime())) {
-    console.error(
+    logger.error(
       "❌ Invalid Date setelah konversi dari newDateIndonesia:",
       newDateIndonesia
     );
@@ -63,7 +64,7 @@ export const updateAbsensi = async (req, res) => {
   const jamMasukShift = new Date(exits.shift.jamMasuk);
   jamMasuk.setHours(jamMasukShift.getHours(), jamMasukShift.getMinutes(), 0, 0);
 
-  console.log("Jam Masuk Shift:", jamMasuk);
+  logger.info("Jam Masuk Shift:", jamMasuk);
 
   // Ambil jam dari jamMasuk untuk dibandingkan
   const batasMasuk = new Date(jamMasuk); // Buat salinan objek Date
@@ -72,8 +73,8 @@ export const updateAbsensi = async (req, res) => {
   const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
   const batasMasukHour = batasMasuk.getHours();
   const batasMasukMinute = batasMasuk.getMinutes();
-  console.log("Jam Masuk Shift (Batas Akhir):", batasMasuk);
-  console.log("Jam Sekarang:", currentHour);
+  logger.info("Jam Masuk Shift (Batas Akhir):", batasMasuk);
+  logger.info("Jam Sekarang:", currentHour);
 
 
   if (
@@ -152,7 +153,7 @@ export const absenPulang = async (req, res) => {
   const result = await getTimeInJakarta();
 
   if (!result) {
-    console.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
+    logger.error("❌ Tidak bisa mendapatkan waktu Jakarta.");
     return;
   }
 
@@ -163,14 +164,14 @@ export const absenPulang = async (req, res) => {
 
   // Validasi apakah Date berhasil dibuat
   if (isNaN(dateIndonesia.getTime())) {
-    console.error(
+    logger.error(
       "❌ Invalid Date setelah konversi dari newDateIndonesia:",
       newDateIndonesia
     );
     return;
   }
 
-  console.log("Waktu Indonesia saat ini:", newDateIndonesia);
+  logger.info("Waktu Indonesia saat ini:", newDateIndonesia);
 
   // Ambil jamPulang dan pastikan memiliki tanggal yang sama dengan `newDateIndonesia`
   const jamPulang = new Date(newDateIndonesia);
@@ -182,7 +183,7 @@ export const absenPulang = async (req, res) => {
     0
   );
 
-  console.log("Jam Pulang Shift:", jamPulang);
+  logger.info("Jam Pulang Shift:", jamPulang);
 
   // Ambil jam dari jamPulang untuk dibandingkan
   const tenAM = jamPulang.getHours() + 2; // Waktu batas pulang (jamPulang + 1 jam)
@@ -193,8 +194,8 @@ const batasPulangMinute = jamPulang.getMinutes();
   // Ambil jam dari currentDate untuk perbandingan
   // const currentHour = formattedHour.getHours(); // Jam sekarang (format 24 jam)
   const [currentHour, currentMinute] = formattedHour.split(":").map(Number);
-  console.log("Jam Pulang Shift:", tenAM);
-  console.log("Jam Sekarang:", currentHour);
+  logger.info("Jam Pulang Shift:", tenAM);
+  logger.info("Jam Sekarang:", currentHour);
 
   
   
@@ -290,15 +291,15 @@ export const updateStatusCron = async (req, res) => {
       },
     });
 
-    console.log(currentDate);
+    logger.info(currentDate);
 
     if (data.every((item) => item.hadir === "tidak_hadir")) {
-      console.log(`selesai`);
+      logger.info(`selesai`);
       return;
     }
 
     if (data.length > 0) {
-      console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+      logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
 
       await prisma.absensi.updateMany({
         where: {
@@ -311,10 +312,10 @@ export const updateStatusCron = async (req, res) => {
         },
       });
     } else {
-      console.log("Tidak ada absensi yang perlu diperbarui.");
+      logger.info("Tidak ada absensi yang perlu diperbarui.");
     }
   } catch (error) {
-    console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
+    logger.error("Terjadi kesalahan saat memperbarui status absensi:", error);
     res.status(500).json({ error: "Gagal memperbarui status absensi." });
   }
 };
@@ -329,7 +330,7 @@ export const updateStatusCron = async (req, res) => {
 
 //     const currentDate = new Date(newDateIndonesia);
 //     currentDate.setHours(0, 0, 0, 0);
-//     console.log("Current Date (Indonesia Time):", currentDate);
+//     logger.info("Current Date (Indonesia Time):", currentDate);
 
 //     // Mengambil data absensi yang tanggalnya sudah lewat
 //     const data = await prisma.absensi.findMany({
@@ -343,11 +344,11 @@ export const updateStatusCron = async (req, res) => {
 //       },
 //     });
 
-//     console.log("Data absensi yang ditemukan:", data);
+//     logger.info("Data absensi yang ditemukan:", data);
 
 //     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
 //     if (data.length > 0) {
-//       console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+//       logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
 
 //       await prisma.absensi.updateMany({
 //         where: {
@@ -360,21 +361,21 @@ export const updateStatusCron = async (req, res) => {
 //         },
 //       });
 
-//       console.log(
+//       logger.info(
 //         "Status hadir berhasil diupdate menjadi 'tidak_hadir' untuk absensi dengan ID:",
 //         data.map((item) => item.id)
 //       );
 //     } else {
-//       console.log("Tidak ada absensi yang perlu diperbarui.");
+//       logger.info("Tidak ada absensi yang perlu diperbarui.");
 //     }
 //   } catch (error) {
-//     console.error("Terjadi kesalahan saat memperbarui status absensi:", error);
+//     logger.error("Terjadi kesalahan saat memperbarui status absensi:", error);
 //   }
 // };
 
 export const rekapDaftarAbsensi = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
+  logger.info(id);
   try {
     const data = await prisma.absensi.findMany({
       where: {
@@ -453,7 +454,7 @@ export const UpdateStatusAbsen = async (req, res) => {
     let update;
 
     if (status === "selesai") {
-      console.log(status);
+      logger.info(status);
       if (findData.gps === null) {
         return sendResponse(
           res,
@@ -530,7 +531,7 @@ export const UpdateStatusAbsen = async (req, res) => {
       });
     }
     const refreshedData = await prisma.absensi.findUnique({ where: { id } });
-    console.log(refreshedData);
+    logger.info(refreshedData);
     return sendResponse(res, 200, "Status absensi berhasil diupdate", update);
   } catch (error) {
     sendError(res, error);
@@ -539,7 +540,7 @@ export const UpdateStatusAbsen = async (req, res) => {
 
 // export const updateSundayPray = async () => {
 //   try {
-//     console.log("Menjalankan cron job update Sunday Pray...");
+//     logger.info("Menjalankan cron job update Sunday Pray...");
 
 //     // Query langsung ke database untuk mengambil ID yang perlu diperbarui
 //     const sundayIds = await prisma.$queryRaw`
@@ -549,7 +550,7 @@ export const UpdateStatusAbsen = async (req, res) => {
 //   `;
 
 //     if (!sundayIds || sundayIds.length === 0) {
-//       console.log("Tidak ada data absensi yang perlu diperbarui.");
+//       logger.info("Tidak ada data absensi yang perlu diperbarui.");
 //       return;
 //     }
 
@@ -566,16 +567,16 @@ export const UpdateStatusAbsen = async (req, res) => {
 //       },
 //     });
 
-//     console.log(
+//     logger.info(
 //       `Berhasil memperbarui ${idsToUpdate.length} data absensi hari Minggu.`
 //     );
 //   } catch (error) {
-//     console.error("Error dalam update Sunday Pray:", error);
+//     logger.error("Error dalam update Sunday Pray:", error);
 //   }
 // };
 export const updateSundayPray = async () => {
   try {
-    console.log("Menjalankan cron job update Sunday Pray...");
+    logger.info("Menjalankan cron job update Sunday Pray...");
 
     // Query langsung ke database untuk mengambil ID yang perlu diperbarui
     const sundayIds = await prisma.$queryRaw`
@@ -586,7 +587,7 @@ export const updateSundayPray = async () => {
   `;
 
     if (!sundayIds || sundayIds.length === 0) {
-      console.log("Tidak ada data absensi yang perlu diperbarui.");
+      logger.info("Tidak ada data absensi yang perlu diperbarui.");
       return;
     }
 
@@ -603,10 +604,10 @@ export const updateSundayPray = async () => {
       },
     });
 
-    console.log(
+    logger.info(
       `Berhasil memperbarui ${idsToUpdate.length} data absensi hari Minggu.`
     );
   } catch (error) {
-    console.error("Error dalam update Sunday Pray:", error);
+    logger.error("Error dalam update Sunday Pray:", error);
   }
 };

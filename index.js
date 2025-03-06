@@ -8,19 +8,10 @@ import {
   deleteAllPkl,
   updateStatusPKLCron,
 } from "./src/Controller/PKLController.js";
-import csurf from "csurf";
-
+import { Server } from "socket.io";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
-import fs from "fs";
-import path from "path";
-import { createReadStream } from "fs";
 import { AbsensRoutes } from "./src/Routes/AbsenRoutes.js";
-import csv from "csv-parser";
-import mysql from "mysql2";
-import bcrypt from "bcryptjs";
-import { v4 as uuidv4 } from "uuid";
-import { prisma } from "./src/Config/Prisma.js";
+
 import {
   updateStatusCron,
   updateSundayPray,
@@ -31,8 +22,9 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
-import { csrfProtection } from "./src/Config/Cookie.js";
+
 import { BeritaRoutes } from "./src/Routes/BeritaRoutes.js";
+import logger, {setSocketIo} from "./src/Logging/logger.js";
 
 dotenv.config();
 
@@ -41,6 +33,24 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 
 app.use(cookieParser());
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+// Hubungkan instance Socket.IO ke logger.js
+setSocketIo(io);
+
+// Saat ada client yang terhubung
+io.on("connection", (socket) => {
+  logger.info(`Client connected: ${socket.id}`);
+
+  socket.on("disconnect", () => {
+    logger.info(`Client disconnected: ${socket.id}`);
+  });
+});
 
 app.use(
   helmet({
@@ -118,16 +128,16 @@ app.use(
 // Cron Job 8 bulan sekali
 // cron.schedule("0 0 1 1,9 *", () => {
 //   deleteAllPkl();
-//   console.log("Cron job dijalankan setiap 8 bulan sekali");
+//   logger.info("Cron job dijalankan setiap 8 bulan sekali");
 // });
 
 cron.schedule("*/1 * * * *", async () => {
   try {
-    console.log("Menjalankan cron job updateStatusCron setiap 60 detik...");
+    logger.info("Menjalankan cron job updateStatusCron setiap 60 detik...");
     await updateStatusCron();
     await updateStatusPKLCron();
   } catch (error) {
-    console.error("Terjadi kesalahan saat menjalankan cron job:", error);
+    logger.error("Terjadi kesalahan saat menjalankan cron job:", error);
   }
 });
 
@@ -142,17 +152,16 @@ cron.schedule(
   }
 );
 
-
 // await updateSundayPray();
 
 app.get("/api/cron", async (req, res) => {
   try {
-    console.log("Menjalankan cron job di Vercel...");
+    logger.info("Menjalankan cron job di Vercel...");
     await updateStatusCron();
     await updateStatusPKLCron();
     res.json({ message: "Cron job berhasil dijalankan" });
   } catch (error) {
-    console.error("Error menjalankan cron job:", error);
+    logger.error("Error menjalankan cron job:", error);
     res.status(500).json({ error: "Cron job gagal" });
   }
 });
@@ -178,5 +187,5 @@ app.get("/api/connection", (req, res) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+  logger.info(`Server berjalan di http://localhost:${PORT}`);
 });

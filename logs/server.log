@@ -1,0 +1,167 @@
+2025-03-06T04:37:56.781Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:39:03.157Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:39:29.471Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:39:57.300Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:40:00.316Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:40:00.718Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:40:00.722Z [INFO]: selesai
+2025-03-06T04:40:36.470Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:40:58.615Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:41:00.619Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:41:01.050Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:41:01.054Z [INFO]: selesai
+2025-03-06T04:41:21.738Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:41:31.810Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:42:00.028Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:42:00.449Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:42:00.453Z [INFO]: selesai
+2025-03-06T04:42:00.570Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:42:00.574Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:42:21.016Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:42:48.913Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:42:57.771Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:43:00.780Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:43:01.218Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:43:01.222Z [INFO]: selesai
+2025-03-06T04:43:01.351Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:43:01.354Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:44:00.153Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:44:00.527Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:44:00.529Z [INFO]: selesai
+2025-03-06T04:44:00.644Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:44:00.646Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:45:00.539Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:45:00.932Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:45:00.933Z [INFO]: selesai
+2025-03-06T04:45:01.076Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:45:01.077Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:46:00.897Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:46:01.316Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:46:01.317Z [INFO]: selesai
+2025-03-06T04:46:01.441Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:46:01.443Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:47:00.231Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:47:00.599Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:47:00.600Z [INFO]: selesai
+2025-03-06T04:47:00.720Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:47:00.721Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:48:00.635Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:48:01.128Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:48:01.129Z [INFO]: selesai
+2025-03-06T04:48:01.252Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:48:01.253Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:48:04.057Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:48:54.409Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:49:00.430Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:49:00.880Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:49:00.885Z [INFO]: selesai
+2025-03-06T04:49:01.008Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:49:01.011Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:50:00.777Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:50:01.281Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:50:01.282Z [INFO]: selesai
+2025-03-06T04:50:01.413Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:50:01.416Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:51:00.117Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:51:00.471Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:51:00.472Z [INFO]: selesai
+2025-03-06T04:51:00.592Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:51:00.593Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:52:00.460Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:52:00.820Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:52:00.822Z [INFO]: selesai
+2025-03-06T04:52:00.950Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:52:00.951Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:53:00.890Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:53:01.274Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:53:01.275Z [INFO]: selesai
+2025-03-06T04:53:01.391Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:53:01.392Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:54:00.346Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:54:00.739Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:54:00.740Z [INFO]: selesai
+2025-03-06T04:54:00.860Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:54:00.861Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:55:00.747Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:55:01.244Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:55:01.246Z [INFO]: selesai
+2025-03-06T04:55:01.379Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:55:01.380Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:56:00.045Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:56:00.416Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:56:00.417Z [INFO]: selesai
+2025-03-06T04:56:00.528Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:56:00.528Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:57:00.462Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:57:00.845Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:57:00.847Z [INFO]: selesai
+2025-03-06T04:57:00.967Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:57:00.968Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:58:00.784Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:58:01.253Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:58:01.254Z [INFO]: selesai
+2025-03-06T04:58:01.378Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:58:01.380Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:58:23.838Z [INFO]: Client connected: 5Zq2sPlMIclkxrmDAAAB
+2025-03-06T04:58:53.655Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T04:58:53.729Z [INFO]: Client connected: hHFy0O5FLn2hnTIyAAAB
+2025-03-06T04:59:00.687Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T04:59:01.105Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T04:59:01.107Z [INFO]: selesai
+2025-03-06T04:59:01.222Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T04:59:01.222Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T04:59:13.058Z [INFO]: Client disconnected: hHFy0O5FLn2hnTIyAAAB
+2025-03-06T04:59:13.436Z [INFO]: Client connected: f5lrqvFDdTqpympJAAAD
+2025-03-06T05:00:00.040Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T05:00:01.484Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T05:00:01.518Z [INFO]: Client connected: rThfH4RJbH28db07AAAB
+2025-03-06T05:01:00.792Z [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+2025-03-06T05:01:01.236Z [INFO]: 2025-03-06T00:00:00.000+07:00
+2025-03-06T05:01:01.240Z [INFO]: selesai
+2025-03-06T05:01:01.354Z [INFO]: Data pkl yang ditemukan:
+2025-03-06T05:01:01.355Z [INFO]: Tidak ada pkl yang perlu diperbarui.
+2025-03-06T05:01:05.318Z [INFO]: Server berjalan di http://localhost:8081
+2025-03-06T05:01:05.536Z [INFO]: Client connected: rZ_xeCzNdgoVOAlKAAAB
+Thursday, 06 March 2025 12:05:18 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 12:05:19 [INFO]: Client connected: iiFoq_Bv6MLpnC4BAAAB
+Thursday, 06 March 2025 12:05:30 [INFO]: Client disconnected: iiFoq_Bv6MLpnC4BAAAB
+Thursday, 06 March 2025 12:05:30 [INFO]: Client connected: fwJyBpnvVLyb7DMIAAAD
+Thursday, 06 March 2025 12:05:35 [INFO]: Server berjalan di http://localhost:8081
+Thursday, 06 March 2025 12:05:35 [INFO]: Client connected: nwPtJpo5fwNg-bG2AAAB
+Thursday, 06 March 2025 12:06:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:06:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:06:00 [INFO]: selesai
+Thursday, 06 March 2025 12:06:00 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:06:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:06:56 [INFO]: Client connected: g4QbF61I9ODAGR4GAAAD
+Thursday, 06 March 2025 12:07:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:07:05 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:07:05 [INFO]: selesai
+Thursday, 06 March 2025 12:07:05 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:07:05 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:08:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:08:01 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:08:01 [INFO]: selesai
+Thursday, 06 March 2025 12:08:01 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:08:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:08:31 [INFO]: Client connected: tgUc8JLiDYNeJj35AAAF
+Thursday, 06 March 2025 12:08:34 [INFO]: Client disconnected: nwPtJpo5fwNg-bG2AAAB
+Thursday, 06 March 2025 12:08:34 [INFO]: Client disconnected: tgUc8JLiDYNeJj35AAAF
+Thursday, 06 March 2025 12:08:34 [INFO]: Client disconnected: g4QbF61I9ODAGR4GAAAD
+Thursday, 06 March 2025 12:08:34 [INFO]: Client connected: O3Fr1Kkx0BI5qKK0AAAH
+Thursday, 06 March 2025 12:09:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:09:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:09:00 [INFO]: selesai
+Thursday, 06 March 2025 12:09:00 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:09:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:10:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:10:01 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:10:01 [INFO]: selesai
+Thursday, 06 March 2025 12:10:01 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:10:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:11:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Thursday, 06 March 2025 12:11:00 [INFO]: 2025-03-06T00:00:00.000+07:00
+Thursday, 06 March 2025 12:11:00 [INFO]: selesai
+Thursday, 06 March 2025 12:11:01 [INFO]: Data pkl yang ditemukan:
+Thursday, 06 March 2025 12:11:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Thursday, 06 March 2025 12:11:02 [INFO]: Client connected: Wnmo6R0yFTbZL9oyAAAJ

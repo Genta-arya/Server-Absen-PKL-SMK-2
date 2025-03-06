@@ -1,4 +1,5 @@
 import { prisma } from "../Config/Prisma.js";
+import logger from "../Logging/logger.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
 
 export const getLaporanByuser = async (req, res) => {
@@ -32,7 +33,7 @@ export const getLaporanByuser = async (req, res) => {
 
     return sendResponse(res, 200, "Data laporan harian ditemukan", data);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -85,7 +86,7 @@ export const getSingleLaporan = async (req, res) => {
     };
     return sendResponse(res, 200, "Data laporan harian ditemukan", laporanWithPembimbing);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -122,14 +123,14 @@ export const getLaporanMingguanByuser = async (req, res) => {
 
     return sendResponse(res, 200, "Data laporan mingguan ditemukan", data);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
 
 export const getSingleLaporanMingguan = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
+  logger.info(id);
   if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
@@ -170,14 +171,14 @@ export const getSingleLaporanMingguan = async (req, res) => {
     };
     return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
 
 export const getLaporanMingguan = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
+  logger.info(id);
   if (!id) {
     return sendResponse(res, 400, "Invalid request");
   }
@@ -201,7 +202,7 @@ export const getLaporanMingguan = async (req, res) => {
       },
     });
 
-    console.log(exitsLaporan);
+    logger.info(exitsLaporan);
     if (!exitsLaporan) {
       return sendResponse(res, 404, "Laporan tidak ditemukan");
     }
@@ -219,7 +220,7 @@ export const getLaporanMingguan = async (req, res) => {
     };
     return sendResponse(res, 200, "Data laporan mingguan ditemukan", laporanWithPembimbing);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -353,7 +354,7 @@ export const uploadLaporanHarian = async (req, res) => {
         })),
       });
     } else {
-      console.log(
+      logger.info(
         "Semua foto sudah ada di database, tidak ada yang ditambahkan."
       );
     }
@@ -369,7 +370,7 @@ export const uploadLaporanHarian = async (req, res) => {
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -460,7 +461,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
         })),
       });
     } else {
-      console.log(
+      logger.info(
         "Semua foto sudah ada di database, tidak ada yang ditambahkan."
       );
     }
@@ -476,7 +477,7 @@ export const uploadLaporanHarianMingguan = async (req, res) => {
       { ...updatedLaporan, fotos: updatedFotos } // **Tambahkan `fotos` ke response**
     );
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -498,7 +499,7 @@ export const deleteSingleImage = async (req, res) => {
     });
     return sendResponse(res, 200, "Data gambar laporan berhasil dihapus", deletedImage);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };

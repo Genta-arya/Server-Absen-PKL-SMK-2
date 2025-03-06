@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import logger from "../Logging/logger.js";
 
 const transporter = nodemailer.createTransport({
   service: "SMTP",
@@ -15,7 +16,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendEmail = (to, subject, body) => {
-  console.log(to);
+  logger.info(to);
   const htmlContent = fs.readFileSync(
     path.join(path.resolve(), "src", "Email", "index.html"),
     "utf-8"
@@ -37,10 +38,10 @@ export const sendEmail = (to, subject, body) => {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("Error sending email:", error);
+      logger.info("Error sending email:", error);
     } else {
-      console.log(`Email sent to: ${mailOptions.to}`);
-      console.log(`Response: ${info.response}`);
+      logger.info(`Email sent to: ${mailOptions.to}`);
+      logger.info(`Response: ${info.response}`);
     }
   });
 };

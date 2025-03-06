@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { sendError, sendResponse } from "../Utils/Response.js";
 import { sendNotificationEmail } from "./EmailController.js";
 import { DateTime } from "luxon";
+import logger from "../Logging/logger.js";
 
 const BATCH_SIZE = 50;
 
@@ -180,9 +181,9 @@ export const createPKLWithAbsensi = async (req, res) => {
       batchPromises.push(prisma.absensi.createMany({ data: batch }));
     }
 
-    console.log(`Memulai insert ${absensiData.length} data absensi...`);
+    logger.info(`Memulai insert ${absensiData.length} data absensi...`);
     await Promise.all(batchPromises);
-    console.log("Insert absensi selesai.");
+    logger.info("Insert absensi selesai.");
 
     const absensiBaru = await prisma.absensi.findMany({
       where: {
@@ -198,12 +199,12 @@ export const createPKLWithAbsensi = async (req, res) => {
       );
     }
 
-    console.log(`Mengambil kembali data absensi dari database...`);
+    logger.info(`Mengambil kembali data absensi dari database...`);
 
-    console.log("Jumlah data di database setelah insert:", absensiBaru.length);
-    console.log("Contoh data absensi:", absensiBaru.slice(0, 5)); // Lihat 5 data pertama
+    logger.info("Jumlah data di database setelah insert:", absensiBaru.length);
+    logger.info("Contoh data absensi:", absensiBaru.slice(0, 5)); // Lihat 5 data pertama
 
-    console.log(
+    logger.info(
       `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
     );
     const userAbsensiCounts = absensiBaru.reduce((acc, absensi) => {
@@ -212,7 +213,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     }, {});
 
     const firstUserAbsensiCount = Object.values(userAbsensiCounts)[0]; // Ambil nilai pertama
-    console.log(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
+    logger.info(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
 
     const laporanData = absensiBaru.map((absensi) => ({
       tanggal: absensi.tanggal ?? new Date(),
@@ -246,7 +247,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     for (let userId in userAbsensiGrouped) {
       const absensiUser = userAbsensiGrouped[userId];
       const jumlahMinggu = Math.ceil(absensiUser.length / 7); // Menghitung minggu per user
-      console.log(`User ${userId} memiliki ${jumlahMinggu} minggu`);
+      logger.info(`User ${userId} memiliki ${jumlahMinggu} minggu`);
 
       for (let i = 0; i < jumlahMinggu; i++) {
         const startIndex = i * 7;
@@ -272,12 +273,12 @@ export const createPKLWithAbsensi = async (req, res) => {
     // Tunggu hingga semua laporan mingguan selesai dibuat
     await Promise.all(laporanMingguanPromises);
 
-    console.log(
+    logger.info(
       `User ${absensiBaru[0]?.user_id} memiliki ${lengthAbsensi} absensi.`
     );
-    console.log(`Jumlah minggu yang dihitung: ${jumlahMinggu}`);
+    logger.info(`Jumlah minggu yang dihitung: ${jumlahMinggu}`);
 
-    console.log(
+    logger.info(
       `Membuat ${jumlahMinggu} laporan mingguan untuk user ${absensiBaru[0]?.user_id}`
     );
 
@@ -314,7 +315,7 @@ export const createPKLWithAbsensi = async (req, res) => {
     });
     // map kan data name creator dan pkl name
     if (!pklData) {
-      console.error("PKL tidak ditemukan atau tidak valid.");
+      logger.error("PKL tidak ditemukan atau tidak valid.");
     } else {
       // Ambil nama PKL dan nama creator
       const pklname = pklData.name;
@@ -348,7 +349,7 @@ export const createPKLWithAbsensi = async (req, res) => {
       newPkl
     );
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return sendError(res, error);
   }
 };
@@ -525,7 +526,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
       return sendResponse(res, 400, "Data absensi tidak ditemukan");
     }
 
-    console.log(
+    logger.info(
       `Ditemukan ${absensiBaru.length} data absensi, lanjut membuat laporan...`
     );
 
@@ -535,7 +536,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
     }, {});
 
     const firstUserAbsensiCount = Object.values(userAbsensiCounts)[0]; // Ambil nilai pertama
-    console.log(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
+    logger.info(`Jumlah absensi user pertama: ${firstUserAbsensiCount}`);
 
     const laporanData = absensiBaru.map((absensi) => ({
       tanggal: absensi.tanggal ?? new Date(),
@@ -560,7 +561,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
       return acc;
     }, {});
 
-    console.log("Jumlah absensi per user:", userAbsensiGrouped);
+    logger.info("Jumlah absensi per user:", userAbsensiGrouped);
 
     const lengthAbsensi = firstUserAbsensiCount;
     // Pembagian jumlah absensi per 7 hari = jumlah minggu
@@ -613,7 +614,7 @@ export const addSiswaToExistingPKL = async (req, res) => {
       "Siswa berhasil ditambahkan ke PKL, data shift diperbarui, dan absensi telah dibuat"
     );
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return sendError(res, error);
   }
 };
@@ -812,10 +813,10 @@ export const deleteAllPkl = async (req, res) => {
       where: { id: { in: pklIds } },
     });
 
-    console.log("Data PKL berhasil dihapus", deletePkl);
+    logger.info("Data PKL berhasil dihapus", deletePkl);
     res.json({ message: "PKL dan data terkait berhasil dihapus" });
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
@@ -861,11 +862,11 @@ export const updateStatusPkl = async (req, res) => {
       })
     );
 
-    console.log("currentDateOnly", currentDateOnly);
-    console.log("checkPklTanggalSelesaiOnly", checkPklTanggalSelesaiOnly);
+    logger.info("currentDateOnly", currentDateOnly);
+    logger.info("checkPklTanggalSelesaiOnly", checkPklTanggalSelesaiOnly);
 
     if (!checkPkl.status && currentDateOnly > checkPklTanggalSelesaiOnly) {
-      console.log("Periode PKL sudah selesai");
+      logger.info("Periode PKL sudah selesai");
       return sendResponse(
         res,
         400,
@@ -883,7 +884,7 @@ export const updateStatusPkl = async (req, res) => {
     });
     return sendResponse(res, 200, "Data PKL berhasil diupdate", update);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     sendError(res, error);
   }
 };
@@ -892,8 +893,8 @@ export const removeSiswaFromPkl = async (req, res) => {
   const { id } = req.params; // ID PKL
   const { siswaId, isDelete } = req.body; // ID Siswa
 
-  console.log("id", id);
-  console.log("siswaId", siswaId);
+  logger.info("id", id);
+  logger.info("siswaId", siswaId);
 
   if (!id || !siswaId) {
     return sendResponse(res, 400, "Invalid request");
@@ -965,9 +966,9 @@ export const removeSiswaFromPkl = async (req, res) => {
     SELECT "id" FROM "Shift" WHERE "pklId" = ${id}
   )
   `;
-      console.log("Relasi siswa dari shift berhasil dihapus.");
+      logger.info("Relasi siswa dari shift berhasil dihapus.");
     } catch (error) {
-      console.error("Gagal menghapus relasi siswa dari shift:", error);
+      logger.error("Gagal menghapus relasi siswa dari shift:", error);
     }
 
     return sendResponse(
@@ -977,7 +978,7 @@ export const removeSiswaFromPkl = async (req, res) => {
       updatedPkl
     );
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     sendError(res, error);
   }
 };
@@ -1059,11 +1060,11 @@ export const updateStatusPKLCron = async (req, res) => {
       },
     });
 
-    console.log("Data pkl yang ditemukan:", data);
+    logger.info("Data pkl yang ditemukan:", data);
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
     if (data.length > 0) {
-      console.log(`Terdapat ${data.length} absensi yang belum lengkap`);
+      logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
 
       await prisma.pkl.updateMany({
         where: {
@@ -1076,15 +1077,15 @@ export const updateStatusPKLCron = async (req, res) => {
         },
       });
 
-      console.log(
+      logger.info(
         "Mengupdate status PKL dengan ID:",
         data.map((item) => item.id)
       );
     } else {
-      console.log("Tidak ada pkl yang perlu diperbarui.");
+      logger.info("Tidak ada pkl yang perlu diperbarui.");
     }
   } catch (error) {
-    console.error("Terjadi kesalahan saat memperbarui status pkl:", error);
+    logger.error("Terjadi kesalahan saat memperbarui status pkl:", error);
   }
 };
 

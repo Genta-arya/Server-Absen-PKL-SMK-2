@@ -155,7 +155,7 @@ cron.schedule(
   }
 );
 
-await updateSundayPray();
+// await updateSundayPray();
 
 app.get("/api/cron", async (req, res) => {
   try {

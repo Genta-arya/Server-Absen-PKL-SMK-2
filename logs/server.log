@@ -6074,3 +6074,67 @@ Monday, 10 March 2025 12:42:01 [INFO]: Total data yang pulang null 187
 Monday, 10 March 2025 12:42:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
 Monday, 10 March 2025 12:42:01 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:42:01 - Pkl.findMany took 112 ms
 Monday, 10 March 2025 12:42:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Monday, 10 March 2025 12:43:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Monday, 10 March 2025 12:43:00 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:00 - Absensi.findMany took 158 ms
+Monday, 10 March 2025 12:43:00 [INFO]: 2025-03-10T00:00:00.000+07:00
+Monday, 10 March 2025 12:43:00 [INFO]: Total data yang pulang null 187 
+Monday, 10 March 2025 12:43:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Monday, 10 March 2025 12:43:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Monday, 10 March 2025 12:43:39 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:39 - User.findFirst took 439 ms
+Monday, 10 March 2025 12:43:39 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:39 - User.findFirst took 259 ms
+Monday, 10 March 2025 12:43:39 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:43:39 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:39 - User.findFirst took 592 ms
+Monday, 10 March 2025 12:43:39 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:40 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:40 - Laporan.findMany took 108 ms
+Monday, 10 March 2025 12:43:40 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:41 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:41 - Absensi.findUnique took 323 ms
+Monday, 10 March 2025 12:43:41 [INFO]: LOG: Data ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:44 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:44 - Absensi.update took 416 ms
+Monday, 10 March 2025 12:43:44 [INFO]: [object Object]
+Monday, 10 March 2025 12:43:44 [INFO]: LOG: Status absensi berhasil diupdate, ID:adf95b48-1d9c-4381-819a-d048074705e0, Status:200
+Monday, 10 March 2025 12:43:45 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:45 - User.findFirst took 108 ms
+Monday, 10 March 2025 12:43:45 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:45 - User.findFirst took 157 ms
+Monday, 10 March 2025 12:43:45 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:43:45 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:45 - Absensi.findUnique took 157 ms
+Monday, 10 March 2025 12:43:45 [INFO]: LOG: Data ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:47 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:47 - User.findFirst took 317 ms
+Monday, 10 March 2025 12:43:47 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:47 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:59 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:59 - User.findFirst took 157 ms
+Monday, 10 March 2025 12:43:59 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:59 - User.findFirst took 158 ms
+Monday, 10 March 2025 12:43:59 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:43:59 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:43:59 - User.findFirst took 347 ms
+Monday, 10 March 2025 12:43:59 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:43:59 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Monday, 10 March 2025 12:44:00 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:00 - Absensi.findMany took 227 ms
+Monday, 10 March 2025 12:44:00 [INFO]: 2025-03-10T00:00:00.000+07:00
+Monday, 10 March 2025 12:44:00 [INFO]: Total data yang pulang null 186 
+Monday, 10 March 2025 12:44:00 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Monday, 10 March 2025 12:44:00 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:00 - Pkl.findMany took 105 ms
+Monday, 10 March 2025 12:44:00 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Monday, 10 March 2025 12:44:03 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:03 - User.findFirst took 104 ms
+Monday, 10 March 2025 12:44:03 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:03 - User.findFirst took 172 ms
+Monday, 10 March 2025 12:44:03 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:44:04 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:04 - User.findFirst took 310 ms
+Monday, 10 March 2025 12:44:04 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:04 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:09 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:09 - User.findFirst took 110 ms
+Monday, 10 March 2025 12:44:09 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:09 - User.findFirst took 160 ms
+Monday, 10 March 2025 12:44:09 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:44:10 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:10 - User.findFirst took 318 ms
+Monday, 10 March 2025 12:44:10 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:10 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:22 [INFO]: Menjalankan cron job update Sunday Pray...
+Monday, 10 March 2025 12:44:22 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:22 - undefined.queryRaw took 348 ms
+Monday, 10 March 2025 12:44:22 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:22 - Absensi.updateMany took 220 ms
+Monday, 10 March 2025 12:44:22 [INFO]: Berhasil memperbarui 213 data absensi hari Minggu.
+Monday, 10 March 2025 12:44:22 [INFO]: Server berjalan di http://localhost:8081
+Monday, 10 March 2025 12:44:23 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:23 - User.findFirst took 209 ms
+Monday, 10 March 2025 12:44:23 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:23 - User.findFirst took 262 ms
+Monday, 10 March 2025 12:44:23 [INFO]: LOG: User ditemukan, ID:5355e687-da0d-4b79-b54e-7ad9a2b52a72, Status:200
+Monday, 10 March 2025 12:44:24 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:24 - User.findFirst took 572 ms
+Monday, 10 March 2025 12:44:24 [INFO]: LOG: User ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:24 [WARN]: [DB SLOW] Monday, 10 Mar 2025 12:44:24 - Laporan.findMany took 105 ms
+Monday, 10 March 2025 12:44:24 [INFO]: LOG: Data laporan harian ditemukan, ID:45a69975-1c9d-4bb9-82f5-8b6ed4fdccc3, Status:200
+Monday, 10 March 2025 12:44:29 [INFO]: Server berjalan di http://localhost:8081

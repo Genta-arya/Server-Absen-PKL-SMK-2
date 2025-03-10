@@ -1063,7 +1063,7 @@ export const updateStatusPKLCron = async (req, res) => {
 
     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
     if (data.length > 0) {
-      logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
+  
 
       await prisma.pkl.updateMany({
         where: {

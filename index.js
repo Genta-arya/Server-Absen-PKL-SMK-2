@@ -155,13 +155,13 @@ cron.schedule(
   }
 );
 
-// await updateSundayPray();
+await updateSundayPray();
 
 app.get("/api/cron", async (req, res) => {
   try {
     logger.info("Menjalankan cron job di Vercel...");
-    await updateStatusCron();
-    await updateStatusPKLCron();
+    // await updateStatusCron();
+    // await updateStatusPKLCron();
     res.json({ message: "Cron job berhasil dijalankan" });
   } catch (error) {
     logger.error("Error menjalankan cron job:", error);

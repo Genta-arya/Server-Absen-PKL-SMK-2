@@ -454,8 +454,14 @@ export const rekapDaftarAbsensi = async (req, res) => {
 
 export const UpdateStatusAbsen = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status , keterangan } = req.body;
   const dataEnum = ["selesai", "tidak_hadir", "izin", "libur"];
+
+  if (status === "izin") {
+    if (!keterangan) {
+      return sendResponse(res, 400, "Invalid request", id);
+    }
+  }
 
   if (!id || !status) {
     return sendResponse(res, 400, "Invalid request", id);
@@ -543,6 +549,7 @@ export const UpdateStatusAbsen = async (req, res) => {
         },
         data: {
           hadir: status,
+          keterangan: keterangan,
         },
       });
     } else {

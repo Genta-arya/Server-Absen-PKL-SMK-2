@@ -8368,3 +8368,24 @@ Tuesday, 11 March 2025 22:36:01 [INFO]: Total data yang pulang null 239
 Tuesday, 11 March 2025 22:36:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
 Tuesday, 11 March 2025 22:36:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:36:01 - Pkl.findMany took 107 ms
 Tuesday, 11 March 2025 22:36:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Tuesday, 11 March 2025 22:37:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Tuesday, 11 March 2025 22:37:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:37:01 - Absensi.findMany took 435 ms
+Tuesday, 11 March 2025 22:37:01 [INFO]: 2025-03-11T00:00:00.000+07:00
+Tuesday, 11 March 2025 22:37:01 [INFO]: Total data yang pulang null 239 
+Tuesday, 11 March 2025 22:37:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Tuesday, 11 March 2025 22:37:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:37:01 - Pkl.findMany took 108 ms
+Tuesday, 11 March 2025 22:37:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Tuesday, 11 March 2025 22:38:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Tuesday, 11 March 2025 22:38:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:38:01 - Absensi.findMany took 444 ms
+Tuesday, 11 March 2025 22:38:01 [INFO]: 2025-03-11T00:00:00.000+07:00
+Tuesday, 11 March 2025 22:38:01 [INFO]: Total data yang pulang null 239 
+Tuesday, 11 March 2025 22:38:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Tuesday, 11 March 2025 22:38:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:38:01 - Pkl.findMany took 107 ms
+Tuesday, 11 March 2025 22:38:01 [INFO]: Tidak ada pkl yang perlu diperbarui.
+Tuesday, 11 March 2025 22:39:00 [INFO]: Menjalankan cron job updateStatusCron setiap 60 detik...
+Tuesday, 11 March 2025 22:39:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:39:01 - Absensi.findMany took 439 ms
+Tuesday, 11 March 2025 22:39:01 [INFO]: 2025-03-11T00:00:00.000+07:00
+Tuesday, 11 March 2025 22:39:01 [INFO]: Total data yang pulang null 239 
+Tuesday, 11 March 2025 22:39:01 [INFO]: Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"
+Tuesday, 11 March 2025 22:39:01 [WARN]: [DB SLOW] Tuesday, 11 Mar 2025 22:39:01 - Pkl.findMany took 105 ms
+Tuesday, 11 March 2025 22:39:01 [INFO]: Tidak ada pkl yang perlu diperbarui.

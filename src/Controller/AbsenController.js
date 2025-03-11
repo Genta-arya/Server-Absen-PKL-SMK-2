@@ -309,32 +309,60 @@ export const updateStatusCron = async (req, res) => {
           lt: currentDate.toJSDate(), // Hanya data sebelum hari ini
         },
 
-        pulang: null, // Pulang juga kosong
+        // pulang: null, // Pulang juga kosong
+        pulang: null,
+
+        AND: [
+          {
+            OR: [
+              { hadir: null }, // Jika belum ada status
+              { hadir: { notIn: ["libur", "sakit", "izin"] } }, // Tidak termasuk "libur", "sakit", "izin"
+            ],
+          },
+        ],
       },
     });
 
     logger.info(currentDate);
+    logger.info(`Total data yang pulang null ${data.length} `, data.length);
 
-    if (data.every((item) => item.hadir === "tidak_hadir" || item.hadir === "libur")) {
+    if (
+      data.every(
+        (item) =>
+          item.hadir === "tidak_hadir" ||
+          item.hadir === "libur" ||
+          item.hadir === "sakit" ||
+          item.hadir === "izin"
+      )
+    ) {
       logger.info(
         `Semua absensi tanggal sebelum hari ini sudah memiliki status "tidak_hadir"`
       );
       return;
+    } else {
+      logger.info(
+        `Terdapat ${data.length} absensi yang belum memiliki status "tidak_hadir"`
+      );
     }
 
     if (data.length > 0) {
       logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
 
-      await prisma.absensi.updateMany({
+      const update = await prisma.absensi.updateMany({
         where: {
           id: {
             in: data.map((item) => item.id),
           },
+          // OR: [
+          //   { hadir: { notIn: ["libur", "sakit", "izin"] } }, // Tidak termasuk "libur", "sakit", "izin"
+          // ],
         },
         data: {
           hadir: "tidak_hadir",
         },
       });
+
+      logger.info(`${update.count} absensi berhasil diperbarui`);
     } else {
       logger.info("Tidak ada absensi yang perlu diperbarui.");
     }
@@ -344,61 +372,9 @@ export const updateStatusCron = async (req, res) => {
   }
 };
 
-// export const updateStatusCron = async (req, res) => {
-//   try {
-//     // Mendapatkan waktu Indonesia
-//     const newDateIndonesia = new Date().toLocaleString("en-US", {
-//       timeZone: "Asia/Jakarta",
-//       hour12: false,
-//     });
-
-//     const currentDate = new Date(newDateIndonesia);
-//     currentDate.setHours(0, 0, 0, 0);
-//     logger.info("Current Date (Indonesia Time):", currentDate);
-
-//     // Mengambil data absensi yang tanggalnya sudah lewat
-//     const data = await prisma.absensi.findMany({
-//       where: {
-//         OR: [{ isDelete: false }, { isDelete: null }],
-//         tanggal: {
-//           lt: currentDate, // hanya ambil data dengan tanggal sebelum hari ini
-//         },
-//         hadir: null,
-//         OR: [{ pulang: null }, { datang: null }],
-//       },
-//     });
-
-//     logger.info("Data absensi yang ditemukan:", data);
-
-//     // Jika ada data absensi yang sesuai, update status hadir menjadi "tidak_hadir"
-//     if (data.length > 0) {
-//       logger.info(`Terdapat ${data.length} absensi yang belum lengkap`);
-
-//       await prisma.absensi.updateMany({
-//         where: {
-//           id: {
-//             in: data.map((item) => item.id), // Menggunakan ID data yang sudah diambil
-//           },
-//         },
-//         data: {
-//           hadir: "tidak_hadir",
-//         },
-//       });
-
-//       logger.info(
-//         "Status hadir berhasil diupdate menjadi 'tidak_hadir' untuk absensi dengan ID:",
-//         data.map((item) => item.id)
-//       );
-//     } else {
-//       logger.info("Tidak ada absensi yang perlu diperbarui.");
-//     }
-//   } catch (error) {
-//     logger.error("Terjadi kesalahan saat memperbarui status absensi:", error);
-//   }
-// };
-
 export const rekapDaftarAbsensi = async (req, res) => {
   const { id } = req.params;
+  ``;
   logger.info(id);
   try {
     const data = await prisma.absensi.findMany({
@@ -454,8 +430,14 @@ export const rekapDaftarAbsensi = async (req, res) => {
 
 export const UpdateStatusAbsen = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
-  const dataEnum = ["selesai", "tidak_hadir", "izin", "libur"];
+  const { status, keterangan } = req.body;
+  const dataEnum = ["selesai", "tidak_hadir", "izin", "libur", "sakit"];
+
+  if (status === "izin") {
+    if (!keterangan) {
+      return sendResponse(res, 400, "Invalid request", id);
+    }
+  }
 
   if (!id || !status) {
     return sendResponse(res, 400, "Invalid request", id);
@@ -522,8 +504,7 @@ export const UpdateStatusAbsen = async (req, res) => {
           },
         });
       }
-    }
-    if (status === "izin") {
+    } else if (status === "izin") {
       const countIzin = await prisma.absensi.count({
         where: {
           user_id: findData.user_id,
@@ -543,6 +524,17 @@ export const UpdateStatusAbsen = async (req, res) => {
         },
         data: {
           hadir: status,
+          keterangan: keterangan,
+        },
+      });
+    } else if (status === "sakit") {
+      update = await prisma.absensi.update({
+        where: {
+          id,
+        },
+        data: {
+          hadir: status,
+          keterangan: "sedang sakit",
         },
       });
     } else {

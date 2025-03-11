@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import logger from "../Logging/logger.js";
 
 export const prisma = new PrismaClient({
-  log: ["query"], // Aktifkan logging Prisma
+//   log: ["query"], // Aktifkan logging Prisma
 });
 
 prisma.$use(async (params, next) => {

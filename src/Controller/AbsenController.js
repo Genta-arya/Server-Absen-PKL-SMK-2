@@ -433,11 +433,11 @@ export const UpdateStatusAbsen = async (req, res) => {
   const { status, keterangan } = req.body;
   const dataEnum = ["selesai", "tidak_hadir", "izin", "libur", "sakit"];
 
-  if (status === "izin") {
+ 
     if (!keterangan) {
       return sendResponse(res, 400, "Invalid request", id);
     }
-  }
+  
 
   if (!id || !status) {
     return sendResponse(res, 400, "Invalid request", id);

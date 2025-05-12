@@ -432,9 +432,10 @@ export const UpdateStatusAbsen = async (req, res) => {
   const { id } = req.params;
   const { status, keterangan } = req.body;
   const dataEnum = ["selesai", "tidak_hadir", "izin", "libur", "sakit"];
+  console.log(status);
 
  
-    if (!keterangan) {
+    if (!keterangan && status === "izin") {
       return sendResponse(res, 400, "Invalid request", id);
     }
   
